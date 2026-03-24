@@ -1,27 +1,43 @@
-import type { Employee } from "@shared/schemas/employee.schema.js";
+import type { 
+  Employee, 
+  NewEmployee, 
+  EmployeeUpdatePayload, 
+  EmployeeFilter 
+} from "@crm/shared/schemas/employee.schema.js";
 
-// Определяем интерфейс фильтров для расширяемости (например, если добавится поиск по имени)
-export interface EmployeeFilters {
-  department?: string;
-  minSalary?: number;
-}
+export interface EmployeesService {
+  /**
+   * Добавление нового сотрудника. 
+   * Принимает данные без ID, возвращает полный объект с созданным ID.
+   */
+  addEmployee(empl: NewEmployee): Promise<Employee>;
 
-export interface IEmployeesService {
-  // Найти одного
-  getById(id: number | string): Promise<Employee | null>;
+  /**
+   * Обновление данных.
+   * Используем твой EmployeeUpdatePayload для строгости.
+   */
+  updateEmployee(payload: EmployeeUpdatePayload): Promise<Employee>;
 
-  // Получить всех с опциональной фильтрацией
-  getAll(filters?: EmployeeFilters): Promise<Employee[]>;
+  /**
+   * Удаление сотрудника. 
+   * Возвращает удаленный объект (полезно для уведомлений или undo).
+   */
+  deleteEmployee(id: string): Promise<Employee>;
 
-  // Создать (обычно возвращает созданный объект с присвоенным ID)
-  create(employee: Omit<Employee, 'id'>): Promise<Employee>;
+  /**
+   * Получение одного сотрудника по ID.
+   */
+  getEmployee(id: string): Promise<Employee>;
 
-  // Обновить (Partial позволяет передать только те поля, которые изменились)
-  update(id: number | string, data: Partial<Employee>): Promise<Employee>;
+  /**
+   * Получение списка с учетом фильтрации (зарплата, возраст, департамент).
+   * Теперь типизировано через EmployeeFilter.
+   */
+  getAll(filter?: EmployeeFilter): Promise<Employee[]>;
 
-  // Удалить (часто возвращает void или boolean, но можно и сам объект)
-  delete(id: number | string): Promise<boolean>;
-
-  // Метод для "сохранения" (актуально для In-Memory или файлового хранения)
+  /**
+   * Метод для принудительного сохранения (для файлового хранилища).
+   * В случае SQL/Mongo может быть пустым, но в интерфейсе пусть будет.
+   */
   save(): Promise<void>;
 }
