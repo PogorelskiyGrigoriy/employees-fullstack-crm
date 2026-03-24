@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    /* Path Mapping */
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    },
+
+    /* File Layout */
+    // Убираем "rootDir": "./", так как это ограничивает TS только папкой backend.
+    // TS сам вычислит общий корень (которым станет папка Employees_fullstack_crm),
+    // чтобы охватить и backend/src, и shared/
+    "outDir": "./dist",
+
+    /* Environment Settings */
+    "module": "nodenext",
+    "target": "esnext",
+    "lib": ["esnext"],
+    "types": ["node"],
+
+    /* Other Outputs */
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    /* Stricter Typechecking Options */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    /* Recommended Options */
+    "jsx": "react-jsx",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*", 
+    "../shared/**/*"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

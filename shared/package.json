@@ -1,0 +1,10 @@
+{
+  "name": "@crm/shared",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "date-fns": "^3.6.0",
+    "zod": "^3.22.0"
+  }
+}

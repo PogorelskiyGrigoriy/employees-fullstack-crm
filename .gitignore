@@ -1,0 +1,38 @@
+# Зависимости (самое тяжелое)
+node_modules/
+**/node_modules/
+package-lock.json
+
+# Сборка и логи
+dist/
+frontend/dist/
+backend/dist/
+build/
+*.log
+.eslintcache
+
+# Настройки редактора
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Переменные окружения
+.env
+.env.*
+
+# Секреты (Environment variables)
+backend/.env
+backend/.env.local
+# Если на фронте тоже появится .env
+frontend/.env
+frontend/.env.local
+
+# Логи бэкенда
+# Игнорируем всю папку с логами, которую создает твой логгер
+backend/logs/
+# На всякий случай игнорируем любые файлы с расширением .log в корне или подпапках
+*.log
