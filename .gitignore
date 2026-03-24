@@ -1,17 +1,27 @@
-# Зависимости (самое тяжелое)
+# Dependencies
 node_modules/
 **/node_modules/
-package-lock.json
 
-# Сборка и логи
+# Build outputs
 dist/
+build/
 frontend/dist/
 backend/dist/
-build/
+shared/dist/
+
+# Logs and runtime data
 *.log
+backend/logs/
 .eslintcache
 
-# Настройки редактора
+# Environment variables and secrets
+.env
+*.env.*
+.env.local
+backend/.env
+frontend/.env
+
+# Editor and System files
 .vscode/
 .idea/
 *.suo
@@ -19,20 +29,11 @@ build/
 *.njsproj
 *.sln
 *.sw?
+.DS_Store
+Thumbs.db
 
-# Переменные окружения
-.env
-.env.*
-
-# Секреты (Environment variables)
-backend/.env
-backend/.env.local
-# Если на фронте тоже появится .env
-frontend/.env
-frontend/.env.local
-
-# Логи бэкенда
-# Игнорируем всю папку с логами, которую создает твой логгер
-backend/logs/
-# На всякий случай игнорируем любые файлы с расширением .log в корне или подпапках
-*.log
+# Optional: Lock files
+# In a monorepo, keep the root package-lock.json, but ignore local ones
+frontend/package-lock.json
+backend/package-lock.json
+shared/package-lock.json

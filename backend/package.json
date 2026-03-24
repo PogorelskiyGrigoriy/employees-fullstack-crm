@@ -1,5 +1,5 @@
 {
-  "name": "nodejsproj",
+  "name": "@crm/backend",
   "version": "1.0.0",
   "type": "module",
   "description": "back-end service for employees data",
@@ -9,9 +9,9 @@
     "prebuild": "npm run clean",
     "build": "tsc",
     "check": "tsc --noEmit",
-    "dev": "node --import tsx --watch --env-file=.env src/index.ts | pino-pretty -c -t",
+    "dev": "node --import tsx --watch --env-file=.env src/index.ts",
     "start": "tsx --env-file=.env src/index.ts",
-    "serve": "node --env-file=.env dist/index.ts"
+    "serve": "node --env-file=.env dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +24,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@crm/shared": "*",
     "express": "^5.2.1",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0",
