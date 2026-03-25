@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 import type { 
   Employee, 
   NewEmployee, 
@@ -14,31 +14,36 @@ export class InMemoryEmployeesService implements EmployeesService {
   async addEmployee(data: NewEmployee): Promise<Employee> {
     const newEmployee: Employee = {
       ...data,
-      id: uuidv4(),
+      id: randomUUID(),
     };
     this.employees.push(newEmployee);
     return newEmployee;
   }
 
   async updateEmployee({ id, changes }: EmployeeUpdatePayload): Promise<Employee> {
-  const index = this.employees.findIndex(e => e.id === id);
-  if (index === -1) throw new Error(`Employee with id ${id} not found`);
+    const index = this.employees.findIndex(e => e.id === id);
+    
+    if (index === -1) {
+        throw new Error(`Employee with id ${id} not found`);
+    }
+    const existing = this.employees[index]!;
 
-  const updated = { 
-    ...this.employees[index], 
-    ...changes, 
-    id 
-  } as Employee;
+    // Создаем обновленный объект, гарантируя, что ID не перезапишется из changes
+    const updated = { 
+      ...existing,
+      ...changes,
+      id 
+    } as Employee;
 
-  this.employees[index] = updated;
-  return updated;
-}
+    this.employees[index] = updated;
+    return updated;
+  }
 
   async deleteEmployee(id: string): Promise<Employee> {
     const index = this.employees.findIndex(e => e.id === id);
     if (index === -1) throw new Error(`Employee with id ${id} not found`);
 
-    const [deleted] = this.employees.splice(index, 1);
+    const [deleted] = this.employees.splice(index, 1) as [Employee];
     return deleted;
   }
 
@@ -52,9 +57,13 @@ export class InMemoryEmployeesService implements EmployeesService {
     if (!filter) return [...this.employees];
 
     return this.employees.filter(emp => {
+      // 1. Фильтр по департаменту
       const matchesDept = filter.department === "All" || emp.department === filter.department;
+      
+      // 2. Фильтр по зарплате
       const matchesSalary = emp.salary >= filter.minSalary && emp.salary <= filter.maxSalary;
       
+      // 3. Фильтр по возрасту (используем общую логику из shared)
       const age = calculateAge(emp.birthDate);
       const matchesAge = age >= filter.minAge && age <= filter.maxAge;
 
@@ -63,7 +72,6 @@ export class InMemoryEmployeesService implements EmployeesService {
   }
 
   async save(): Promise<void> {
-    // В памяти сохранять некуда, просто имитируем успех
     return Promise.resolve();
   }
 }

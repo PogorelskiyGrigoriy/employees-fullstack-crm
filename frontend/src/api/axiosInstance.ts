@@ -14,7 +14,7 @@ import { ROUTES } from '@/config/navigation';
  * Global axios instance with predefined base URL and timeout.
  */
 export const api = axios.create({
-  baseURL: 'http://localhost:4000',
+  baseURL: 'http://localhost:3000/api',
   timeout: 10000,
 });
 
