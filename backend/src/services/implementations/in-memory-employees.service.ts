@@ -6,12 +6,14 @@ import type {
   EmployeeUpdatePayload, 
   EmployeeFilter 
 } from "@crm/shared/schemas/employee.schema.js";
-import type { StatsResponse, StatsDataItem } from "@crm/shared/schemas/stats.schema.js";
+import type { StatsResponse, StatsDataItem, DepartmentInfo } from "@crm/shared/schemas/stats.schema.js";
 import { type EmployeesService } from '../EmployeesService.js';
 import { calculateAge } from "@crm/shared/utils/dateUtils.js";
 import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees-config.js";
+import { departmentSchema } from "@crm/shared/schemas/department.schema.js";
 
-const { range, countBy } = pkg;
+// Extract necessary helpers from lodash
+const { range, countBy, groupBy, meanBy } = pkg;
 
 export class InMemoryEmployeesService implements EmployeesService {
   private employees: Employee[] = [];
@@ -33,7 +35,6 @@ export class InMemoryEmployeesService implements EmployeesService {
     }
     const existing = this.employees[index]!;
 
-    // Создаем обновленный объект, гарантируя, что ID не перезапишется из changes
     const updated = { 
       ...existing,
       ...changes,
@@ -62,13 +63,9 @@ export class InMemoryEmployeesService implements EmployeesService {
     if (!filter) return [...this.employees];
 
     return this.employees.filter(emp => {
-      // 1. Фильтр по департаменту
       const matchesDept = filter.department === "All" || emp.department === filter.department;
-      
-      // 2. Фильтр по зарплате
       const matchesSalary = emp.salary >= filter.minSalary && emp.salary <= filter.maxSalary;
       
-      // 3. Фильтр по возрасту (используем общую логику из shared)
       const age = calculateAge(emp.birthDate);
       const matchesAge = age >= filter.minAge && age <= filter.maxAge;
 
@@ -76,6 +73,9 @@ export class InMemoryEmployeesService implements EmployeesService {
     });
   }
 
+  /**
+   * Orchestrates the calculation of all analytical data.
+   */
   async getStatistics(): Promise<StatsResponse> {
     const { salary, age } = EMPLOYEES_CONFIG;
 
@@ -98,14 +98,16 @@ export class InMemoryEmployeesService implements EmployeesService {
         (v, last) => `Age: ${v}-${last ? 'max' : v + age.interval}`
       ),
 
-      // 3. Distribution by Department count
-      departmentDistribution: this.calculateDepartmentStats()
+      // 3. Simple count per department for charts
+      departmentDistribution: this.calculateDepartmentStats(),
+
+      // 4. Detailed analytics (avg salary/age) per department
+      departmentAnalytics: this.calculateDepartmentAnalytics()
     };
   }
 
   /**
    * Generic helper for numeric binning (histograms).
-   * Groups items into fixed-interval ranges based on EMPLOYEES_CONFIG.
    */
   private calculateBins<T>(
     items: T[],
@@ -116,7 +118,6 @@ export class InMemoryEmployeesService implements EmployeesService {
   ): StatsDataItem[] {
     const { min, max, interval } = config;
 
-    // Aggregate counts using lodash
     const stats = countBy(items, (item) => {
       const val = valueExtractor(item);
       const effectiveVal = Math.min(Math.max(val, min), max - 1);
@@ -124,7 +125,6 @@ export class InMemoryEmployeesService implements EmployeesService {
       return Math.floor(offset / interval) * interval + min;
     });
 
-    // Generate complete range to include empty bins
     return range(min, max, interval).map((v) => {
       const isLast = v + interval >= max;
       return {
@@ -136,7 +136,7 @@ export class InMemoryEmployeesService implements EmployeesService {
   }
 
   /**
-   * Simple categorical grouping for departments.
+   * Aggregates employee counts into chart-ready format.
    */
   private calculateDepartmentStats(): StatsDataItem[] {
     const stats = countBy(this.employees, 'department');
@@ -148,7 +148,37 @@ export class InMemoryEmployeesService implements EmployeesService {
     }));
   }
 
+  /**
+   * Calculates averages (Salary and Age) for each department defined in the schema.
+   */
+  private calculateDepartmentAnalytics(): DepartmentInfo[] {
+    // Group employees by department
+    const grouped = groupBy(this.employees, 'department');
+    
+    // Get all possible departments from the Zod enum options
+    const allDepartments = departmentSchema.options;
+
+    return allDepartments.map((dept): DepartmentInfo => {
+      const deptEmployees = grouped[dept] || [];
+      const count = deptEmployees.length;
+
+      return {
+        department: dept,
+        numEmployees: count,
+        // Calculate rounded average salary
+        avgSalary: count > 0 
+          ? Math.round(meanBy(deptEmployees, 'salary')) 
+          : 0,
+        // Calculate rounded average age
+        avgAge: count > 0 
+          ? Math.round(meanBy(deptEmployees, (e) => calculateAge(e.birthDate))) 
+          : 0
+      };
+    });
+  }
+
   async save(): Promise<void> {
+    // No-op for in-memory implementation
     return Promise.resolve();
   }
 }
