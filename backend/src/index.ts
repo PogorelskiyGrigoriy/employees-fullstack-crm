@@ -8,6 +8,20 @@ import {
   newEmployeeSchema, 
   employeeUpdateSchema 
 } from '@crm/shared/schemas/employee.schema.js';
+import { loginSchema } from "@crm/shared/schemas/auth.schema.js";
+
+const authService = new InMemoryAuthService();
+
+app.post('/api/auth/login', async (req, res, next) => {
+  try {
+    const credentials = loginSchema.parse(req.body);
+    const userData = await authService.login(credentials);
+    res.json(userData);
+  } catch (e) {
+    // errorMiddleware will return 400 for Zod errors or 401 for bad credentials
+    next(e);
+  }
+});
 
 const app = express();
 const employeesService = new InMemoryEmployeesService();

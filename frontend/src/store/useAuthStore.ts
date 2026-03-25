@@ -6,7 +6,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { UserData } from '@/schemas/auth.schema';
+import type { UserData } from '@crm/shared/schemas/auth.schema';
 
 /**
  * Interface defining the structure and actions of the authentication store.

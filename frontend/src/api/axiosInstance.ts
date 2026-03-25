@@ -19,6 +19,25 @@ export const api = axios.create({
 });
 
 /**
+ * Request Interceptor:
+ * Injects the Bearer Token into the Authorization header for every request.
+ */
+api.interceptors.request.use(
+  (config) => {
+    // Access the Zustand store state directly (outside of React components)
+    const token = useAuthStore.getState().user?.token;
+
+    if (token) {
+      // Standard "Bearer" authentication scheme
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+/**
  * Response Interceptor:
  * Handles global API responses and error scenarios like 401 Unauthorized 
  * or 500 Server Errors.

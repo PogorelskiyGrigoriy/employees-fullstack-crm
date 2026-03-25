@@ -33,9 +33,11 @@ export type LoginData = z.infer<typeof loginSchema>;
  * Defines the shape of the user object stored in global state or session.
  */
 export const userDataSchema = z.object({
-  id: z.string().uuid().or(z.string()), // ID can be a UUID or a standard string
+  id: z.string().uuid().or(z.string()),
   username: z.string().min(1, "Username is required"),
+  email: z.string().email(), // Added email for better identity tracking
   role: userRoleSchema,
+  token: z.string().optional(), // Added token for API authentication
 });
 
 /** Type representing the profile of an authenticated user */
