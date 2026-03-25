@@ -8,9 +8,10 @@ import type {
   Employee, 
   NewEmployee, 
   EmployeeUpdatePayload 
-} from "@/schemas/employee.schema";
-import type { EmployeeFilter } from "@/schemas/employee.schema";
+} from "@crm/shared/schemas/employee.schema";
+import type { EmployeeFilter } from "@crm/shared/schemas/employee.schema";
 import type { SortState } from "@/store/sort-store";
+import type { StatsResponse } from "@crm/shared/schemas/stats.schema.js";
 
 /**
  * Defines mandatory methods for any data source (API or Stub).
@@ -43,4 +44,9 @@ export interface ApiClient {
    * Throws ZodError if response is invalid.
    */
   updateEmployee(payload: EmployeeUpdatePayload): Promise<Employee>;
+
+/**
+   * Fetches pre-calculated statistics from the server.
+   */
+  getStatistics(): Promise<StatsResponse>;
 }

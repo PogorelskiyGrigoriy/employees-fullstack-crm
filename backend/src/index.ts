@@ -20,12 +20,11 @@ const seedData = generateMockEmployees(10);
 seedData.forEach(emp => employeesService.addEmployee(emp));
 
 // Роуты
-app.get('/api/employees', async (req, res, next) => {
+app.get('/api/employees/stats', async (req, res, next) => {
   try {
-    const filters = employeeFilterSchema.parse(req.query);
-    const data = await employeesService.getAll(filters);
-    res.json(data);
-  } catch (e) { next(e); } // Передаем ошибку в глобальный обработчик
+    const stats = await employeesService.getStatistics();
+    res.json(stats);
+  } catch (e) { next(e); }
 });
 
 app.post('/api/employees', async (req, res, next) => {

@@ -21,6 +21,7 @@ import {
 
 import type { StatsChartProps } from "@/schemas/statsInterface.schema";
 
+
 /** Constant margin config to maximize usable chart area while keeping labels visible */
 const CHART_MARGIN = { top: 10, right: 10, left: -20, bottom: 0 } as const;
 
