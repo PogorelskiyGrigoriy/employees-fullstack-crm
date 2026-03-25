@@ -1,19 +1,23 @@
 /**
  * @module useAddEmployee
- * Mutation hook for creating a new employee record.
  */
 
-import type { Employee, NewEmployee } from "@/schemas/employee.schema"; 
+import type { Employee, NewEmployee } from "@crm/shared/schemas/employee.schema.js"; 
 import { apiClient } from "@/services/ApiClientImplementation";
 import { useEmployeesMutation } from "./useEmployeesMutation";
+import { toaster } from "@/components/ui/toaster-config";
 
-/**
- * Hook to add a new employee.
- * Sends data without ID, receives full Employee object from server.
- * Cache invalidation is handled automatically by useEmployeesMutation.
- */
 export const useAddEmployee = () => {
   return useEmployeesMutation<NewEmployee, Employee>(
-    (newEmp) => apiClient.addEmployee(newEmp)
+    (newEmp) => apiClient.addEmployee(newEmp),
+    {
+      onSuccess: () => {
+        toaster.create({
+          title: "Employee Added",
+          description: "New record successfully created in the database",
+          type: "success",
+        });
+      }
+    }
   );
 };
