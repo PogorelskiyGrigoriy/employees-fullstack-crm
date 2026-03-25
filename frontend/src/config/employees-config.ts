@@ -4,7 +4,7 @@
  * grouping logic, and UI constraints.
  */
 
-import { DEPARTMENTS_LIST, type Department } from "@/schemas/department.schema";
+import { DEPARTMENTS_LIST, type Department } from "@crm/shared/schemas/department.schema";
 
 /**
  * Configuration for numeric ranges used in grouping and filtering (e.g., Salary, Age).

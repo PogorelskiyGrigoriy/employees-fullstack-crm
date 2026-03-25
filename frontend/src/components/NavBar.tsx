@@ -22,7 +22,7 @@ import { StatisticsSelector } from "./StatisticsSelector";
 import { useAuthStore, useIsAuthenticated } from "@/store/useAuthStore";
 import { useLogout } from "@/services/hooks/authHooks/useLogout";
 import { MAIN_NAV_LINKS, ROUTES } from "@/config/navigation";
-import type { UserData } from "@/schemas/auth.schema"; 
+import type { UserData } from "@crm/shared/schemas/auth.schema"; 
 
 /**
  * Main application navigation bar.

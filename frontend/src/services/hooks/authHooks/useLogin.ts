@@ -8,7 +8,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '@/services/AuthServiceImplementation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { ROUTES } from '@/config/navigation';
-// Use the shared schema with .js extension
 import type { LoginData, UserData } from '@crm/shared/schemas/auth.schema.js';
 import { toaster } from "@/components/ui/toaster-config";
 
@@ -35,7 +34,6 @@ export const useLogin = () => {
     },
 
     onError: (error: any) => {
-      // Accessing the backend error message if it exists in the Axios response
       const message = error.response?.data?.error || error.message || "Invalid credentials";
       
       toaster.create({

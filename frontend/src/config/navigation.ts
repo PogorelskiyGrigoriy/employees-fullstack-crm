@@ -4,7 +4,7 @@
  * Defines application routes and role-based access control (RBAC) for navigation links.
  */
 
-import type { UserRole } from "@/schemas/auth.schema";
+import type { UserRole } from "@crm/shared/schemas/auth.schema";
 
 /**
  * Unique identifiers for all application routes.

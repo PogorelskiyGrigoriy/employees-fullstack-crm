@@ -19,7 +19,7 @@ import {
 
 import { Field } from "@/components/ui/field";
 import { useLogin } from "@/services/hooks/authHooks/useLogin";
-import { loginSchema, type LoginData } from "@/schemas/auth.schema";
+import { loginSchema, type LoginData } from "@crm/shared/schemas/auth.schema";
 
 /**
  * LoginPage Component.
@@ -67,7 +67,7 @@ export const LoginPage = () => {
                   <Input
                     {...register("email")}
                     type="email"
-                    placeholder="admin@tel-ran.com"
+                    placeholder="admin@crm.com"
                     autoComplete="email"
                   />
                 </Field>
@@ -118,10 +118,10 @@ export const LoginPage = () => {
           </Text>
           <VStack gap="0">
             <Text fontSize="xs" color="fg.subtle">
-              Admin: <b>admin@tel-ran.com</b> / admin1234
+              Admin: <b>admin@crm.com</b> / password123
             </Text>
             <Text fontSize="xs" color="fg.subtle">
-              User: <b>user@tel-ran.com</b> / user1234
+              User: <b>user@crm.com</b> / password123
             </Text>
           </VStack>
         </VStack>

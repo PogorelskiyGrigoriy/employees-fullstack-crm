@@ -1,7 +1,6 @@
 /**
  * @module LoginForm
- * Accessible authentication form with real-time validation.
- * Uses React Hook Form for state management and TanStack Query for the login mutation.
+ * Refactored to use ZodResolver for Single Source of Truth validation.
  */
 
 "use client"
@@ -9,14 +8,12 @@
 import { Button, Input, Stack, Heading, Box, Alert } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Field } from "@/components/ui/field";
 import { useLogin } from "@/services/hooks/authHooks/useLogin";
-import type { LoginData } from "@/schemas/auth.schema";
+import { loginSchema, type LoginData } from "@crm/shared/schemas/auth.schema.js";
 
-/**
- * Handles user login with validation and server-side error feedback.
- */
 export const LoginForm = () => {
   const { mutate, isPending, isError, error, reset: resetMutation } = useLogin();
   
@@ -26,16 +23,13 @@ export const LoginForm = () => {
     watch,
     formState: { errors, isValid, isDirty } 
   } = useForm<LoginData>({
-    mode: "onBlur", // Validates when user leaves the field for a less intrusive UX
+    resolver: zodResolver(loginSchema),
+    mode: "onBlur",
     defaultValues: { email: "", password: "" }
   });
 
-  /**
-   * UX Optimization:
-   * Clears the previous "Invalid credentials" error message as soon as the user
-   * starts typing a new email or password, providing immediate feedback.
-   */
   const [email, password] = watch(["email", "password"]);
+  
   useEffect(() => {
     if (isError) resetMutation();
   }, [email, password, isError, resetMutation]);
@@ -43,6 +37,9 @@ export const LoginForm = () => {
   const handleLogin = (data: LoginData) => {
     mutate(data);
   };
+
+  // Extract server error message safely
+  const serverErrorMessage = (error as any)?.response?.data?.error || error?.message || "Invalid credentials";
 
   return (
     <Box 
@@ -61,20 +58,18 @@ export const LoginForm = () => {
             Sign In
           </Heading>
 
-          {/* Authentication Error Alert: Shows if the API returns an error */}
           {isError && (
             <Alert.Root status="error" variant="subtle" borderRadius="md">
               <Alert.Indicator />
               <Alert.Content>
                 <Alert.Title fontSize="xs">
-                  {error instanceof Error ? error.message : "Invalid credentials"}
+                  {serverErrorMessage}
                 </Alert.Title>
               </Alert.Content>
             </Alert.Root>
           )}
 
           <Stack gap="4">
-            {/* Email Field with validation */}
             <Field 
               label="Email" 
               invalid={!!errors.email} 
@@ -85,17 +80,10 @@ export const LoginForm = () => {
                 autoComplete="email"
                 placeholder="jane.doe@company.com"
                 disabled={isPending}
-                {...register("email", { 
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Enter a valid email"
-                  }
-                })}
+                {...register("email")}
               />
             </Field>
 
-            {/* Password Field with length requirement */}
             <Field 
               label="Password" 
               invalid={!!errors.password} 
@@ -106,10 +94,7 @@ export const LoginForm = () => {
                 autoComplete="current-password"
                 placeholder="••••••••"
                 disabled={isPending}
-                {...register("password", { 
-                  required: "Password is required",
-                  minLength: { value: 6, message: "Min 6 characters" }
-                })}
+                {...register("password")}
               />
             </Field>
           </Stack>
@@ -118,7 +103,6 @@ export const LoginForm = () => {
             type="submit" 
             colorPalette="blue" 
             loading={isPending} 
-            // Ensures button is clickable only when form is valid and touched
             disabled={!isValid || !isDirty}
             width="full"
             mt="2"

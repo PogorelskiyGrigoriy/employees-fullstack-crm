@@ -7,7 +7,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore, useIsAuthenticated } from "@/store/useAuthStore";
 import { ROUTES } from "@/config/navigation";
-import type { UserRole, UserData } from "@/schemas/auth.schema";
+import type { UserRole, UserData } from "@crm/shared/schemas/auth.schema";
 
 interface ProtectedRouteProps {
   /** Components to render if access is granted */
