@@ -7,13 +7,14 @@ import type {
   EmployeeFilter 
 } from "@crm/shared/schemas/employee.schema.js";
 import type { StatsResponse, StatsDataItem, DepartmentInfo } from "@crm/shared/schemas/stats.schema.js";
+import type { SortParams } from "@crm/shared/schemas/common.js";
 import { type EmployeesService } from '../EmployeesService.js';
 import { calculateAge } from "@crm/shared/utils/dateUtils.js";
 import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees-config.js";
 import { departmentSchema } from "@crm/shared/schemas/department.schema.js";
 
 // Extract necessary helpers from lodash
-const { range, countBy, groupBy, meanBy } = pkg;
+const { range, countBy, groupBy, meanBy, orderBy } = pkg;
 
 export class InMemoryEmployeesService implements EmployeesService {
   private employees: Employee[] = [];
@@ -59,19 +60,33 @@ export class InMemoryEmployeesService implements EmployeesService {
     return employee;
   }
 
-  async getAll(filter?: EmployeeFilter): Promise<Employee[]> {
-    if (!filter) return [...this.employees];
+  async getAll(filter?: EmployeeFilter, sort?: SortParams): Promise<Employee[]> {
+    let result = [...this.employees];
 
-    return this.employees.filter(emp => {
-      const matchesDept = filter.department === "All" || emp.department === filter.department;
-      const matchesSalary = emp.salary >= filter.minSalary && emp.salary <= filter.maxSalary;
-      
-      const age = calculateAge(emp.birthDate);
-      const matchesAge = age >= filter.minAge && age <= filter.maxAge;
+    // 1. Filtering logic
+    if (filter) {
+      result = result.filter(emp => {
+        const matchesDept = filter.department === "All" || emp.department === filter.department;
+        const matchesSalary = emp.salary >= filter.minSalary && emp.salary <= filter.maxSalary;
+        const age = calculateAge(emp.birthDate);
+        const matchesAge = age >= filter.minAge && age <= filter.maxAge;
+        return matchesDept && matchesSalary && matchesAge;
+      });
+    }
 
-      return matchesDept && matchesSalary && matchesAge;
-    });
+    // 2. Sorting logic (using lodash orderBy)
+    if (sort?._sort && sort?._order) {
+      // We cast _order to 'asc' | 'desc' because lodash expects these literal strings
+      result = orderBy(
+        result, 
+        [sort._sort], 
+        [sort._order as 'asc' | 'desc']
+      );
+    }
+
+    return result;
   }
+
 
   /**
    * Orchestrates the calculation of all analytical data.

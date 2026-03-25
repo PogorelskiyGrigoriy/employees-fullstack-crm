@@ -46,3 +46,23 @@ export interface FilterOption {
   readonly label: string; // The text shown to the user
   readonly value: string; // The actual data value (ID or slug)
 }
+
+/**
+ * Validator for sorting direction.
+ * Supports "asc", "desc" or no sorting (null/undefined).
+ */
+export const sortOrderSchema = z.enum(["asc", "desc"]).nullable().optional();
+
+/** Inferred type for sorting direction */
+export type SortOrder = z.infer<typeof sortOrderSchema>;
+
+/**
+ * Combined schema for sorting parameters.
+ * Useful for validating query strings in the Backend.
+ */
+export const sortParamsSchema = z.object({
+  _sort: z.string().nullable().optional(), // The field name (key)
+  _order: sortOrderSchema,                 // The direction
+});
+
+export type SortParams = z.infer<typeof sortParamsSchema>;

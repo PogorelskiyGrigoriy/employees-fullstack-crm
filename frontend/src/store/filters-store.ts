@@ -5,7 +5,7 @@
  */
 
 import { create } from "zustand";
-import { employeeFilterSchema, type EmployeeFilter } from "@/schemas/employee.schema";
+import { employeeFilterSchema, type EmployeeFilter } from "@crm/shared/schemas/employee.schema";
 
 /**
  * Interface defining available actions for modifying the filter state.
