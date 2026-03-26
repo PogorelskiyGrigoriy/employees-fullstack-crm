@@ -1,44 +1,45 @@
 /**
  * @module AuthSchema
- * Validation schemas for authentication and user authorization.
- * Built with Zod for runtime type checking and TypeScript inference.
+ * Validation logic for authentication and RBAC.
  */
 
 import { z } from "zod";
 import { emailSchema, passwordSchema } from "./common.js";
 
 /**
- * Enumeration of available user roles.
- * Used for Role-Based Access Control (RBAC) throughout the application.
+ * User roles for Role-Based Access Control.
  */
 export const userRoleSchema = z.enum(['ADMIN', 'USER']);
-
-/** Type representing valid user roles ('ADMIN' | 'USER') */
 export type UserRole = z.infer<typeof userRoleSchema>;
 
 /**
- * Validation schema for the login form.
- * Ensures email format and password complexity rules are met.
+ * Credentials for login requests.
  */
 export const loginSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
 });
 
-/** Data structure for login submissions */
 export type LoginData = z.infer<typeof loginSchema>;
 
 /**
- * Validation schema for the authenticated user profile.
- * Defines the shape of the user object stored in global state or session.
+ * Authenticated user profile structure.
  */
 export const userDataSchema = z.object({
   id: z.string().uuid().or(z.string()),
   username: z.string().min(1, "Username is required"),
-  email: z.string().email(), // Added email for better identity tracking
+  email: z.string().email(),
   role: userRoleSchema,
-  token: z.string().optional(), // Added token for API authentication
+  token: z.string().optional(),
 });
 
-/** Type representing the profile of an authenticated user */
 export type UserData = z.infer<typeof userDataSchema>;
+
+/**
+ * Decoded JWT payload structure.
+ * Shared between AuthService and AuthMiddleware.
+ */
+export interface JwtPayload {
+  id: string;
+  role: UserRole;
+}

@@ -3,10 +3,11 @@ import cors from 'cors';
 
 // 1. Services
 import { InMemoryEmployeesService } from './services/implementations/in-memory-employees.service.js';
-import { InMemoryAuthService } from './services/AuthService.js';
+import { InMemoryAuthService } from './services/implementations/in-memory-auth-service.js';
 
 // 2. Middlewares
 import { errorMiddleware } from './middlewares/error.middleware.js';
+import { protect, authorize } from "./middlewares/auth.middleware.js";
 
 // 3. Utils
 import { generateMockEmployees } from './utils/seeder.js';
@@ -41,7 +42,7 @@ seedData.forEach(emp => employeesService.addEmployee(emp));
 /**
  * AUTH ROUTES
  */
-app.post('/api/auth/login', async (req, res, next) => {
+app.post('/api/employees', protect, authorize('ADMIN'), async (req, res, next) => {
   try {
     const credentials = loginSchema.parse(req.body);
     const userData = await authService.login(credentials);
@@ -56,7 +57,7 @@ app.post('/api/auth/login', async (req, res, next) => {
  */
 
 // GET all with filters and sorting
-app.get('/api/employees', async (req, res, next) => {
+app.get('/api/employees', protect, async (req, res, next) => {
   try {
     const filters = employeeFilterSchema.parse(req.query);
     const sortParams = sortParamsSchema.parse(req.query);
@@ -75,7 +76,7 @@ app.get('/api/employees/stats', async (req, res, next) => {
 });
 
 // CREATE
-app.post('/api/employees', async (req, res, next) => {
+app.post('/api/employees', protect, authorize('ADMIN'), async (req, res, next) => {
   try {
     const validated = newEmployeeSchema.parse(req.body);
     const result = await employeesService.addEmployee(validated);
@@ -84,7 +85,7 @@ app.post('/api/employees', async (req, res, next) => {
 });
 
 // UPDATE
-app.patch('/api/employees/:id', async (req, res, next) => {
+app.patch('/api/employees/:id', protect, authorize('ADMIN'), async (req, res, next) => {
   try {
     const payload = employeeUpdateSchema.parse({ 
         id: req.params.id, 
@@ -96,7 +97,7 @@ app.patch('/api/employees/:id', async (req, res, next) => {
 });
 
 // DELETE
-app.delete('/api/employees/:id', async (req, res, next) => {
+app.delete('/api/employees/:id', protect, authorize('ADMIN'), async (req, res, next) => {
   try {
     const result = await employeesService.deleteEmployee(req.params.id);
     res.json(result);
