@@ -12,6 +12,7 @@ import { type EmployeesService } from '../EmployeesService.js';
 import { calculateAge } from "@crm/shared/utils/dateUtils.js";
 import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees-config.js";
 import { departmentSchema } from "@crm/shared/schemas/department.schema.js";
+import { generateMockEmployees } from '../../utils/seeder.js';
 
 
 // Extract necessary helpers from lodash
@@ -19,6 +20,18 @@ const { range, countBy, groupBy, meanBy, orderBy } = pkg;
 
 export class InMemoryEmployeesService implements EmployeesService {
   private employees: Employee[] = [];
+
+  /**
+   * The constructor now accepts an optional initial count.
+   * If provided, it auto-populates the memory store.
+   */
+  constructor(initialCount = 20) {
+    if (initialCount > 0) {
+      const mocks = generateMockEmployees(initialCount);
+      // We use addEmployee to ensure any validation or secondary logic is triggered
+      mocks.forEach(emp => this.addEmployee(emp));
+    }
+  }
 
   async addEmployee(data: NewEmployee): Promise<Employee> {
     const newEmployee: Employee = {
