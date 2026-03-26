@@ -1,11 +1,9 @@
-// frontend/src/services/hooks/useDepartmentStats.ts
-
 import { useStatistics } from "./useStatistics";
 
 export const useDepartmentStats = () => {
   const { data, isLoading, error } = useStatistics();
 
-  // Извлекаем только нужную часть данных
+  // Directly use the analytics calculated by the backend
   const departmentsInfo = data?.departmentAnalytics ?? [];
 
   return { departmentsInfo, isLoading, error };
