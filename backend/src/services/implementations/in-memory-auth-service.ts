@@ -11,7 +11,7 @@ import { ENV } from "../../config/env.js";
 export class InMemoryAuthService implements IAuthService {
   /**
    * Mock users database for testing RBAC.
-   * Both users use the password: "password123"
+   * Both users use the password: "password"
    */
   private users = [
     { 

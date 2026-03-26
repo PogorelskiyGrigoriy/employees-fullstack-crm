@@ -118,10 +118,10 @@ export const LoginPage = () => {
           </Text>
           <VStack gap="0">
             <Text fontSize="xs" color="fg.subtle">
-              Admin: <b>admin@crm.com</b> / password123
+              Admin: <b>admin@crm.com</b> / password
             </Text>
             <Text fontSize="xs" color="fg.subtle">
-              User: <b>user@crm.com</b> / password123
+              User: <b>user@crm.com</b> / password
             </Text>
           </VStack>
         </VStack>
