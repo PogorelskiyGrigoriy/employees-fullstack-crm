@@ -1,4 +1,4 @@
-import type { IAuthService } from "@crm/shared/types/auth.js";
+import type { IAuthService } from "@crm/shared/types/auth.types.js";
 import type { UserData } from "@crm/shared/schemas/auth.schema.js";
 
 /** 

@@ -9,7 +9,7 @@ import {
   newEmployeeSchema, 
   employeeUpdateSchema 
 } from '@crm/shared/schemas/employee.schema.js';
-import { sortParamsSchema } from '@crm/shared/schemas/common.js';
+import { sortParamsSchema } from '@shared/schemas/common.schema.js';
 
 export class EmployeesController {
   constructor(private employeesService: InMemoryEmployeesService) {}

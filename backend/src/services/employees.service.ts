@@ -5,7 +5,7 @@ import type {
   EmployeeFilter 
 } from "@crm/shared/schemas/employee.schema.js";
 import type { StatsResponse } from "@crm/shared/schemas/stats.schema.js";
-import type { SortParams } from "@crm/shared/schemas/common.js";
+import type { SortParams } from "@shared/schemas/common.schema.js";
 
 export interface EmployeesService {
   addEmployee(empl: NewEmployee): Promise<Employee>;

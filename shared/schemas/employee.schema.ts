@@ -12,7 +12,7 @@ import { nameSchema, dateStringSchema } from "./common.schema.js";
 // чтобы и фронт и бек могли их прочитать. 
 // Используй относительные пути вместо @/
 import { EMPLOYEES_CONFIG } from "../config/employees.config.js";
-import { calculateAge } from "../utils/dateUtils.js";
+import { calculateAge } from "../utils/date-utils.js";
 
 const { salary, age } = EMPLOYEES_CONFIG;
 

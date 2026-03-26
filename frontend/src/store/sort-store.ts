@@ -4,7 +4,7 @@
 
 import { create } from "zustand";
 import type { Employee } from "@crm/shared/schemas/employee.schema.js";
-import type { SortOrder } from "@crm/shared/schemas/common.js";
+import type { SortOrder } from "@crm/shared/schemas/common.schema";
 
 export interface SortState {
   readonly key: keyof Employee | null; 

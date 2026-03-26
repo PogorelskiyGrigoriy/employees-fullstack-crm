@@ -13,7 +13,7 @@ import { DepartmentSelect } from "@/components/shared/DepartmentSelect";
 
 import { useFilters } from "@/store/filters-store";
 import { employeeFilterSchema, type EmployeeFilter } from "@crm/shared/schemas/employee.schema.js";
-import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees-config.js";
+import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees.config";
 
 interface Props {
   /** Callback to close the filter overlay or modal upon application */

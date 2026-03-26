@@ -16,7 +16,7 @@ import {
 import { IconButton, VStack, HStack, Text, Separator, Box } from "@chakra-ui/react";
 import { LuChevronRight, LuBriefcase, LuCalendar, LuWallet } from "react-icons/lu";
 import { EmployeeIdentity, CurrencyText, DateText, DeptBadge } from "./ui/DataDisplay";
-import { calculateAge } from "@crm/shared/utils/dateUtils.js";
+import { calculateAge } from "@crm/shared/utils/date-utils";
 import type { Employee } from "@crm/shared/schemas/employee.schema.js";
 
 interface Props {

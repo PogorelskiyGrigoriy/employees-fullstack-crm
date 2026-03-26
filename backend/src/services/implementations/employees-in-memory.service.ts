@@ -7,9 +7,9 @@ import type {
   EmployeeFilter 
 } from "@crm/shared/schemas/employee.schema.js";
 import type { StatsResponse, StatsDataItem, DepartmentInfo } from "@crm/shared/schemas/stats.schema.js";
-import type { SortParams } from "@crm/shared/schemas/common.js";
+import type { SortParams } from '@shared/schemas/common.schema.js';
 import { type EmployeesService } from '../employees.service.js';
-import { calculateAge } from "@crm/shared/utils/dateUtils.js";
+import { calculateAge } from '@shared/utils/date-utils.js';
 import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees.config.js";
 import { departmentSchema } from "@crm/shared/schemas/department.schema.js";
 import { generateMockEmployees } from '../../utils/seeder.js';
