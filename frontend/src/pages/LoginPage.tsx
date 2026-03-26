@@ -19,7 +19,7 @@ import {
 
 import { Field } from "@/components/ui/field";
 import { useLogin } from "@/services/hooks/authHooks/useLogin";
-import { loginSchema, type LoginData } from "@crm/shared/schemas/auth.schema";
+import { loginSchema, type LoginData } from "@crm/shared/schemas/auth.schema.js";
 
 /**
  * LoginPage Component.
