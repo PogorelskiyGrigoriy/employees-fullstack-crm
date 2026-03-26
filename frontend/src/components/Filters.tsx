@@ -12,8 +12,8 @@ import { Field } from "@/components/ui/field";
 import { DepartmentSelect } from "@/components/shared/DepartmentSelect";
 
 import { useFilters } from "@/store/filters-store";
-import { employeeFilterSchema, type EmployeeFilter } from "@/schemas/employee.schema";
-import { EMPLOYEES_CONFIG } from "@/config/employees-config";
+import { employeeFilterSchema, type EmployeeFilter } from "@crm/shared/schemas/employee.schema.js";
+import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees-config.js";
 
 interface Props {
   /** Callback to close the filter overlay or modal upon application */

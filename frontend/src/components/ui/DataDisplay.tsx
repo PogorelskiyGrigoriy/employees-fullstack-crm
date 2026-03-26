@@ -4,7 +4,7 @@
  */
 
 import { Badge, Text, type BadgeProps, HStack, Avatar as ChakraAvatar } from "@chakra-ui/react";
-import { formatDateDisplay } from "@/utils/dateUtils";
+import { formatDateDisplay } from "@crm/shared/utils/dateUtils";
 
 /**
  * BADGE: Standardized display for counts and numeric quantities.

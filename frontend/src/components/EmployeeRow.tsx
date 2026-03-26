@@ -8,8 +8,8 @@ import { Table, HStack, VStack, Text } from "@chakra-ui/react";
 import { CurrencyText, DateText, EmployeeIdentity, DeptBadge } from "./ui/DataDisplay";
 import { DeleteEmployeeAction } from "./DeleteEmployeeAction";
 import { EditEmployeeAction } from "./EditEmployeeAction";
-import { calculateAge } from "@/utils/dateUtils";
-import type { Employee } from "@/schemas/employee.schema";
+import { calculateAge } from "@crm/shared/utils/dateUtils.js";
+import type { Employee } from "@crm/shared/schemas/employee.schema.js";
 
 interface EmployeeRowProps {
   readonly employee: Employee;

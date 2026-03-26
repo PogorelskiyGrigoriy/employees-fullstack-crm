@@ -9,7 +9,7 @@ import { EmployeeIdentity } from "./ui/DataDisplay";
 import { DeleteEmployeeAction } from "./DeleteEmployeeAction";
 import { EditEmployeeAction } from "./EditEmployeeAction";
 import { EmployeeDetailsDialog } from "./EmployeeDetailsDialog";
-import type { Employee } from "@/schemas/employee.schema";
+import type { Employee } from "@crm/shared/schemas/employee.schema.js";
 import { useRef } from "react";
 
 interface EmployeeCardProps {

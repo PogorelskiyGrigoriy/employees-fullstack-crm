@@ -3,7 +3,7 @@ import cors from 'cors';
 
 // 1. Services
 import { InMemoryEmployeesService } from './services/implementations/in-memory-employees.service.js';
-import { InMemoryAuthService } from './services/AuthService.js'; // Ensure you import this
+import { InMemoryAuthService } from './services/AuthService.js';
 
 // 2. Middlewares
 import { errorMiddleware } from './middlewares/error.middleware.js';

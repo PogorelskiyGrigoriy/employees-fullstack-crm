@@ -17,9 +17,9 @@ import {
   newEmployeeSchema,
   type Employee, 
   type NewEmployee 
-} from "@/schemas/employee.schema";
-import type { Department } from "@/schemas/department.schema";
-import { EMPLOYEES_CONFIG } from "@/config/employees-config";
+} from "@crm/shared/schemas/employee.schema.js";
+import type { Department } from "@crm/shared/schemas/department.schema.js";
+import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees-config.js";
 
 interface Props {
   /** Callback triggered on valid form submission */

@@ -22,7 +22,7 @@ import { EmployeeForm } from "./EmployeeForm";
 
 import { useUpdateEmployee } from "@/services/hooks/mutationHooks/useUpdateEmployee";
 import { toaster } from "@/components/ui/toaster-config";
-import type { Employee, NewEmployee } from "@/schemas/employee.schema";
+import type { Employee, NewEmployee } from "@crm/shared/schemas/employee.schema.js";
 
 interface Props {
   /** The current employee object to populate the form */
