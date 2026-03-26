@@ -1,4 +1,4 @@
-import { useStatistics } from "./useStatistics";
+import { useStatistics } from "./use-statistics";
 
 export const useDepartmentStats = () => {
   const { data, isLoading, error } = useStatistics();

@@ -14,7 +14,7 @@ import { LoginPage } from "@/pages/LoginPage";
 import AddEmployeePage from "@/pages/AddEmployeePage";
 import AgeStatisticsPage from "@/pages/AgeStatisticsPage";
 import SalaryStatisticsPage from "@/pages/SalaryStatisticsPage";
-import DepartmentStatisticPage from "@/pages/DepartmentStatisticPage";
+import DepartmentStatisticPage from "@/pages/DepartmentStatisticsPage";
 import ErrorPage from "@/pages/ErrorPage";
 
 /**

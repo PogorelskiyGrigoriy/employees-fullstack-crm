@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/drawer";
 import { EmployeeForm } from "./EmployeeForm";
 
-import { useUpdateEmployee } from "@/services/hooks/mutationHooks/useUpdateEmployee";
+import { useUpdateEmployee } from "@/services/hooks/mutation-hooks/use-update-employee";
 import { toaster } from "@/components/ui/toaster-config";
 import type { Employee, NewEmployee } from "@crm/shared/schemas/employee.schema.js";
 

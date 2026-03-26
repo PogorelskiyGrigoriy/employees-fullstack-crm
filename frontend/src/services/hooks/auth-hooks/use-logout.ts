@@ -5,8 +5,8 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '@/services/AuthServiceImplementation';
-import { useAuthStore } from '@/store/useAuthStore';
+import { authService } from '@/services/auth.implementation';
+import { useAuthStore } from '@/store/auth-store';
 import { ROUTES } from '@/config/navigation';
 import { toaster } from "@/components/ui/toaster-config";
 

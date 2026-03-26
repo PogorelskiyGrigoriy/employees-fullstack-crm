@@ -3,8 +3,8 @@
  * Specific mutation hook for removing an employee record.
  */
 
-import { apiClient } from "@/services/ApiClientImplementation";
-import { useEmployeesMutation } from "./useEmployeesMutation";
+import { apiClient } from "@/services/api-client.implementation";
+import { useEmployeesMutation } from "./use-employee-mutation";
 import { toaster } from "@/components/ui/toaster-config";
 
 /**

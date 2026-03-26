@@ -3,9 +3,9 @@
  * Communicates with the Express Backend via REST.
  */
 
-import { api } from "@/api/axiosInstance";
+import { api } from "@/api/axios-instance";
 import { userDataSchema, type LoginData, type UserData } from "@crm/shared/schemas/auth.schema.js";
-import type { AuthService } from "./AuthService";
+import type { AuthService } from "./auth.service";
 
 class AuthServiceRest implements AuthService {
   async login(credentials: LoginData): Promise<UserData> {

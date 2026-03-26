@@ -5,7 +5,7 @@
 "use client"
 
 import { Container, Heading, VStack, Box, Center, Spinner, Text } from "@chakra-ui/react"
-import { useDepartmentStats } from "@/services/hooks/useDepartmentStats"
+import { useDepartmentStats } from "@/services/hooks/use-department-stats"
 import { DepartmentsTable } from "@/components/DepartmentsTable"
 
 const DepartmentStatisticsPage = () => {

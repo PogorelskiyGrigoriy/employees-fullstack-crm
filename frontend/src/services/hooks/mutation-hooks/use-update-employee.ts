@@ -4,8 +4,8 @@
  */
 
 import type { Employee, EmployeeUpdatePayload } from "@crm/shared/schemas/employee.schema"; 
-import { apiClient } from "@/services/ApiClientImplementation";
-import { useEmployeesMutation } from "./useEmployeesMutation";
+import { apiClient } from "@/services/api-client.implementation";
+import { useEmployeesMutation } from "./use-employee-mutation";
 
 /**
  * Hook to update employee details.

@@ -4,8 +4,8 @@
  */
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/services/ApiClientImplementation';
-import { useAuthStore } from '@/store/useAuthStore';
+import { apiClient } from '@/services/api-client.implementation';
+import { useAuthStore } from '@/store/auth-store';
 import { Center, Spinner, Text, VStack } from '@chakra-ui/react';
 
 export const AppInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) => {

@@ -3,7 +3,7 @@
  * High-order component (HOC) for authentication and role-based access control.
  */
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuthStore, useIsAuthenticated } from "@/store/useAuthStore";
+import { useAuthStore, useIsAuthenticated } from "@/store/auth-store";
 import { ROUTES } from "@/config/navigation";
 import type { UserRole } from "@crm/shared/schemas/auth.schema.js";
 

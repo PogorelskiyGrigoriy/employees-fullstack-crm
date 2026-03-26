@@ -5,7 +5,7 @@
 "use client"
 
 import { Container, Center, Spinner, Text, Stack } from "@chakra-ui/react";
-import { useStatistics } from "@/services/hooks/useStatistics";
+import { useStatistics } from "@/services/hooks/use-statistics";
 import { StatisticsChart } from "@/components/StatisticsChart";
 
 const SalaryStatisticsPage = () => {

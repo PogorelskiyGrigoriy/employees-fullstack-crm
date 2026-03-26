@@ -19,8 +19,8 @@ import {
 } from "@chakra-ui/react";
 
 import { StatisticsSelector } from "./StatisticsSelector";
-import { useAuthStore, useIsAuthenticated } from "@/store/useAuthStore";
-import { useLogout } from "@/services/hooks/authHooks/useLogout";
+import { useAuthStore, useIsAuthenticated } from "@/store/auth-store";
+import { useLogout } from "@/services/hooks/auth-hooks/use-logout";
 import { MAIN_NAV_LINKS, ROUTES } from "@/config/navigation";
 import type { UserData } from "@crm/shared/schemas/auth.schema.js"; 
 

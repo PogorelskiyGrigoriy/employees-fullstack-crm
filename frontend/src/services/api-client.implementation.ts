@@ -2,7 +2,7 @@
  * @module ApiClientImplementation
  * REST implementation of the ApiClient interface.
  */
-import { api } from "@/api/axiosInstance";
+import { api } from "@/api/axios-instance";
 import type { AxiosRequestConfig } from "axios";
 import { 
   employeeSchema, 
@@ -12,7 +12,7 @@ import {
   type EmployeeFilter
 } from "@crm/shared/schemas/employee.schema.js";
 import type { SortState } from "@/store/sort-store";
-import type { ApiClient } from "./ApiClient";
+import type { ApiClient } from "./api-client";
 import type { StatsResponse } from "@crm/shared/schemas/stats.schema.js";
 import type { UserData } from "@crm/shared/schemas/auth.schema.js";
 

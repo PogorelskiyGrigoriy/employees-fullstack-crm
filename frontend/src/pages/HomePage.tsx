@@ -18,7 +18,7 @@ import {
 import { Employees } from "@/components/Employees";
 import { Filters } from "@/components/Filters";
 import { ActiveFilters } from "@/components/ActiveFilters";
-import { useEmployees } from "@/services/hooks/useEmployees";
+import { useEmployees } from "@/services/hooks/use-employees";
 import { useFilters } from "@/store/filters-store";
 import { employeeFilterSchema } from "@crm/shared/schemas/employee.schema.js";
 

@@ -19,7 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { useDeleteEmployee } from "@/services/hooks/mutationHooks/useDeleteEmployee";
+import { useDeleteEmployee } from "@/services/hooks/mutation-hooks/use-delete-employee";
 
 interface Props {
   id: string;

@@ -12,8 +12,8 @@ import { EmployeeRow } from "./EmployeeRow";
 import { MobileSortActions } from "./MobileSortActions";
 import { SortableColumn } from "./ui/SortableColumn";
 
-import { useEmployees } from "@/services/hooks/useEmployees";
-import { useUserRole } from "@/store/useAuthStore";
+import { useEmployees } from "@/services/hooks/use-employees";
+import { useUserRole } from "@/store/auth-store";
 
 /**
  * Root component for the employee listing feature.

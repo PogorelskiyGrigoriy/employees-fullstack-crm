@@ -5,10 +5,10 @@
  */
 
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { apiClient } from "../ApiClientImplementation";
+import { apiClient } from "../api-client.implementation";
 import { useFilters } from "@/store/filters-store";
 import { useSortStore } from "@/store/sort-store";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/auth-store";
 import type { Employee } from "@crm/shared/schemas/employee.schema.js";
 
 export const useEmployees = () => {

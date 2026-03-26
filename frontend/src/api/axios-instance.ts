@@ -6,8 +6,8 @@
 
 import axios, { AxiosError } from 'axios';
 import { toaster } from "@/components/ui/toaster-config";
-import { useAuthStore } from '@/store/useAuthStore';
-import { appRouter } from '@/router/routes';
+import { useAuthStore } from '@/store/auth-store';
+import { appRouter } from '@/router/app-router';
 import { ROUTES } from '@/config/navigation';
 
 /**

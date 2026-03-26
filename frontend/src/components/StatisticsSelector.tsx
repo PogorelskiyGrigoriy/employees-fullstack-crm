@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/menu"; 
 
 import { STATS_NAV_LINKS } from "@/config/navigation";
-import { useIsAuthenticated, useUserRole } from "@/store/useAuthStore";
+import { useIsAuthenticated, useUserRole } from "@/store/auth-store";
 import type { UserRole } from "@crm/shared/schemas/auth.schema.js";
 
 /**

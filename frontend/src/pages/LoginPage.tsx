@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 
 import { Field } from "@/components/ui/field";
-import { useLogin } from "@/services/hooks/authHooks/useLogin";
+import { useLogin } from "@/services/hooks/auth-hooks/use-login";
 import { loginSchema, type LoginData } from "@crm/shared/schemas/auth.schema.js";
 
 /**
