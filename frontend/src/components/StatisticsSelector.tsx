@@ -20,7 +20,7 @@ import {
 
 import { STATS_NAV_LINKS } from "@/config/navigation";
 import { useIsAuthenticated, useUserRole } from "@/store/useAuthStore";
-import type { UserRole } from "@/schemas/auth.schema";
+import type { UserRole } from "@crm/shared/schemas/auth.schema.js";
 
 /**
  * Dropdown selector for statistical views.

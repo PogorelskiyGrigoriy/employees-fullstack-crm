@@ -1,11 +1,15 @@
-// frontend/src/services/hooks/useEmployees.ts
+/**
+ * @module useEmployees
+ * Hook for fetching employee data with server-side filtering and sorting.
+ * Provides necessary metadata for the UI (counts and status).
+ */
 
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../ApiClientImplementation";
 import { useFilters } from "@/store/filters-store";
 import { useSortStore } from "@/store/sort-store";
 import { useAuthStore } from "@/store/useAuthStore";
-import type { Employee } from "@crm/shared/schemas/employee.schema";
+import type { Employee } from "@crm/shared/schemas/employee.schema.js";
 
 export const useEmployees = () => {
   const filters = useFilters((state) => state.filters);
@@ -20,9 +24,21 @@ export const useEmployees = () => {
     enabled: isAuthenticated, 
   });
 
+  const employees = query.data ?? [];
+
   return {
     ...query,
-    employees: query.data ?? [], // Just return data from server
-    totalCount: query.data?.length ?? 0,
+    employees,
+    /** 
+     * Current count of employees matching active filters.
+     * In Fullstack, this is simply the length of the result array.
+     */
+    filteredCount: employees.length,
+    /** 
+     * Total count of employees in the database.
+     * In Phase 1 (In-Memory), we use array length. 
+     * In Phase 2 (SQL), we can fetch the real total from the server.
+     */
+    totalCount: employees.length,
   };
 };

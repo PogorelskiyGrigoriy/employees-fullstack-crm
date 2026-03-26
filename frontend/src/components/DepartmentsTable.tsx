@@ -6,7 +6,7 @@
 
 import { Table, Text } from "@chakra-ui/react";
 import { CountBadge, CurrencyText, AgeText } from "./ui/DataDisplay";
-import type { DepartmentInfo } from "@/schemas/department.schema";
+import type { DepartmentInfo } from "@crm/shared/schemas/department.schema.js";
 
 interface Props {
   /** Aggregated department metrics from the analytics hook */

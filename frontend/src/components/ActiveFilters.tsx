@@ -7,7 +7,8 @@
 import { HStack, Text, Button } from "@chakra-ui/react";
 import { Tag } from "./ui/tag";
 import { useFilters } from "@/store/filters-store";
-import { employeeFilterSchema } from "@/schemas/employee.schema";
+import { employeeFilterSchema } from "@crm/shared/schemas/employee.schema.js";
+import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees-config";
 
 /**
  * Component that renders removable tags for each active filter.
@@ -35,7 +36,7 @@ export const ActiveFilters = () => {
       id: "salary",
       isActive: filters.minSalary !== defaults.minSalary || filters.maxSalary !== defaults.maxSalary,
       label: "Salary",
-      value: `${filters.minSalary.toLocaleString()} - ${filters.maxSalary.toLocaleString()}`,
+      value: `${EMPLOYEES_CONFIG.salary.currency}${filters.minSalary.toLocaleString()} - ${filters.maxSalary.toLocaleString()}`,
       color: "green",
       onClear: () => setFilters({ minSalary: defaults.minSalary, maxSalary: defaults.maxSalary }),
     },
