@@ -5,7 +5,7 @@
  */
 import jwt from "jsonwebtoken";
 import { compare } from "bcrypt-ts";
-import type { IAuthService } from "@crm/shared/types/auth.js";
+import type { IAuthService } from "@crm/shared/types/auth.types.js";
 import type { UserData, LoginData, JwtPayload } from "@crm/shared/schemas/auth.schema.js";
 import { ENV } from "../../config/env.js";
 

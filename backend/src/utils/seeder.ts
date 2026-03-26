@@ -5,7 +5,7 @@
 import { faker } from '@faker-js/faker';
 import type { Employee } from '@crm/shared/schemas/employee.schema.js';
 import { departmentSchema } from '@crm/shared/schemas/department.schema.js';
-import { EMPLOYEES_CONFIG } from '@crm/shared/config/employees-config.js';
+import { EMPLOYEES_CONFIG } from '@crm/shared/config/employees.config.js';
 import { randomUUID } from 'node:crypto';
 
 /**

@@ -10,7 +10,7 @@ import type { StatsResponse, StatsDataItem, DepartmentInfo } from "@crm/shared/s
 import type { SortParams } from "@crm/shared/schemas/common.js";
 import { type EmployeesService } from '../employees.service.js';
 import { calculateAge } from "@crm/shared/utils/dateUtils.js";
-import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees-config.js";
+import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees.config.js";
 import { departmentSchema } from "@crm/shared/schemas/department.schema.js";
 import { generateMockEmployees } from '../../utils/seeder.js';
 

@@ -4,7 +4,7 @@
  */
 
 import { z } from "zod";
-import { emailSchema, passwordSchema } from "./common.js";
+import { emailSchema, passwordSchema } from "./common.schema.js";
 
 /**
  * User roles for Role-Based Access Control.

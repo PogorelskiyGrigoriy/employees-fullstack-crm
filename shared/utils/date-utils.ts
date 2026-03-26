@@ -11,7 +11,7 @@ import {
   subYears, 
   startOfToday 
 } from "date-fns";
-import type { GroupingConfig } from "../config/employees-config.js";
+import type { GroupingConfig } from "../config/employees.config.js";
 
 const DATE_FORMATS = {
   DISPLAY: "dd.MM.yyyy",

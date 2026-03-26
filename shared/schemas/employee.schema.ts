@@ -6,12 +6,12 @@
 
 import { z } from "zod";
 import { departmentSchema } from "./department.schema.js";
-import { nameSchema, dateStringSchema } from "./common.js";
+import { nameSchema, dateStringSchema } from "./common.schema.js";
 
 // 2. ВАЖНО: Эти файлы (config и utils) теперь ДОЛЖНЫ лежать в shared, 
 // чтобы и фронт и бек могли их прочитать. 
 // Используй относительные пути вместо @/
-import { EMPLOYEES_CONFIG } from "../config/employees-config.js";
+import { EMPLOYEES_CONFIG } from "../config/employees.config.js";
 import { calculateAge } from "../utils/dateUtils.js";
 
 const { salary, age } = EMPLOYEES_CONFIG;
