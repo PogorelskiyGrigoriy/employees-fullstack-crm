@@ -8,43 +8,25 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { UserData } from '@crm/shared/schemas/auth.schema';
 
-/**
- * Interface defining the structure and actions of the authentication store.
- */
 interface AuthStore {
-  /** The currently authenticated user's profile data, or null if guest */
-  readonly user: UserData | null;
-  /** Action to commit user data to state after successful login */
+  user: UserData | null;
+  isInitialized: boolean;
   setLogin: (data: UserData) => void;
-  /** Action to clear session data upon logout */
   setLogout: () => void;
+  setInitialized: (val: boolean) => void; 
 }
 
-/**
- * Core Auth Store implementation.
- * Persistence ensures that the user stays logged in after a page refresh.
- */
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
-      // Initial state: no user logged in
       user: null,
+      isInitialized: false,
 
-      /**
-       * Updates the store with validated user profile data.
-       * Triggered by the useLogin mutation hook.
-       */
-      setLogin: (user) => set({ user }),
-
-      /**
-       * Wipes user data from both the state and persistent localStorage.
-       * Triggered by the useLogout mutation hook.
-       */
-      setLogout: () => set({ user: null }),
+      setLogin: (user) => set({ user, isInitialized: true }),
+      setLogout: () => set({ user: null, isInitialized: true }),
+      setInitialized: (isInitialized) => set({ isInitialized }),
     }),
-    { 
-      name: 'auth-storage', // Key used in LocalStorage to identify this store
-    }
+    { name: 'auth-storage' }
   )
 );
 

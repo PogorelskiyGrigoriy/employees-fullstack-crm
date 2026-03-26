@@ -2,51 +2,26 @@
  * @module ApiClient
  * Abstract interface for employee management data provider with Zod validation.
  */
-
 import type { AxiosRequestConfig } from "axios";
 import type { 
   Employee, 
   NewEmployee, 
-  EmployeeUpdatePayload 
+  EmployeeUpdatePayload,
+  EmployeeFilter 
 } from "@crm/shared/schemas/employee.schema";
-import type { EmployeeFilter } from "@crm/shared/schemas/employee.schema";
+import type { UserData } from "@crm/shared/schemas/auth.schema";
 import type { SortState } from "@/store/sort-store";
 import type { StatsResponse } from "@crm/shared/schemas/stats.schema.js";
 
-/**
- * Defines mandatory methods for any data source (API or Stub).
- * All implementations are expected to validate data against Zod schemas.
- */
 export interface ApiClient {
-  /**
-   * Fetches employees and validates each record. 
-   * Corrupted records should be filtered out.
-   */
-  getEmployees(
-    filters?: EmployeeFilter, 
-    sort?: SortState, 
-    config?: AxiosRequestConfig
-  ): Promise<Employee[]>;
-  
-  /**
-   * Creates an employee and validates the server response.
-   * Throws ZodError if response is invalid.
-   */
+  getEmployees(filters?: EmployeeFilter, sort?: SortState, config?: AxiosRequestConfig): Promise<Employee[]>;
   addEmployee(employee: NewEmployee): Promise<Employee>;
-  
-  /**
-   * Removes an employee. No validation expected for empty responses.
-   */
   deleteEmployee(id: string): Promise<void>;
+  updateEmployee(payload: EmployeeUpdatePayload): Promise<Employee>;
+  getStatistics(): Promise<StatsResponse>;
   
   /**
-   * Updates an employee and validates the patched response.
-   * Throws ZodError if response is invalid.
+   * Validates current token and returns user profile.
    */
-  updateEmployee(payload: EmployeeUpdatePayload): Promise<Employee>;
-
-/**
-   * Fetches pre-calculated statistics from the server.
-   */
-  getStatistics(): Promise<StatsResponse>;
+  getMe(): Promise<Omit<UserData, 'token'>>;
 }

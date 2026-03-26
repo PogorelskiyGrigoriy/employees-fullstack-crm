@@ -73,7 +73,7 @@ api.interceptors.response.use(
     }
 
     // CASE C: Client-side errors (400, 403, 404) or Network failures
-    const message = (error.response?.data as any)?.message || error.message;
+    const message = (error.response?.data as any)?.error || error.message;
     toaster.create({
       title: `Error ${status || 'Network'}`,
       description: message,

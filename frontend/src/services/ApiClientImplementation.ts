@@ -1,8 +1,7 @@
 /**
  * @module ApiClientImplementation
- * Универсальная реализация ApiClient для работы с нашим Express бэкендом.
+ * REST implementation of the ApiClient interface.
  */
-
 import { api } from "@/api/axiosInstance";
 import type { AxiosRequestConfig } from "axios";
 import { 
@@ -12,38 +11,27 @@ import {
   type EmployeeUpdatePayload,
   type EmployeeFilter
 } from "@crm/shared/schemas/employee.schema.js";
-
 import type { SortState } from "@/store/sort-store";
 import type { ApiClient } from "./ApiClient";
 import type { StatsResponse } from "@crm/shared/schemas/stats.schema.js";
+import type { UserData } from "@crm/shared/schemas/auth.schema.js";
 
 const ENDPOINTS = {
   EMPLOYEES: "/employees",
+  AUTH: "/auth",
 } as const;
 
 class ApiClientRest implements ApiClient {
   
-  async getEmployees(
-    filters?: EmployeeFilter, 
-    sort?: SortState, 
-    config?: AxiosRequestConfig
-  ): Promise<Employee[]> {
-    // Теперь строим параметры, которые понимает наш Express
+  async getEmployees(filters?: EmployeeFilter, sort?: SortState, config?: AxiosRequestConfig): Promise<Employee[]> {
     const params = this.buildParams(filters, sort, config?.params);
+    const { data } = await api.get<unknown[]>(ENDPOINTS.EMPLOYEES, { ...config, params });
 
-    const { data } = await api.get<unknown[]>(ENDPOINTS.EMPLOYEES, { 
-      ...config, 
-      params 
-    });
-
-    // Оставляем "мягкую" валидацию для надежности фронтенда
+    // Soft validation: filters out corrupted records without breaking the whole list
     return data.reduce<Employee[]>((acc, item) => {
       const result = employeeSchema.safeParse(item);
-      if (result.success) {
-        acc.push(result.data);
-      } else {
-        console.error("[API Data Corruption]:", result.error.format());
-      }
+      if (result.success) acc.push(result.data);
+      else console.error("[API Data Corruption]:", result.error.format());
       return acc;
     }, []);
   }
@@ -63,31 +51,22 @@ class ApiClientRest implements ApiClient {
   }
 
   async getStatistics(): Promise<StatsResponse> {
-    const { data } = await api.get<StatsResponse>("/employees/stats");
+    const { data } = await api.get<StatsResponse>(`${ENDPOINTS.EMPLOYEES}/stats`);
     return data;
   }
 
-  /**
-   * Чистый маппинг фильтров во фронтенд-формат.
-   * Больше никакой логики JSON-Server (_gte, _lte).
-   */
-  private buildParams(
-    filters?: EmployeeFilter,
-    sort?: SortState, 
-    baseParams?: Record<string, any>
-  ): Record<string, any> {
-    const params: Record<string, any> = { ...baseParams };
+  async getMe(): Promise<Omit<UserData, 'token'>> {
+    const { data } = await api.get(`${ENDPOINTS.AUTH}/me`);
+    return data as Omit<UserData, 'token'>;
+  }
 
-    if (filters) {
-      // Наш бэкенд ожидает объект EmployeeFilter один в один
-      Object.assign(params, filters);
-    }
-
+  private buildParams(filters?: EmployeeFilter, sort?: SortState, baseParams?: any) {
+    const params = { ...baseParams };
+    if (filters) Object.assign(params, filters);
     if (sort?.key && sort?.order) {
       params.sortBy = sort.key;
       params.sortOrder = sort.order;
     }
-
     return params;
   }
 }

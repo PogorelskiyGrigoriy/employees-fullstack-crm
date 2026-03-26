@@ -1,36 +1,27 @@
 /**
  * @module ProtectedRoute
- * High-order component (HOC) for route protection.
- * Manages authentication checks and granular role-based access control.
+ * High-order component (HOC) for authentication and role-based access control.
  */
-
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore, useIsAuthenticated } from "@/store/useAuthStore";
 import { ROUTES } from "@/config/navigation";
-import type { UserRole, UserData } from "@crm/shared/schemas/auth.schema.js";
+import type { UserRole } from "@crm/shared/schemas/auth.schema.js";
 
 interface ProtectedRouteProps {
-  /** Components to render if access is granted */
   children: React.ReactNode;
-  /** Optional list of roles permitted to access this route */
+  /** Optional: List of roles allowed to access this route */
   allowedRoles?: UserRole[];
 }
 
-/**
- * Guard component that wraps sensitive application views.
- */
 export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const location = useLocation();
   const isAuthenticated = useIsAuthenticated();
-  
-  // Cast user to UserData to ensure role access
-  const user = useAuthStore((state) => state.user as UserData | null);
+  const user = useAuthStore((state) => state.user);
 
   /**
-   * 1. Authentication Check:
-   * If not logged in, redirect to Login page.
-   * 'state={{ from: location }}' allows us to return the user to their
-   * intended destination after a successful login.
+   * 1. Authentication Guard:
+   * Redirect to Login if not authenticated. 
+   * Includes 'from' state to redirect back after successful login.
    */
   if (!isAuthenticated) {
     return (
@@ -43,17 +34,15 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
   }
 
   /**
-   * 2. Authorization (RBAC) Check:
-   * If roles are specified and the user's role isn't among them,
-   * bounce them back to the Home/Dashboard.
+   * 2. Authorization Guard (RBAC):
+   * Checks if the user's role is permitted for this specific route.
    */
   const hasAccess = !allowedRoles || (user && allowedRoles.includes(user.role));
 
   if (!hasAccess) {
-    // Replace prevents the user from getting stuck in a back-button loop
+    // Redirect to home if the user lacks the required role
     return <Navigate to={ROUTES.HOME} replace />;
   }
 
-  // If all checks pass, render the protected content
   return <>{children}</>;
 };

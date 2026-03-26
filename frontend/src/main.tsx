@@ -5,6 +5,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { appRouter } from "./router/routes";
+import { AppInitializer } from "./components/auth/AppInitializer";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,7 +20,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <ChackraProvider>     
-        <RouterProvider router={appRouter} />
+        <AppInitializer>
+          <RouterProvider router={appRouter} />
+        </AppInitializer>
         <Toaster /> 
       </ChackraProvider>
     </QueryClientProvider>
