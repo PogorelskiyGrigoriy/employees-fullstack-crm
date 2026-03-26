@@ -3,7 +3,7 @@
  * Handles incoming HTTP requests for employee data.
  */
 import type { Request, Response, NextFunction } from 'express';
-import { InMemoryEmployeesService } from '../services/implementations/in-memory-employees.service.js';
+import { InMemoryEmployeesService } from '../services/implementations/employees-in-memory.service.js';
 import { 
   employeeFilterSchema, 
   newEmployeeSchema, 

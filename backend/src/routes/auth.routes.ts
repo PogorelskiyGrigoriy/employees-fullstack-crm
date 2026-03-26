@@ -4,7 +4,7 @@
  */
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller.js';
-import { InMemoryAuthService } from '../services/implementations/in-memory-auth-service.js';
+import { InMemoryAuthService } from '../services/implementations/auth-in-memory.service.js';
 import { protect } from '../middlewares/auth.middleware.js';
 
 const router = Router();

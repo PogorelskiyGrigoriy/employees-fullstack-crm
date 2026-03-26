@@ -3,7 +3,7 @@
  * Handles authentication requests (login, session validation).
  */
 import type { Request, Response, NextFunction } from 'express';
-import { InMemoryAuthService } from '../services/implementations/in-memory-auth-service.js';
+import { InMemoryAuthService } from '../services/implementations/auth-in-memory.service.js';
 import { loginSchema } from '@crm/shared/schemas/auth.schema.js';
 
 export class AuthController {

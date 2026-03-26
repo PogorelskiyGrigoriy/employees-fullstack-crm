@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { EmployeesController } from '../controllers/employees.controller.js';
 import { protect, authorize } from '../middlewares/auth.middleware.js';
-import { InMemoryEmployeesService } from '../services/implementations/in-memory-employees.service.js';
+import { InMemoryEmployeesService } from '../services/implementations/employees-in-memory.service.js';
 
 const router = Router();
 // Инстанс сервиса обычно передается через DI или импортируется как синглтон
