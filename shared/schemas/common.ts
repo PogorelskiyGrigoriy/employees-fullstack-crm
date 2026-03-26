@@ -61,8 +61,8 @@ export type SortOrder = z.infer<typeof sortOrderSchema>;
  * Useful for validating query strings in the Backend.
  */
 export const sortParamsSchema = z.object({
-  _sort: z.string().nullable().optional(), // The field name (key)
-  _order: sortOrderSchema,                 // The direction
+  sortBy: z.string().nullable().optional(),
+  sortOrder: z.enum(["asc", "desc"]).nullable().optional(),
 });
 
 export type SortParams = z.infer<typeof sortParamsSchema>;

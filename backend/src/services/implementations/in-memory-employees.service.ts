@@ -13,6 +13,7 @@ import { calculateAge } from "@crm/shared/utils/dateUtils.js";
 import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees-config.js";
 import { departmentSchema } from "@crm/shared/schemas/department.schema.js";
 
+
 // Extract necessary helpers from lodash
 const { range, countBy, groupBy, meanBy, orderBy } = pkg;
 
@@ -60,32 +61,56 @@ export class InMemoryEmployeesService implements EmployeesService {
     return employee;
   }
 
-  async getAll(filter?: EmployeeFilter, sort?: SortParams): Promise<Employee[]> {
-    let result = [...this.employees];
+  /**
+ * Retrieves all employees with filtering and sorting applied.
+ */
+async getAll(filters: any, sortParams: any): Promise<Employee[]> {
+  let result = [...this.employees];
 
-    // 1. Filtering logic
-    if (filter) {
-      result = result.filter(emp => {
-        const matchesDept = filter.department === "All" || emp.department === filter.department;
-        const matchesSalary = emp.salary >= filter.minSalary && emp.salary <= filter.maxSalary;
-        const age = calculateAge(emp.birthDate);
-        const matchesAge = age >= filter.minAge && age <= filter.maxAge;
-        return matchesDept && matchesSalary && matchesAge;
-      });
-    }
-
-    // 2. Sorting logic (using lodash orderBy)
-    if (sort?._sort && sort?._order) {
-      // We cast _order to 'asc' | 'desc' because lodash expects these literal strings
-      result = orderBy(
-        result, 
-        [sort._sort], 
-        [sort._order as 'asc' | 'desc']
-      );
-    }
-
-    return result;
+  // --- 1. DEPARTMENT FILTER ---
+  if (filters.department && filters.department !== 'All') {
+    result = result.filter(e => e.department === filters.department);
   }
+
+  // --- 2. SALARY FILTER ---
+  if (filters.minSalary !== undefined || filters.maxSalary !== undefined) {
+    result = result.filter(e => 
+      e.salary >= (filters.minSalary ?? 0) && 
+      e.salary <= (filters.maxSalary ?? Infinity)
+    );
+  }
+
+  // --- 3. AGE FILTER (Using shared utility) ---
+  if (filters.minAge !== undefined || filters.maxAge !== undefined) {
+    result = result.filter(e => {
+      const age = calculateAge(e.birthDate);
+      return age >= (filters.minAge ?? 0) && age <= (filters.maxAge ?? 100);
+    });
+  }
+
+  // --- 4. SORTING ---
+  const { sortBy, sortOrder } = sortParams;
+
+  if (sortBy && sortOrder) {
+    result.sort((a, b) => {
+      const valA = a[sortBy as keyof Employee];
+      const valB = b[sortBy as keyof Employee];
+
+      if (valA === undefined || valB === undefined) return 0;
+
+      let comparison = 0;
+      if (typeof valA === 'string' && typeof valB === 'string') {
+        comparison = valA.localeCompare(valB);
+      } else if (typeof valA === 'number' && typeof valB === 'number') {
+        comparison = valA - valB;
+      }
+
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+  }
+
+  return result;
+}
 
 
   /**
