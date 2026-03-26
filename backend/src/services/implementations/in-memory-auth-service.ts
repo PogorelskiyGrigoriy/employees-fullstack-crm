@@ -1,9 +1,10 @@
 /**
  * @module AuthService
  * Implementation of IAuthService using in-memory storage for development and testing.
+ * Uses bcrypt-ts for environment-independent password hashing.
  */
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import { compare } from "bcrypt-ts";
 import type { IAuthService } from "@crm/shared/types/auth.js";
 import type { UserData, LoginData, JwtPayload } from "@crm/shared/schemas/auth.schema.js";
 import { ENV } from "../../config/env.js";
@@ -37,12 +38,14 @@ export class InMemoryAuthService implements IAuthService {
     const { email, password } = credentials;
     const user = this.users.find(u => u.email === email);
     
-    // Verify user existence and password validity
-    if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+    // Check if user exists and verify password using bcrypt-ts (async compare)
+    const isPasswordValid = user ? await compare(password, user.passwordHash) : false;
+
+    if (!user || !isPasswordValid) {
       throw new Error("Invalid credentials");
     }
 
-    // Prepare the token payload based on the shared interface
+    // Token payload follows the shared interface
     const payload: JwtPayload = { 
       id: user.id, 
       role: user.role 
@@ -50,13 +53,12 @@ export class InMemoryAuthService implements IAuthService {
 
     /**
      * Generate the JWT.
-     * Type assertion for 'expiresIn' is required because jsonwebtoken expects 
-     * specific string literals or numbers, while Zod provides a generic string.
+     * We use NonNullable to satisfy strict TypeScript checks for expiresIn.
      */
     const token = jwt.sign(
       payload, 
       ENV.JWT_SECRET,
-      {expiresIn: ENV.JWT_EXPIRES_IN as NonNullable<jwt.SignOptions['expiresIn']>}
+      { expiresIn: ENV.JWT_EXPIRES_IN as NonNullable<jwt.SignOptions['expiresIn']> }
     );
 
     return {
@@ -69,7 +71,7 @@ export class InMemoryAuthService implements IAuthService {
   }
 
   /**
-   * Validates a user's existence by ID. Useful for session persistence.
+   * Validates a user's existence by ID. Essential for the /me endpoint.
    */
   async validateUser(id: string): Promise<Omit<UserData, 'token'>> {
     const user = this.users.find(u => u.id === id);
