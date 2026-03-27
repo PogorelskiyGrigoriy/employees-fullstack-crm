@@ -15,7 +15,8 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.coerce.number().default(3000),
   JWT_SECRET: z.string().min(8, "JWT_SECRET must be at least 8 characters"),
-  JWT_EXPIRES_IN: z.string().default("1h"),
+  JWT_EXPIRES_IN: z.string().default("2h"),
+  DB_TYPE: z.enum(["IN_MEMORY", "PRISMA", "MONGODB"]).default("IN_MEMORY"),
 });
 
 // Parse and validate process.env
@@ -36,3 +37,5 @@ if (_env.data.NODE_ENV === "production" && _env.data.JWT_SECRET === "default_fal
  * Validated environment configuration object.
  */
 export const ENV = _env.data;
+
+export type DbType = z.infer<typeof envSchema>["DB_TYPE"];

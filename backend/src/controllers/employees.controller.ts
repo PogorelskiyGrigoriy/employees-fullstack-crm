@@ -3,6 +3,7 @@
  * Handles incoming HTTP requests for employee data.
  */
 import type { Request, Response, NextFunction } from 'express';
+import { type EmployeesService } from '../services/employees.service.js';
 import { InMemoryEmployeesService } from '../services/implementations/employees-in-memory.service.js';
 import { 
   employeeFilterSchema, 
@@ -12,7 +13,7 @@ import {
 import { sortParamsSchema } from '@shared/schemas/common.schema.js';
 
 export class EmployeesController {
-  constructor(private employeesService: InMemoryEmployeesService) {}
+  constructor(private employeesService: EmployeesService) {}
 
   getAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
