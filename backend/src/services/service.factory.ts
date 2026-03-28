@@ -4,7 +4,7 @@
  * Uses Pino for structured logging and implements the Singleton pattern.
  */
 import { ENV } from '../config/env.js';
-import logger from '../utils/pino-logger.js'; // Your Pino logger
+import logger from '../utils/pino-logger.js';
 import { type EmployeesService } from './employees.service.js';
 import { InMemoryEmployeesService } from './implementations/employees-in-memory.service.js';
 

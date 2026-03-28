@@ -5,7 +5,7 @@
  */
 import { Router } from 'express';
 import { EmployeesController } from '../controllers/employees.controller.js';
-import { ServiceFactory } from '../services/service.factory.js'; // Импортируем фабрику
+import { ServiceFactory } from '../services/service.factory.js';
 import { protect, authorize } from '../middlewares/auth.middleware.js';
 
 const router = Router();

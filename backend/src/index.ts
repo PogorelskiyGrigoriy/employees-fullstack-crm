@@ -16,10 +16,9 @@ app.use(cors());
 app.use(express.json());
 
 // Mount API Routes
-app.use('/api/auth', authRouter);           // All auth logic is here now
-app.use('/api/employees', employeeRouter);   // All employee logic is here now
+app.use('/api/auth', authRouter);
+app.use('/api/employees', employeeRouter);
 
-// Error Handler
 app.use(errorMiddleware);
 
 app.listen(ENV.PORT, () => {
