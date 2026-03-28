@@ -1,7 +1,7 @@
 /**
  * @module InMemoryEmployeesService
  * Implementation of EmployeesService using a volatile in-memory array.
- * Strictly follows shared Zod schemas for data integrity.
+ * Strictly follows shared Zod schemas for data integrity and uses custom AppErrors.
  */
 import { randomUUID } from 'node:crypto';
 import pkg from 'lodash';
@@ -18,6 +18,7 @@ import { calculateAge } from "@crm/shared/utils/date-utils.js";
 import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees.config.js";
 import { departmentSchema } from "@crm/shared/schemas/department.schema.js";
 import { generateMockEmployees } from '../../utils/seeder.js';
+import { NotFoundError } from '../../utils/app-errors.js';
 
 const { range, countBy, groupBy, meanBy } = pkg;
 
@@ -30,10 +31,6 @@ export class InMemoryEmployeesService implements EmployeesService {
     }
   }
 
-  /**
-   * Internal persistence placeholder. 
-   * Hidden from the interface to ensure encapsulation.
-   */
   private async persist(): Promise<void> {
     return Promise.resolve();
   }
@@ -42,30 +39,23 @@ export class InMemoryEmployeesService implements EmployeesService {
     let result = [...this.employees];
 
     if (filters) {
-      // 1. Department Filter (supports "All" wildcard from your schema)
       if (filters.department && filters.department !== 'All') {
         result = result.filter(e => e.department === filters.department);
       }
-
-      // 2. Salary Range Filter
       result = result.filter(e => 
         e.salary >= filters.minSalary && e.salary <= filters.maxSalary
       );
-
-      // 3. Age Range Filter using your calculateAge utility
       result = result.filter(e => {
         const age = calculateAge(e.birthDate);
         return age >= filters.minAge && age <= filters.maxAge;
       });
     }
 
-    // 4. Sorting logic based on sortParamsSchema
     if (sortParams?.sortBy && sortParams?.sortOrder) {
       const { sortBy, sortOrder } = sortParams;
       result.sort((a, b) => {
         const valA = a[sortBy as keyof Employee];
         const valB = b[sortBy as keyof Employee];
-
         if (valA === undefined || valB === undefined) return 0;
 
         let comparison = 0;
@@ -74,7 +64,6 @@ export class InMemoryEmployeesService implements EmployeesService {
         } else if (typeof valA === 'number' && typeof valB === 'number') {
           comparison = valA - valB;
         }
-
         return sortOrder === 'asc' ? comparison : -comparison;
       });
     }
@@ -84,7 +73,7 @@ export class InMemoryEmployeesService implements EmployeesService {
 
   async getEmployee(id: string): Promise<Employee> {
     const employee = this.employees.find(e => e.id === id);
-    if (!employee) throw new Error(`Employee ${id} not found`);
+    if (!employee) throw new NotFoundError(`Employee with ID ${id}`);
     return employee;
   }
 
@@ -97,7 +86,7 @@ export class InMemoryEmployeesService implements EmployeesService {
 
   async updateEmployee({ id, changes }: EmployeeUpdatePayload): Promise<Employee> {
     const index = this.employees.findIndex(e => e.id === id);
-    if (index === -1) throw new Error(`Employee ${id} not found`);
+    if (index === -1) throw new NotFoundError(`Employee with ID ${id}`);
 
     const updated = { ...this.employees[index]!, ...changes, id } as Employee;
     this.employees[index] = updated;
@@ -108,7 +97,7 @@ export class InMemoryEmployeesService implements EmployeesService {
 
   async deleteEmployee(id: string): Promise<Employee> {
     const index = this.employees.findIndex(e => e.id === id);
-    if (index === -1) throw new Error(`Employee ${id} not found`);
+    if (index === -1) throw new NotFoundError(`Employee with ID ${id}`);
 
     const [deleted] = this.employees.splice(index, 1) as [Employee];
     await this.persist();
@@ -119,7 +108,6 @@ export class InMemoryEmployeesService implements EmployeesService {
     const { salary, age } = EMPLOYEES_CONFIG;
 
     return {
-      // Matches salaryDistribution array in statsResponseSchema
       salaryDistribution: this.calculateBins(
         this.employees,
         salary,
@@ -127,8 +115,6 @@ export class InMemoryEmployeesService implements EmployeesService {
         (v) => `${v / 1000}k`,
         (v, last) => `Range: ${v}${last ? '+' : '-' + (v + salary.interval)}`
       ),
-
-      // Matches ageDistribution array in statsResponseSchema
       ageDistribution: this.calculateBins(
         this.employees,
         age,
@@ -136,13 +122,10 @@ export class InMemoryEmployeesService implements EmployeesService {
         (v) => `${v}`,
         (v, last) => `Age: ${v}${last ? '+' : '-' + (v + age.interval)}`
       ),
-
       departmentDistribution: this.calculateDepartmentStats(),
       departmentAnalytics: this.calculateDepartmentAnalytics()
     };
   }
-
-  // --- Private Aggregation Helpers ---
 
   private calculateBins<T>(
     items: T[],
