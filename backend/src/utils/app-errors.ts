@@ -34,3 +34,15 @@ export class ValidationError extends AppError {
     super(message, 400, 'VALIDATION_ERROR', details);
   }
 }
+
+export class UnauthorizedError extends AppError {
+  constructor(message: string = "Authentication required") {
+    super(message, 401, 'AUTH_REQUIRED');
+  }
+}
+
+export class ForbiddenError extends AppError {
+  constructor(message: string = "Access denied") {
+    super(message, 403, 'FORBIDDEN');
+  }
+}

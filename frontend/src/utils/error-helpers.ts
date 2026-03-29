@@ -42,12 +42,21 @@ export const getErrorData = (error: unknown) => {
 
   if (axios.isAxiosError(error)) {
     const data = error.response?.data as ApiErrorResponse | undefined;
+    if (!error.response) {
+      return {
+        status: "Network",
+        title: "Connection Failed",
+        desc: "Unable to connect to the server. Please check your internet.",
+        debug: error.message
+      };
+    }
+
     return {
-      status: error.response?.status || "API",
+      status: error.response.status,
       title: data?.code || "Server Error",
       desc: data?.error || error.message,
       debug: JSON.stringify({ code: data?.code, ts: data?.timestamp, url: error.config?.url }, null, 2),
-      validation: data?.code === "VALIDATION_ERROR" ? data.details : null
+      validation: data?.code === "VALIDATION_ERROR" ? (data.details as ValidationErrorDetail[]) : null
     };
   }
 

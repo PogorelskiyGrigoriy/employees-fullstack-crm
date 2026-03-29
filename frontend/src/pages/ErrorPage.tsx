@@ -8,7 +8,7 @@ const ErrorPage = () => {
   const navigate = useNavigate();
   const { status, title, desc, debug, validation } = getErrorData(useRouteError());
   const { copied, copy } = useClipboard({ value: debug || String(status) });
-  const validationMessages = validation ? formatValidationErrors(validation as any) : [];
+  const validationMessages = validation ? formatValidationErrors(validation) : [];
 
   return (
     <Center h="100vh" p="6" bg="bg.canvas">
