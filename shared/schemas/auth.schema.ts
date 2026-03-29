@@ -1,43 +1,61 @@
 /**
  * @module AuthSchema
- * Validation logic for authentication and RBAC.
+ * Validation logic for Authentication and User Management.
+ * Updated for Zod 4.3.x standards.
  */
 
 import { z } from "zod";
 import { emailSchema, passwordSchema } from "./common.schema.js";
 
 /**
- * User roles for Role-Based Access Control.
+ * RBAC Roles
  */
 export const userRoleSchema = z.enum(['ADMIN', 'USER']);
 export type UserRole = z.infer<typeof userRoleSchema>;
 
 /**
- * Credentials for login requests.
+ * Base User Entity
+ */
+export const userSchema = z.object({
+  id: z.string().min(1, "ID is required"),
+  username: z.string().min(1, "Username is required"),
+  email: emailSchema,
+  role: userRoleSchema,
+});
+
+/**
+ * 1. FOR AUTH SERVICE: Response after login
+ */
+export const userDataSchema = userSchema.extend({
+  token: z.string().optional(),
+});
+export type UserData = z.infer<typeof userDataSchema>;
+
+/**
+ * 2. FOR AUTH SERVICE: Login request
  */
 export const loginSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
 });
-
 export type LoginData = z.infer<typeof loginSchema>;
 
 /**
- * Authenticated user profile structure.
+ * 3. FOR USER SERVICE: Create User (Admin action)
  */
-export const userDataSchema = z.object({
-  id: z.string().uuid().or(z.string()),
-  username: z.string().min(1, "Username is required"),
-  email: z.string().email(),
-  role: userRoleSchema,
-  token: z.string().optional(),
+export const createUserSchema = userSchema.omit({ id: true }).extend({
+  password: passwordSchema,
 });
-
-export type UserData = z.infer<typeof userDataSchema>;
+export type CreateUserDto = z.infer<typeof createUserSchema>;
 
 /**
- * Decoded JWT payload structure.
- * Shared between AuthService and AuthMiddleware.
+ * 4. FOR USER SERVICE: Update User (Admin action)
+ */
+export const updateUserSchema = createUserSchema.partial();
+export type UpdateUserDto = z.infer<typeof updateUserSchema>;
+
+/**
+ * Decoded JWT Payload
  */
 export interface JwtPayload {
   id: string;

@@ -4,13 +4,10 @@
  */
 import dotenv from "dotenv";
 import { z } from "zod";
+import logger from "../utils/pino-logger.js";
 
 dotenv.config();
 
-/**
- * Validation schema for environment variables.
- * Uses z.coerce to ensure types match (e.g., string from .env to number).
- */
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.coerce.number().default(3000),
@@ -23,19 +20,23 @@ const envSchema = z.object({
 const _env = envSchema.safeParse(process.env);
 
 if (!_env.success) {
-  console.error("❌ Invalid environment variables:", _env.error.format());
+  const errors = _env.error.issues.map((issue) => ({
+    variable: issue.path.join("."),
+    message: issue.message,
+  }));
+
+  logger.fatal({ errors }, "❌ Invalid environment variables configuration");
   process.exit(1);
 }
 
 // Critical production security check
 if (_env.data.NODE_ENV === "production" && _env.data.JWT_SECRET === "default_fallback_secret") {
-  console.error("❌ FATAL: JWT_SECRET must be a unique secure string in production!");
+  logger.fatal(
+    { node_env: _env.data.NODE_ENV },
+    "❌ FATAL: JWT_SECRET must be a unique secure string in production!"
+  );
   process.exit(1);
 }
 
-/**
- * Validated environment configuration object.
- */
 export const ENV = _env.data;
-
 export type DbType = z.infer<typeof envSchema>["DB_TYPE"];

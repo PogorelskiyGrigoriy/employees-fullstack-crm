@@ -1,64 +1,46 @@
 /**
  * @module AuthService
- * Implementation of IAuthService using in-memory storage for development and testing.
- * Uses bcrypt-ts for environment-independent password hashing.
+ * Agnostic implementation of AuthService.
+ * Depends on UserService for data retrieval.
  */
 import jwt from "jsonwebtoken";
 import { compare } from "bcrypt-ts";
-import type { IAuthService } from "@crm/shared/types/auth.types.js";
+import type { AuthService } from "@crm/shared/types/auth.types.js";
+import type { UserService } from "@crm/shared/types/user.types.js";
 import type { UserData, LoginData, JwtPayload } from "@crm/shared/schemas/auth.schema.js";
 import { ENV } from "../../config/env.js";
+import { UnauthorizedError } from "../../utils/app-errors.js";
 
-export class InMemoryAuthService implements IAuthService {
+export class InMemoryAuthService implements AuthService {
   /**
-   * Mock users database for testing RBAC.
-   * Both users use the password: "password"
+   * We inject the interface, not the concrete implementation.
+   * This makes AuthService agnostic to whether users are in memory or Prisma.
    */
-  private users = [
-    { 
-      id: "admin-1", 
-      email: "admin@crm.com", 
-      passwordHash: "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", 
-      username: "System Admin", 
-      role: "ADMIN" as const 
-    },
-    { 
-      id: "user-2", 
-      email: "user@crm.com", 
-      passwordHash: "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", 
-      username: "Regular User", 
-      role: "USER" as const 
-    }
-  ];
+  constructor(private userService: UserService) {}
 
-  /**
-   * Validates credentials and generates a JWT.
-   */
   async login(credentials: LoginData): Promise<UserData> {
     const { email, password } = credentials;
-    const user = this.users.find(u => u.email === email);
+
+    // 1. Ask UserService for the user (including the password hash)
+    const user = await this.userService.findByEmail(email);
     
-    // Check if user exists and verify password using bcrypt-ts (async compare)
+    // 2. Security check
     const isPasswordValid = user ? await compare(password, user.passwordHash) : false;
 
     if (!user || !isPasswordValid) {
-      throw new Error("Invalid credentials");
+      throw new UnauthorizedError("Invalid email or password");
     }
 
-    // Token payload follows the shared interface
+    // 3. Prepare Token Payload
     const payload: JwtPayload = { 
       id: user.id, 
       role: user.role 
     };
 
-    /**
-     * Generate the JWT.
-     * We use NonNullable to satisfy strict TypeScript checks for expiresIn.
-     */
     const token = jwt.sign(
       payload, 
       ENV.JWT_SECRET,
-      { expiresIn: ENV.JWT_EXPIRES_IN as NonNullable<jwt.SignOptions['expiresIn']> }
+      { expiresIn: ENV.JWT_EXPIRES_IN as any }
     );
 
     return {
@@ -70,20 +52,7 @@ export class InMemoryAuthService implements IAuthService {
     };
   }
 
-  /**
-   * Validates a user's existence by ID. Essential for the /me endpoint.
-   */
   async validateUser(id: string): Promise<Omit<UserData, 'token'>> {
-    const user = this.users.find(u => u.id === id);
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    return {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      role: user.role
-    };
+    return await this.userService.getById(id);
   }
 }

@@ -1,8 +1,6 @@
 import type { LoginData, UserData } from "../schemas/auth.schema.js";
 
-/** 
- * Basic contract that both Client and Server must follow 
- */
-export interface IAuthService {
+export interface AuthService {
   login(credentials: LoginData): Promise<UserData>;
+  validateUser(id: string): Promise<Omit<UserData, 'token'>>;
 }
