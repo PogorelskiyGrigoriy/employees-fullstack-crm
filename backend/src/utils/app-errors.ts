@@ -46,3 +46,14 @@ export class ForbiddenError extends AppError {
     super(message, 403, 'FORBIDDEN');
   }
 }
+
+/**
+ * Error for malformed requests or invalid parameters.
+ * Use this for general 400 errors that are not schema-related.
+ */
+export class BadRequestError extends AppError {
+  constructor(message: string = "Bad Request") {
+    // Assuming 'BAD_REQUEST' is available in your AppErrorCode union
+    super(message, 400, 'BAD_REQUEST' as AppErrorCode);
+  }
+}

@@ -1,20 +1,13 @@
-/**
- * @module AuthRoutes
- * Defines endpoints for authentication.
- */
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller.js';
-import { InMemoryAuthService } from '../services/implementations/auth-in-memory.service.js';
+import { ServiceFactory } from '../services/service.factory.js';
 import { protect } from '../middlewares/auth.middleware.js';
 
 const router = Router();
-const authService = new InMemoryAuthService();
-const controller = new AuthController(authService);
+const controller = new AuthController(ServiceFactory.getAuthService());
 
-// Public route for login
 router.post('/login', controller.login);
-
-// Protected route to get current user info (session persistence)
 router.get('/me', protect, controller.getMe);
+router.post('/logout', protect, controller.logout);
 
 export default router;

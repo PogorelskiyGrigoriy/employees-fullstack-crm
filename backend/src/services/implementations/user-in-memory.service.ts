@@ -14,13 +14,13 @@ import {
 import { NotFoundError, ConflictError } from "../../utils/app-errors.js";
 
 /**
- * Internal record type including sensitive password hashes.
+ * Internal record type that includes sensitive password hashes.
  */
 type UserRecord = Omit<UserData, 'token'> & { passwordHash: string };
 
 export class InMemoryUserService implements UserService {
   /**
-   * Mock users database for testing and development.
+   * Mock database for testing and development.
    * Default password for both: "password"
    */
   private users: UserRecord[] = [
@@ -41,14 +41,14 @@ export class InMemoryUserService implements UserService {
   ];
 
   /**
-   * Retrieves all users without password hashes.
+   * Returns all users without sensitive data.
    */
   async getAll(): Promise<Omit<UserData, 'token'>[]> {
     return this.users.map(({ passwordHash, ...user }) => user);
   }
 
   /**
-   * Retrieves a single user by ID. Throws NotFoundError if missing.
+   * Finds a user by ID. Throws NotFoundError if not found.
    */
   async getById(id: string): Promise<Omit<UserData, 'token'>> {
     const user = this.users.find(u => u.id === id);
@@ -59,7 +59,7 @@ export class InMemoryUserService implements UserService {
   }
 
   /**
-   * Internal helper to find a user by email, including the password hash.
+   * Internal helper for Auth logic to retrieve the password hash.
    */
   async findByEmail(email: string): Promise<UserRecord | null> {
     const user = this.users.find(u => u.email === email);
@@ -67,19 +67,19 @@ export class InMemoryUserService implements UserService {
   }
 
   /**
-   * Creates a new user with a hashed password.
+   * Creates a new user with password hashing and email uniqueness check.
    */
   async create(data: CreateUserDto): Promise<Omit<UserData, 'token'>> {
-    // 1. Check for email uniqueness
+    // 1. Check for email conflict
     const existing = await this.findByEmail(data.email);
     if (existing) {
       throw new ConflictError(`User with email ${data.email} already exists`);
     }
 
-    // 2. Hash the raw password
+    // 2. Securely hash the password
     const passwordHash = await hash(data.password, 10);
 
-    // 3. Persist the record
+    // 3. Create the record with a generated ID
     const newUser: UserRecord = {
       id: randomUUID(),
       username: data.username,
@@ -95,7 +95,7 @@ export class InMemoryUserService implements UserService {
   }
 
   /**
-   * Updates an existing user. Uses nullish coalescing to prevent undefined values.
+   * Updates user data. Uses nullish coalescing to prevent overwriting with undefined.
    */
   async update(id: string, data: UpdateUserDto): Promise<Omit<UserData, 'token'>> {
     const index = this.users.findIndex(u => u.id === id);
@@ -103,19 +103,19 @@ export class InMemoryUserService implements UserService {
 
     const current = this.users[index]!;
 
-    // 1. Validate email uniqueness if it is being changed
+    // 1. Validate email uniqueness if changed
     if (data.email && data.email !== current.email) {
       const existing = await this.findByEmail(data.email);
       if (existing) throw new ConflictError(`Email ${data.email} is already taken`);
     }
 
-    // 2. Hash new password if provided, otherwise keep existing hash
+    // 2. Update password hash only if a new password is provided
     let passwordHash = current.passwordHash;
     if (data.password) {
       passwordHash = await hash(data.password, 10);
     }
 
-    // 3. Merge data safely without 'password' field in final record
+    // 3. Construct the updated record safely
     const updatedUser: UserRecord = {
       id: current.id, 
       username: data.username ?? current.username,
@@ -131,7 +131,7 @@ export class InMemoryUserService implements UserService {
   }
 
   /**
-   * Removes a user by ID. Throws NotFoundError if missing.
+   * Deletes a user by ID. Throws NotFoundError if not found.
    */
   async delete(id: string): Promise<void> {
     const index = this.users.findIndex(u => u.id === id);
