@@ -1,32 +1,38 @@
 /**
  * @module AuthController
- * Handles identity-related requests such as login and session validation.
+ * Handles identity-related requests and logs security events (Accounting).
  */
 import type { Request, Response, NextFunction } from 'express';
 import { type AuthService } from '@crm/shared/types/auth.types.js';
+import { type AuditService } from '@crm/shared/types/audit.types.js'; // NEW
 import { loginSchema } from '@crm/shared/schemas/auth.schema.js';
 import { UnauthorizedError } from '../utils/app-errors.js';
-import logger from '../utils/pino-logger.js';
 
 export class AuthController {
   /**
-   * We depend on the AuthService interface, not a concrete implementation.
-   * This allows the controller to work with Memory, Prisma, or MongoDB seamlessly.
+   * Controller now depends on both Auth (Identity) and Audit (Accounting).
    */
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private auditService: AuditService
+  ) {}
 
   /**
-   * Authenticates a user and returns their profile with a JWT.
+   * Authenticates a user and records the login event.
    */
   login = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // 1. Validate request body against shared Zod schema
       const credentials = loginSchema.parse(req.body);
-
-      // 2. Delegate authentication logic to the service
       const userData = await this.authService.login(credentials);
 
-      // 3. Return consistent user data structure
+      // AAA: Accounting - Log successful login
+      await this.auditService.log({
+        userId: userData.id,
+        username: userData.username,
+        action: 'USER_LOGIN',
+        metadata: { ip: req.ip } // Useful for security audits
+      });
+
       res.json(userData);
     } catch (e) {
       next(e);
@@ -34,17 +40,12 @@ export class AuthController {
   };
 
   /**
-   * Retrieves the current user's profile based on the verified JWT.
-   * Expects req.user to be populated by the 'protect' middleware.
+   * Retrieves current session data. 
+   * Note: We do NOT log this to avoid spamming the audit trail.
    */
   getMe = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      if (!req.user) {
-        // Use our specialized AppError for consistent global handling
-        throw new UnauthorizedError("User session not found or expired");
-      }
-
-      // Fetch fresh user data (without sensitive fields) using the ID from the token
+      if (!req.user) throw new UnauthorizedError("Session not found");
       const user = await this.authService.validateUser(req.user.id);
       res.json(user);
     } catch (e) {
@@ -52,10 +53,19 @@ export class AuthController {
     }
   };
 
+  /**
+   * Handles logout and records the session termination.
+   */
   logout = async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (req.user) {
-        logger.info({ userId: req.user.id }, "User logged out");
+        // AAA: Accounting - Log logout event
+        await this.auditService.log({
+          userId: req.user.id,
+          username: 'User', // Placeholder until we add username to JWT payload
+          action: 'USER_LOGOUT'
+        });
+
         await this.authService.logout(req.user.id);
       }
       res.status(204).send();

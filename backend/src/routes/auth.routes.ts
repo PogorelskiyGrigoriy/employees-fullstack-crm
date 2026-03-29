@@ -4,7 +4,15 @@ import { ServiceFactory } from '../services/service.factory.js';
 import { protect } from '../middlewares/auth.middleware.js';
 
 const router = Router();
-const controller = new AuthController(ServiceFactory.getAuthService());
+
+/**
+ * We fetch both singletons from the Factory.
+ */
+const authService = ServiceFactory.getAuthService();
+const auditService = ServiceFactory.getAuditService();
+
+// Injecting both services into the controller
+const controller = new AuthController(authService, auditService);
 
 router.post('/login', controller.login);
 router.get('/me', protect, controller.getMe);
