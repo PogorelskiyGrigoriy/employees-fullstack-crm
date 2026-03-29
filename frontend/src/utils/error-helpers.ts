@@ -1,30 +1,56 @@
 /**
  * @module ErrorHelpers
- * Utilities for parsing and formatting Zod validation errors.
- * Transforms complex error objects into human-readable strings for the UI.
+ * Optimized utilities for formatting validation errors from both 
+ * local Zod validation and remote Backend API responses.
  */
-
-import { z, ZodError } from "zod";
+import { ZodError } from "zod";
+import type { ValidationErrorDetail } from "@crm/shared/types/error.types";
+import { isRouteErrorResponse } from "react-router-dom";
+import axios from "axios";
+import type { ApiErrorResponse } from "@crm/shared/types/error.types";
 
 /**
- * Converts a ZodError into an array of readable strings.
- * Each string identifies the failing field and its corresponding error message.
- * @param error - The ZodError object caught during validation.
- * @returns An array of strings, e.g., ["email: Invalid email address", "password: Min 6 characters"]
+ * Normalizes input and converts validation issues into a flat array of readable strings.
  */
-export const formatZodError = (error: ZodError): string[] => {
-  return error.issues.map((issue: z.ZodIssue) => {
-    // Join path parts (e.g., ['user', 'address', 'street'] -> "user.address.street")
-    const path = issue.path.length > 0 ? issue.path.join(".") : "root";
-    return `${path}: ${issue.message}`;
+export const formatValidationErrors = (
+  error: ZodError | ValidationErrorDetail[]
+): string[] => {
+  const issues = error instanceof ZodError ? error.issues : error;
+
+  return issues.map(({ path, message }) => {
+    const pathString = path.length > 0 ? path.join(".") : "root";
+    return `${pathString}: ${message}`;
   });
 };
 
 /**
- * Converts a ZodError into a single concatenated string for brief notifications (e.g., Toasts).
- * @param error - The ZodError object.
- * @returns A single string with errors separated by pipes.
+ * Concatenates errors into a single string for brief notifications.
  */
-export const formatZodErrorToString = (error: ZodError): string => {
-  return formatZodError(error).join(" | ");
+export const formatValidationErrorsToString = (
+  error: ZodError | ValidationErrorDetail[]
+): string => formatValidationErrors(error).join(" | ");
+
+export const getErrorData = (error: unknown) => {
+  if (isRouteErrorResponse(error)) {
+    return {
+      status: error.status,
+      title: error.status === 404 ? "Page Not Found" : "Router Error",
+      desc: error.statusText || "Navigation error occurred.",
+      debug: JSON.stringify(error.data)
+    };
+  }
+
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as ApiErrorResponse | undefined;
+    return {
+      status: error.response?.status || "API",
+      title: data?.code || "Server Error",
+      desc: data?.error || error.message,
+      debug: JSON.stringify({ code: data?.code, ts: data?.timestamp, url: error.config?.url }, null, 2),
+      validation: data?.code === "VALIDATION_ERROR" ? data.details : null
+    };
+  }
+
+  const err = error as Error;
+  return { status: "App", title: "Internal Error", desc: err.message, debug: err.stack };
 };

@@ -1,7 +1,6 @@
 /**
  * @module AxiosInstance
- * Centralized API client configuration with interceptors for authentication 
- * and global error handling.
+ * Centralized API client with typed error handling based on ApiErrorResponse.
  */
 
 import axios, { AxiosError } from 'axios';
@@ -9,74 +8,65 @@ import { toaster } from "@/components/ui/toaster-config";
 import { useAuthStore } from '@/store/auth-store';
 import { appRouter } from '@/router/app-router';
 import { ROUTES } from '@/config/navigation';
+import type { ApiErrorResponse } from "@crm/shared/types/error.types";
 
-/**
- * Global axios instance with predefined base URL and timeout.
- */
 export const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
   timeout: 10000,
 });
 
 /**
- * Request Interceptor:
- * Injects the Bearer Token into the Authorization header for every request.
+ * Request Interceptor: Auth injection
  */
 api.interceptors.request.use(
   (config) => {
-    // Access the Zustand store state directly (outside of React components)
     const token = useAuthStore.getState().user?.token;
-
     if (token) {
-      // Standard "Bearer" authentication scheme
       config.headers.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
   (error) => Promise.reject(error)
 );
 
 /**
- * Response Interceptor:
- * Handles global API responses and error scenarios like 401 Unauthorized 
- * or 500 Server Errors.
+ * Response Interceptor: Typed Error Handling
  */
 api.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
-    // Handle request cancellation
+  (error: AxiosError<ApiErrorResponse>) => {
     if (axios.isCancel(error)) return Promise.reject(error);
 
     const status = error.response?.status;
+    const errorData = error.response?.data;
 
-    // CASE A: Unauthorized (401) - Session expired or invalid token
+    // CASE A: Unauthorized (401)
     if (status === 401) {
-      // Direct store state access to clear auth data
       useAuthStore.getState().setLogout();
-      
-      // Programmatic navigation to login page
       appRouter.navigate(ROUTES.LOGIN, { replace: true });
 
       toaster.create({
-        title: "Session Expired",
-        description: "Please log in again.",
+        title: errorData?.code || "Session Expired",
+        description: errorData?.error || "Please log in again.",
         type: "error",
       });
       return Promise.reject(error);
     }
 
-    // CASE B: Server-side errors (500+)
-    if (status && status >= 500) {
-      // Propagate error to let React Router's ErrorPage handle it if triggered during routing
+    // CASE B: Validation Error (400)
+    if (errorData?.code === 'VALIDATION_ERROR') {
       return Promise.reject(error);
     }
 
-    // CASE C: Client-side errors (400, 403, 404) or Network failures
-    const message = (error.response?.data as any)?.error || error.message;
+    // CASE C: Server-side errors (500+) 
+    if (status && status >= 500) {
+      return Promise.reject(error);
+    }
+
+    // CASE D: Other client errors (403, 404, 409) or Network failures
     toaster.create({
-      title: `Error ${status || 'Network'}`,
-      description: message,
+      title: errorData?.code || `Error ${status || 'Network'}`,
+      description: errorData?.error || error.message,
       type: "error",
     });
 
