@@ -12,6 +12,8 @@ import {
   type UpdateUserDto 
 } from "@crm/shared/schemas/auth.schema.js";
 import { NotFoundError, ConflictError } from "../../utils/app-errors.js";
+import { generateMockUsers } from '../../utils/users-seeder.js';
+import logger from '../../utils/pino-logger.js';
 
 /**
  * Internal record type that includes sensitive password hashes.
@@ -21,7 +23,7 @@ type UserRecord = Omit<UserData, 'token'> & { passwordHash: string };
 export class InMemoryUserService implements UserService {
   /**
    * Mock database for testing and development.
-   * Default password for both: "password"
+   * Default password for all users: "password"
    */
   private users: UserRecord[] = [
     { 
@@ -39,6 +41,20 @@ export class InMemoryUserService implements UserService {
       role: "USER" 
     }
   ];
+
+  /**
+   * Constructor seeds the database if seedCount is provided.
+   */
+  constructor(seedCount: number = 0) {
+    if (seedCount > 0) {
+      const mockUsers = generateMockUsers(seedCount);
+      this.users.push(...mockUsers);
+      
+      // Log seeded emails to the console for easy frontend testing
+      const seededEmails = mockUsers.map(u => `${u.email} (${u.role})`);
+      logger.info({ emails: seededEmails }, `Seeded ${seedCount} users. Password for all: "password"`);
+    }
+  }
 
   /**
    * Returns all users without sensitive data.
@@ -70,16 +86,13 @@ export class InMemoryUserService implements UserService {
    * Creates a new user with password hashing and email uniqueness check.
    */
   async create(data: CreateUserDto): Promise<Omit<UserData, 'token'>> {
-    // 1. Check for email conflict
     const existing = await this.findByEmail(data.email);
     if (existing) {
       throw new ConflictError(`User with email ${data.email} already exists`);
     }
 
-    // 2. Securely hash the password
     const passwordHash = await hash(data.password, 10);
 
-    // 3. Create the record with a generated ID
     const newUser: UserRecord = {
       id: randomUUID(),
       username: data.username,
@@ -103,19 +116,16 @@ export class InMemoryUserService implements UserService {
 
     const current = this.users[index]!;
 
-    // 1. Validate email uniqueness if changed
     if (data.email && data.email !== current.email) {
       const existing = await this.findByEmail(data.email);
       if (existing) throw new ConflictError(`Email ${data.email} is already taken`);
     }
 
-    // 2. Update password hash only if a new password is provided
     let passwordHash = current.passwordHash;
     if (data.password) {
       passwordHash = await hash(data.password, 10);
     }
 
-    // 3. Construct the updated record safely
     const updatedUser: UserRecord = {
       id: current.id, 
       username: data.username ?? current.username,

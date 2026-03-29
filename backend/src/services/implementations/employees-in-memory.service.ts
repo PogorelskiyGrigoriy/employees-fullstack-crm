@@ -17,7 +17,7 @@ import { type EmployeesService } from '../employees.service.js';
 import { calculateAge } from "@crm/shared/utils/date-utils.js";
 import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees.config.js";
 import { departmentSchema } from "@crm/shared/schemas/department.schema.js";
-import { generateMockEmployees } from '../../utils/seeder.js';
+import { generateMockEmployees } from '../../utils/employees-seeder.js';
 import { NotFoundError } from '../../utils/app-errors.js';
 
 const { range, countBy, groupBy, meanBy } = pkg;

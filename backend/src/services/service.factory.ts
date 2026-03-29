@@ -30,8 +30,9 @@ export class ServiceFactory {
     const dbType = ENV.DB_TYPE;
     try {
       if (dbType === 'IN_MEMORY') {
-        logger.info({ dbType, mockCount: 25 }, 'Initializing Employees database provider');
-        this.employeesInstance = new InMemoryEmployeesService(25);
+        const mockCount = 25;
+        logger.info({ dbType, mockCount }, 'Initializing Employees database provider');
+        this.employeesInstance = new InMemoryEmployeesService(mockCount);
       } else {
         throw new Error(`${dbType} implementation for Employees is not ready yet.`);
       }
@@ -51,8 +52,11 @@ export class ServiceFactory {
     const dbType = ENV.DB_TYPE;
     try {
       if (dbType === 'IN_MEMORY') {
-        logger.info({ dbType }, 'Initializing Users database provider');
-        this.usersInstance = new InMemoryUserService();
+        const seedCount = 20; // Generating 20 random users for testing
+        logger.info({ dbType, seedCount }, 'Initializing Users database provider');
+        
+        // Pass the seedCount to the implementation constructor
+        this.usersInstance = new InMemoryUserService(seedCount);
       } else {
         throw new Error(`${dbType} implementation for Users is not ready yet.`);
       }
@@ -72,7 +76,7 @@ export class ServiceFactory {
 
     const dbType = ENV.DB_TYPE;
     try {
-      // Get the required dependency first
+      // Get the required dependency first (singleton will be reused if already created)
       const userService = this.getUsersService();
 
       if (dbType === 'IN_MEMORY') {
