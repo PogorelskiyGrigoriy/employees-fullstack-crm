@@ -1,25 +1,30 @@
-/**
- * @module AuthServiceImplementation
- * Communicates with the Express Backend via REST.
- */
-
 import { api } from "@/api/axios-instance";
 import { userDataSchema, type LoginData, type UserData } from "@crm/shared/schemas/auth.schema.js";
+import { useAuthStore } from "@/store/auth-store";
 import type { AuthService } from "./auth.service";
 
 class AuthServiceRest implements AuthService {
   async login(credentials: LoginData): Promise<UserData> {
-    // Send credentials to the real backend
     const { data } = await api.post<UserData>("/auth/login", credentials);
-    
-    // Validate that server response matches our schema
     return userDataSchema.parse(data);
   }
 
   async logout(): Promise<void> {
-    // For now, logout is handled by clearing the Store on the client side.
-    // Later, you can add a POST /auth/logout if you use server-side sessions.
-    return Promise.resolve();
+    try {
+      await api.post("/auth/logout");
+    } finally {
+      // Обязательно чистим стейт, даже если бэкенд недоступен
+      useAuthStore.getState().setLogout();
+    }
+  }
+
+  async getCurrentUser(): Promise<UserData | null> {
+    try {
+      const { data } = await api.get<UserData>("/auth/me");
+      return userDataSchema.parse(data);
+    } catch {
+      return null;
+    }
   }
 }
 
