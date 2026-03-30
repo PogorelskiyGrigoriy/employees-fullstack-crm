@@ -1,6 +1,6 @@
 /**
  * @module AxiosInstance
- * Centralized API client with typed error handling based on ApiErrorResponse.
+ * Centralized API client refined for AAA: Strict separation of 401 vs 403.
  */
 
 import axios, { AxiosError } from 'axios';
@@ -40,33 +40,50 @@ api.interceptors.response.use(
     const status = error.response?.status;
     const errorData = error.response?.data;
 
-    // CASE A: Unauthorized (401)
-    if (status === 401) {
+    // CASE A: Authentication (401 / AUTH_REQUIRED)
+    if (status === 401 || errorData?.code === 'AUTH_REQUIRED') {
       useAuthStore.getState().setLogout();
       appRouter.navigate(ROUTES.LOGIN, { replace: true });
 
       toaster.create({
-        title: errorData?.code || "Session Expired",
+        title: "Session Expired",
         description: errorData?.error || "Please log in again.",
         type: "error",
       });
       return Promise.reject(error);
     }
 
-    // CASE B: Validation Error (400)
+    // CASE B: Authorization (403 / FORBIDDEN) - Наш RBAC предохранитель
+    if (status === 403 || errorData?.code === 'FORBIDDEN') {
+      toaster.create({
+        title: "Access Denied", 
+        description: errorData?.error || "Insufficient permissions for this operation.",
+        type: "error",
+      });
+      // Accounting: попытка зафиксирована на бэкенде, фронтенд заблокировал UI-действие.
+      return Promise.reject(error);
+    }
+
+    // CASE C: Resource Not Found (404 / NOT_FOUND)
+    if (status === 404 || errorData?.code === 'NOT_FOUND') {
+      toaster.create({
+        title: "Not Found",
+        description: errorData?.error || "The requested resource does not exist.",
+        type: "info",
+      });
+      return Promise.reject(error);
+    }
+
+    // CASE D: Validation (400 / VALIDATION_ERROR)
     if (errorData?.code === 'VALIDATION_ERROR') {
+      // Пробрасываем ошибку дальше для обработки в формах (React Hook Form)
       return Promise.reject(error);
     }
 
-    // CASE C: Server-side errors (500+) 
-    if (status && status >= 500) {
-      return Promise.reject(error);
-    }
-
-    // CASE D: Other client errors (403, 404, 409) or Network failures
+    // CASE E: Global Fallback (500, Network, etc.)
     toaster.create({
-      title: errorData?.code || `Error ${status || 'Network'}`,
-      description: errorData?.error || error.message,
+      title: errorData?.code || "System Error",
+      description: errorData?.error || error.message || "An unexpected error occurred.",
       type: "error",
     });
 
