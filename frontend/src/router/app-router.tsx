@@ -17,6 +17,9 @@ import SalaryStatisticsPage from "@/pages/SalaryStatisticsPage";
 import DepartmentStatisticPage from "@/pages/DepartmentStatisticsPage";
 import ErrorPage from "@/pages/ErrorPage";
 
+import UserManagementPage from "@/pages/UserManagementPage";
+import AuditLogsPage from "@/pages/AuditLogsPage";
+
 /**
  * Application router instance.
  * Defines public entry points and private authenticated sectors.
@@ -24,14 +27,14 @@ import ErrorPage from "@/pages/ErrorPage";
 export const appRouter = createBrowserRouter([
   {
     path: "/",
-    errorElement: <ErrorPage />, // Global fallback for 404s and runtime errors
+    errorElement: <ErrorPage />, 
     children: [
-      // Public Route: Accessible to everyone
+      // Public Route: Entry point for authentication
       { path: ROUTES.LOGIN, element: <LoginPage /> },
       
       /**
-       * Protected Sector:
-       * Requires basic authentication for all child routes.
+       * Authenticated Sector:
+       * All child routes are wrapped in a layout and require a valid session.
        */
       {
         path: "/",
@@ -41,14 +44,15 @@ export const appRouter = createBrowserRouter([
           </ProtectedRoute>
         ),
         children: [
-          // Landing page for authenticated users
+          // Default landing page
           { 
             index: true, 
             element: <HomePage /> 
           },
+
           /**
-           * Restricted Route: 
-           * Only accessible to users with the 'ADMIN' role.
+           * Administrative Modules:
+           * Restricted to users with the 'ADMIN' role.
            */
           { 
             path: ROUTES.ADD_EMPLOYEE, 
@@ -58,7 +62,27 @@ export const appRouter = createBrowserRouter([
               </ProtectedRoute>
             ) 
           },
-          // Analytics & Statistics section
+          { 
+            path: ROUTES.ADMIN_USERS, 
+            element: (
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
+                <UserManagementPage />
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: ROUTES.ADMIN_LOGS, 
+            element: (
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            ) 
+          },
+
+          /**
+           * Analytics Sector:
+           * Shared access for both USER and ADMIN roles.
+           */
           { 
             path: ROUTES.STATS_AGE, 
             element: <AgeStatisticsPage /> 
