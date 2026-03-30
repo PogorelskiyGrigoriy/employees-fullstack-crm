@@ -17,7 +17,7 @@ import SalaryStatisticsPage from "@/pages/SalaryStatisticsPage";
 import DepartmentStatisticPage from "@/pages/DepartmentStatisticsPage";
 import ErrorPage from "@/pages/ErrorPage";
 
-//import UserManagementPage from "@/pages/UserManagementPage";
+import UserManagementPage from "@/pages/UserManagementPage";
 import { AuditLogsPage } from "@/pages/AuditLogsPage";
 
 /**
@@ -62,14 +62,14 @@ export const appRouter = createBrowserRouter([
               </ProtectedRoute>
             ) 
           },
-          // { 
-          //   path: ROUTES.ADMIN_USERS, 
-          //   element: (
-          //     <ProtectedRoute allowedRoles={["ADMIN"]}>
-          //       <UserManagementPage />
-          //     </ProtectedRoute>
-          //   ) 
-          // },
+          { 
+            path: ROUTES.ADMIN_USERS, 
+            element: (
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
+                <UserManagementPage />
+              </ProtectedRoute>
+            ) 
+          },
           { 
             path: ROUTES.ADMIN_LOGS, 
             element: (
