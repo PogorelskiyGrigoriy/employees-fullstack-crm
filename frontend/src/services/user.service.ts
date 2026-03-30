@@ -8,8 +8,6 @@ export interface UserService {
   createUser(data: CreateUserDto): Promise<UserData>;
   updateUser(id: string, data: UpdateUserDto): Promise<UserData>;
   deleteUser(id: string): Promise<void>;
-  getAuditLogs(): Promise<AuditLog[]>;
-
   // Accounting (Audit)
   getAuditLogs(): Promise<AuditLog[]>;
 }
