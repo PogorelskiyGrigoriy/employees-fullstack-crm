@@ -4,9 +4,9 @@
  */
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/services/api-client.implementation';
 import { useAuthStore } from '@/store/auth-store';
 import { Center, Spinner, Text, VStack } from '@chakra-ui/react';
+import { authService } from '@/services/auth.implementation';
 
 export const AppInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, setLogin, setLogout, isInitialized, setInitialized } = useAuthStore();
@@ -17,7 +17,7 @@ export const AppInitializer: React.FC<{ children: React.ReactNode }> = ({ childr
    */
   const { data, isSuccess, isError, isLoading } = useQuery({
     queryKey: ['auth', 'me'],
-    queryFn: () => apiClient.getMe(),
+    queryFn: () => authService.getCurrentUser(), 
     enabled: !!user?.token, 
     retry: false,
     staleTime: Infinity, // Keep session data fresh within the current tab lifecycle
