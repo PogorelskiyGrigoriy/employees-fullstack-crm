@@ -1,14 +1,24 @@
 /**
  * @module LoginForm
- * Refactored to use ZodResolver for Single Source of Truth validation.
+ * Centralized authentication form with integrated Demo Credentials helper.
  */
 
-"use client"
-
-import { Button, Input, Stack, Heading, Box, Alert } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
 import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { 
+  Button, 
+  Input, 
+  Stack,
+  HStack, 
+  Heading, 
+  Box, 
+  Alert,
+  Fieldset,
+  Text,
+  VStack,
+  Separator
+} from "@chakra-ui/react";
 
 import { Field } from "@/components/ui/field";
 import { useLogin } from "@/services/hooks/auth-hooks/use-login";
@@ -38,80 +48,109 @@ export const LoginForm = () => {
     mutate(data);
   };
 
-  // Extract server error message safely
   const serverErrorMessage = (error as any)?.response?.data?.error || error?.message || "Invalid credentials";
 
   return (
     <Box 
-      maxW="380px" 
+      maxW="400px" 
       w="full" 
       mx="auto" 
-      p="6" 
-      borderRadius="xl" 
-      shadow="sm" 
+      p={{ base: "6", md: "8" }} 
+      borderRadius="2xl" 
+      shadow="md" 
       border="1px solid" 
       borderColor="border.subtle"
+      bg="bg.panel"
     >
       <form onSubmit={handleSubmit(handleLogin)}>
-        <Stack gap="5">
-          <Heading size="lg" textAlign="center" letterSpacing="tight">
-            Sign In
-          </Heading>
+        <Fieldset.Root disabled={isPending}>
+          <Stack gap="6">
+            <Stack gap="1" textAlign="center">
+              <Heading size="xl" letterSpacing="tight">
+                Welcome Back
+              </Heading>
+              <Text fontSize="sm" color="fg.muted">
+                Enter your credentials to access the CRM
+              </Text>
+            </Stack>
 
-          {isError && (
-            <Alert.Root status="error" variant="subtle" borderRadius="md">
-              <Alert.Indicator />
-              <Alert.Content>
-                <Alert.Title fontSize="xs">
-                  {serverErrorMessage}
-                </Alert.Title>
-              </Alert.Content>
-            </Alert.Root>
-          )}
+            {isError && (
+              <Alert.Root status="error" variant="subtle" borderRadius="lg">
+                <Alert.Indicator />
+                <Alert.Content>
+                  <Alert.Title fontSize="xs">{serverErrorMessage}</Alert.Title>
+                </Alert.Content>
+              </Alert.Root>
+            )}
 
-          <Stack gap="4">
-            <Field 
-              label="Email" 
-              invalid={!!errors.email} 
-              errorText={errors.email?.message}
+            <Stack gap="4">
+              <Field 
+                label="Email address" 
+                invalid={!!errors.email} 
+                errorText={errors.email?.message}
+              >
+                <Input
+                  type="email"
+                  autoComplete="email"
+                  placeholder="admin@crm.com"
+                  size="lg"
+                  {...register("email")}
+                />
+              </Field>
+
+              <Field 
+                label="Password" 
+                invalid={!!errors.password} 
+                errorText={errors.password?.message}
+              >
+                <Input
+                  type="password"
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  size="lg"
+                  {...register("password")}
+                />
+              </Field>
+            </Stack>
+
+            <Button 
+              type="submit" 
+              colorPalette="blue" 
+              loading={isPending} 
+              disabled={!isValid || !isDirty}
+              width="full"
+              size="xl"
+              mt="2"
             >
-              <Input
-                type="email"
-                autoComplete="email"
-                placeholder="jane.doe@company.com"
-                disabled={isPending}
-                {...register("email")}
-              />
-            </Field>
-
-            <Field 
-              label="Password" 
-              invalid={!!errors.password} 
-              errorText={errors.password?.message}
-            >
-              <Input
-                type="password"
-                autoComplete="current-password"
-                placeholder="••••••••"
-                disabled={isPending}
-                {...register("password")}
-              />
-            </Field>
+              Sign In
+            </Button>
           </Stack>
-
-          <Button 
-            type="submit" 
-            colorPalette="blue" 
-            loading={isPending} 
-            disabled={!isValid || !isDirty}
-            width="full"
-            mt="2"
-            size="lg"
-          >
-            Login to Dashboard
-          </Button>
-        </Stack>
+        </Fieldset.Root>
       </form>
+
+      {/* --- DEMO CREDENTIALS HELPER --- */}
+      <Stack gap="4" mt="8">
+        <HStack>
+          <Separator flex="1" />
+          <Text fontSize="2xs" fontWeight="bold" color="fg.muted" textTransform="uppercase" whiteSpace="nowrap">
+            Demo Access
+          </Text>
+          <Separator flex="1" />
+        </HStack>
+        
+        <VStack gap="1" align="stretch">
+          <Box p="2" bg="bg.muted" borderRadius="md" border="1px dashed" borderColor="border.subtle">
+            <Text fontSize="xs" color="fg.subtle">
+              <b>Admin:</b> admin@crm.com / password
+            </Text>
+          </Box>
+          <Box p="2" bg="bg.muted" borderRadius="md" border="1px dashed" borderColor="border.subtle">
+            <Text fontSize="xs" color="fg.subtle">
+              <b>User:</b> user@crm.com / password
+            </Text>
+          </Box>
+        </VStack>
+      </Stack>
     </Box>
   );
 };
