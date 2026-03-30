@@ -1,24 +1,26 @@
 /**
  * @module EmployeeCard
- * Mobile-first card component with strict typing and Chakra 3.0 syntax.
- * Designed for compact lists and touch interactions.
+ * Mobile-first card component with integrated RBAC via useUserRole.
  */
 
+import { useRef } from "react";
 import { Box, HStack, Spacer, Text, VStack } from "@chakra-ui/react";
 import { EmployeeIdentity } from "./ui/DataDisplay";
 import { DeleteEmployeeAction } from "./DeleteEmployeeAction";
 import { EditEmployeeAction } from "./EditEmployeeAction";
 import { EmployeeDetailsDialog } from "./EmployeeDetailsDialog";
+
+import { useUserRole } from "@/store/auth-store";
 import type { Employee } from "@crm/shared/schemas/employee.schema.js";
-import { useRef } from "react";
 
 interface EmployeeCardProps {
   readonly employee: Employee;
-  readonly isAdmin: boolean;
 }
 
-export const EmployeeCard = ({ employee, isAdmin }: EmployeeCardProps) => {
-  // Ref used to trigger the Details dialog when the whole card is clicked
+export const EmployeeCard = ({ employee }: EmployeeCardProps) => {
+  const role = useUserRole();
+  const isAdmin = role === "ADMIN";
+
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   return (
@@ -28,14 +30,13 @@ export const EmployeeCard = ({ employee, isAdmin }: EmployeeCardProps) => {
       borderWidth="1px"
       borderRadius="xl"
       boxShadow="sm"
-      _active={{ bg: "bg.muted", transform: "scale(0.98)" }} // Visual feedback for touch
+      _active={{ bg: "bg.muted", transform: "scale(0.98)" }}
       transition="all 0.15s ease-out"
       cursor="pointer"
       onClick={() => triggerRef.current?.click()}
       overflow="hidden"
     >
       <HStack gap={{ base: "2", sm: "4" }} width="full" align="center">
-        {/* Main Info Section */}
         <VStack align="start" gap="0" minW="0" flex="1">
           <EmployeeIdentity 
             name={employee.fullName} 
@@ -44,7 +45,7 @@ export const EmployeeCard = ({ employee, isAdmin }: EmployeeCardProps) => {
           <Text 
             fontSize="xs" 
             color="fg.muted" 
-            ml="12" // Aligns text with the name, skipping the avatar space
+            ml="12" 
             lineClamp={1}
           >
             {employee.department}
@@ -53,7 +54,6 @@ export const EmployeeCard = ({ employee, isAdmin }: EmployeeCardProps) => {
         
         <Spacer />
 
-        {/* Actions Section: StopPropagation prevents opening details when clicking buttons */}
         <HStack gap="1" flexShrink={0} onClick={(e) => e.stopPropagation()}>
           {isAdmin && (
             <>
@@ -62,7 +62,6 @@ export const EmployeeCard = ({ employee, isAdmin }: EmployeeCardProps) => {
             </>
           )}
           
-          {/* Hidden or secondary trigger for the details modal */}
           <Box ref={triggerRef}>
             <EmployeeDetailsDialog employee={employee} />
           </Box>

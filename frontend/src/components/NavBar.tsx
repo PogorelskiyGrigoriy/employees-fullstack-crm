@@ -1,7 +1,6 @@
 /**
  * @module Navbar
- * Global navigation header with role-based link filtering.
- * Features sticky positioning, active route indicators, and integrated auth controls.
+ * Refactored for AAA: High-precision role-based navigation.
  */
 
 import { useMemo } from "react";
@@ -19,32 +18,24 @@ import {
 } from "@chakra-ui/react";
 
 import { StatisticsSelector } from "./StatisticsSelector";
-import { useAuthStore, useIsAuthenticated } from "@/store/auth-store";
+import { useAuthStore, useIsAuthenticated, useUserRole } from "@/store/auth-store";
 import { useLogout } from "@/services/hooks/auth-hooks/use-logout";
 import { MAIN_NAV_LINKS, ROUTES } from "@/config/navigation";
-import type { UserData } from "@crm/shared/schemas/auth.schema.js"; 
 
-/**
- * Main application navigation bar.
- * Responsively handles authenticated/unauthenticated states and role visibility.
- */
 export const Navbar = () => {
-  const user = useAuthStore((state) => state.user as UserData | null);
-  const isAuthenticated = useIsAuthenticated(); 
+  const role = useUserRole();
+  const isAuthenticated = useIsAuthenticated();
+  const username = useAuthStore((state) => state.user?.username);
   
   const { mutate: logout, isPending } = useLogout();
 
   /**
-   * RBAC (Role-Based Access Control) Logic:
-   * Filters the navigation links defined in config based on the current user's role.
+   * RBAC Logic: Filtering links based on strict UserRole comparison.
    */
   const visibleLinks = useMemo(() => {
-    if (!isAuthenticated || !user) return [];
-    
-    return MAIN_NAV_LINKS.filter((link) => 
-      (link.roles as string[]).includes(user.role)
-    );
-  }, [isAuthenticated, user]);
+    if (!isAuthenticated || !role) return [];
+    return MAIN_NAV_LINKS.filter((link) => link.roles.includes(role));
+  }, [isAuthenticated, role]);
 
   return (
     <Box 
@@ -74,7 +65,6 @@ export const Navbar = () => {
                   variant="plain"
                   fontSize="sm"
                   fontWeight="medium"
-                  // Custom styling for active NavLink using React Router's .active class
                   css={{
                     "&.active": {
                       color: "blue.600",
@@ -101,22 +91,20 @@ export const Navbar = () => {
           <Spacer />
 
           {/* Right Side: Profile & Global Actions */}
-          {isAuthenticated && user && (
+          {isAuthenticated && (
             <HStack gap={{ base: "3", md: "5" }}>
-              {/* Context-aware Statistics Trigger */}
               <Box maxW={{ base: "100px", md: "200px" }}>
                 <StatisticsSelector />
               </Box>
 
               <Separator orientation="vertical" height="20px" />
 
-              {/* User Identity Info (Hidden on very small screens) */}
               <Stack gap="0" align="flex-end" hideBelow="sm">
                 <Text fontSize="xs" fontWeight="bold" lineHeight="tight">
-                  {user.username}
+                  {username}
                 </Text>
-                <Text fontSize="10px" color="fg.muted" textTransform="uppercase">
-                  {user.role}
+                <Text fontSize="10px" color="fg.muted" textTransform="uppercase" letterSpacing="wider">
+                  {role}
                 </Text>
               </Stack>
 

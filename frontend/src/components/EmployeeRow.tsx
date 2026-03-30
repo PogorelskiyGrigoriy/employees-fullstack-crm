@@ -1,7 +1,7 @@
 /**
  * @module EmployeeRow
  * Displays a single employee record as a table row.
- * Optimized for high-density desktop views with responsive column visibility.
+ * Now self-manages RBAC via useUserRole.
  */
 
 import { Table, HStack, VStack, Text } from "@chakra-ui/react";
@@ -10,13 +10,16 @@ import { DeleteEmployeeAction } from "./DeleteEmployeeAction";
 import { EditEmployeeAction } from "./EditEmployeeAction";
 import { calculateAge } from "@crm/shared/utils/date-utils";
 import type { Employee } from "@crm/shared/schemas/employee.schema.js";
+import { useUserRole } from "@/store/auth-store";
 
 interface EmployeeRowProps {
   readonly employee: Employee;
-  readonly isAdmin: boolean;
 }
 
-export const EmployeeRow = ({ employee: empl, isAdmin }: EmployeeRowProps) => {
+export const EmployeeRow = ({ employee: empl }: EmployeeRowProps) => {
+  const role = useUserRole();
+  const isAdmin = role === "ADMIN";
+  
   const age = calculateAge(empl.birthDate);
 
   return (
@@ -37,7 +40,7 @@ export const EmployeeRow = ({ employee: empl, isAdmin }: EmployeeRowProps) => {
         <DeptBadge>{empl.department}</DeptBadge>
       </Table.Cell>
       
-      {/* 3. Temporal Data: Hidden on smaller screens to prevent horizontal overflow */}
+      {/* 3. Temporal Data */}
       <Table.Cell display={{ base: "none", lg: "table-cell" }} whiteSpace="nowrap">
         <VStack align="start" gap="0">
           <DateText dateString={empl.birthDate} />
@@ -47,12 +50,12 @@ export const EmployeeRow = ({ employee: empl, isAdmin }: EmployeeRowProps) => {
         </VStack>
       </Table.Cell>
       
-      {/* 4. Financial Data: Right-aligned for easier numeric comparison */}
+      {/* 4. Financial Data */}
       <Table.Cell textAlign="end" whiteSpace="nowrap">
         <CurrencyText value={empl.salary} />
       </Table.Cell>
       
-      {/* 5. Management Actions: Conditionally rendered based on role */}
+      {/* 5. Management Actions: Internal RBAC check */}
       {isAdmin && (
         <Table.Cell textAlign="end" whiteSpace="nowrap">
           <HStack gap="1" justifyContent="flex-end">
