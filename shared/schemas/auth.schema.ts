@@ -15,6 +15,7 @@ export type UserRole = z.infer<typeof userRoleSchema>;
 
 /**
  * Base User Entity
+ * Use this for Database services and General User lists.
  */
 export const userSchema = z.object({
   id: z.string().min(1, "ID is required"),
@@ -23,11 +24,15 @@ export const userSchema = z.object({
   role: userRoleSchema,
 });
 
+// Exported base type without token for Backend Services
+export type User = z.infer<typeof userSchema>;
+
 /**
  * 1. FOR AUTH SERVICE: Response after login
+ * In a successful login scenario, the token is MANDATORY.
  */
 export const userDataSchema = userSchema.extend({
-  token: z.string().optional(),
+  token: z.string().min(1, "Auth token is required"), 
 });
 export type UserData = z.infer<typeof userDataSchema>;
 

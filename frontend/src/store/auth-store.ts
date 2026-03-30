@@ -12,8 +12,9 @@ interface AuthStore {
   user: UserData | null;
   isInitialized: boolean;
   setLogin: (data: UserData) => void;
+  updateUser: (data: Partial<UserData>) => void;
   setLogout: () => void;
-  setInitialized: (val: boolean) => void; 
+  setInitialized: (val: boolean) => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -23,6 +24,9 @@ export const useAuthStore = create<AuthStore>()(
       isInitialized: false,
 
       setLogin: (user) => set({ user, isInitialized: true }),
+      updateUser: (newData) => set((state) => ({
+        user: state.user ? { ...state.user, ...newData } : null
+      })),
       setLogout: () => set({ user: null, isInitialized: true }),
       setInitialized: (isInitialized) => set({ isInitialized }),
     }),
