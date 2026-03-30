@@ -1,9 +1,10 @@
 /**
  * @module UserManagementPage
  * Administrative hub for managing system users. 
- * Orchestrates Desktop Table and Mobile Card views.
+ * Updated with CreateUserModal integration and state management.
  */
 
+import { useState } from "react";
 import { 
   Box, 
   Button, 
@@ -22,9 +23,12 @@ import { LuUserPlus, LuUsers } from "react-icons/lu";
 import { useUsers } from "@/services/hooks/user-hooks/use-users";
 import { UserTable } from "@/components/users/UserTable";
 import { UserCardList } from "@/components/users/UserCardList";
+import { CreateUserModal } from "@/components/users/CreateUserModal";
 
 export const UserManagementPage = () => {
   const { data: users, isLoading, isError, error } = useUsers();
+  
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   // 1. Loading State
   if (isLoading) {
@@ -70,30 +74,24 @@ export const UserManagementPage = () => {
             </Text>
           </Stack>
 
-          {/* Исправленная кнопка для Chakra 3.x */}
           <Button 
             colorPalette="blue" 
             size="lg" 
             variant="solid"
-            onClick={() => {
-              console.log("Open CreateUserModal"); 
-              /* Будет реализовано в Шаге 4 */
-            }}
+            onClick={() => setIsCreateOpen(true)}
           >
             <LuUserPlus />
             Create User
           </Button>
         </Stack>
 
-        {/* Responsive Content Switch */}
+        {/* Content Section */}
         {users && users.length > 0 ? (
           <>
-            {/* DESKTOP VIEW: High-density Table */}
             <Box display={{ base: "none", md: "block" }}>
               <UserTable users={users} />
             </Box>
 
-            {/* MOBILE VIEW: Touch-friendly Card List */}
             <Box display={{ base: "block", md: "none" }}>
               <UserCardList users={users} />
             </Box>
@@ -104,6 +102,12 @@ export const UserManagementPage = () => {
           </Center>
         )}
       </Stack>
+
+      {/* --- Modals Layer --- */}
+      <CreateUserModal 
+        isOpen={isCreateOpen} 
+        onOpenChange={(e) => setIsCreateOpen(e.open)} 
+      />
     </Container>
   );
 };
