@@ -1,7 +1,6 @@
 /**
  * @module UserManagementPage
- * Administrative hub for managing system users. 
- * Updated with CreateUserModal integration and state management.
+ * Finalized with full CRUD state orchestration: Create, Edit, and Delete.
  */
 
 import { useState } from "react";
@@ -24,13 +23,17 @@ import { useUsers } from "@/services/hooks/user-hooks/use-users";
 import { UserTable } from "@/components/users/UserTable";
 import { UserCardList } from "@/components/users/UserCardList";
 import { CreateUserModal } from "@/components/users/CreateUserModal";
+import { EditUserModal } from "@/components/users/EditUserModal";
+import { DeleteUserDialog } from "@/components/users/DeleteUserDialog";
 
 export const UserManagementPage = () => {
   const { data: users, isLoading, isError, error } = useUsers();
   
+  // States for Modals
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
-  // 1. Loading State
   if (isLoading) {
     return (
       <Center h="60vh">
@@ -39,7 +42,6 @@ export const UserManagementPage = () => {
     );
   }
 
-  // 2. Error State
   if (isError) {
     return (
       <Center h="60vh">
@@ -54,46 +56,38 @@ export const UserManagementPage = () => {
   return (
     <Container maxW="6xl" py={{ base: 4, md: 8 }}>
       <Stack gap={8}>
-        {/* Header Section */}
-        <Stack 
-          direction={{ base: "column", sm: "row" }} 
-          justify="space-between" 
-          align={{ base: "flex-start", sm: "center" }}
-          gap={4}
-        >
+        {/* Header */}
+        <Stack direction={{ base: "column", sm: "row" }} justify="space-between" align={{ base: "flex-start", sm: "center" }} gap={4}>
           <Stack gap={1}>
             <HStack color="blue.600">
               <Icon as={LuUsers} />
-              <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="widest">
-                Identity Management
-              </Text>
+              <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="widest">Identity Management</Text>
             </HStack>
             <Heading size={{ base: "xl", md: "2xl" }}>User Accounts</Heading>
-            <Text color="fg.muted" fontSize="sm">
-              Manage system access, roles, and administrative permissions.
-            </Text>
           </Stack>
 
-          <Button 
-            colorPalette="blue" 
-            size="lg" 
-            variant="solid"
-            onClick={() => setIsCreateOpen(true)}
-          >
-            <LuUserPlus />
-            Create User
+          <Button colorPalette="blue" size="lg" onClick={() => setIsCreateOpen(true)}>
+            <LuUserPlus /> Create User
           </Button>
         </Stack>
 
-        {/* Content Section */}
+        {/* Content */}
         {users && users.length > 0 ? (
           <>
             <Box display={{ base: "none", md: "block" }}>
-              <UserTable users={users} />
+              <UserTable 
+                users={users} 
+                onEdit={setEditingUserId} 
+                onDelete={setDeletingUserId}
+              />
             </Box>
 
             <Box display={{ base: "block", md: "none" }}>
-              <UserCardList users={users} />
+              <UserCardList 
+                users={users} 
+                onEdit={setEditingUserId} 
+                onDelete={setDeletingUserId}
+              />
             </Box>
           </>
         ) : (
@@ -107,6 +101,16 @@ export const UserManagementPage = () => {
       <CreateUserModal 
         isOpen={isCreateOpen} 
         onOpenChange={(e) => setIsCreateOpen(e.open)} 
+      />
+
+      <EditUserModal 
+        userId={editingUserId} 
+        onOpenChange={(e) => !e.open && setEditingUserId(null)} 
+      />
+
+      <DeleteUserDialog 
+        userId={deletingUserId}
+        onOpenChange={(e) => !e.open && setDeletingUserId(null)}
       />
     </Container>
   );

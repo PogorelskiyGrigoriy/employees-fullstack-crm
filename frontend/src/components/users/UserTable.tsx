@@ -1,9 +1,27 @@
+/**
+ * @module UserTable
+ * Updated with action callbacks for CRUD integration.
+ */
+
 import { Table, Badge, HStack, IconButton, Box } from "@chakra-ui/react";
 import { LuPencil, LuTrash2 } from "react-icons/lu";
 import type { User } from "@crm/shared/schemas/auth.schema.js";
 
-export const UserTable = ({ users }: { users: User[] }) => (
-  <Box borderWidth="1px" borderRadius="xl" overflow="hidden" shadow="sm" bg="bg.panel">
+interface UserTableProps {
+  readonly users: User[];
+  readonly onEdit: (id: string) => void;
+  readonly onDelete: (id: string) => void;
+}
+
+export const UserTable = ({ users, onEdit, onDelete }: UserTableProps) => (
+  <Box 
+    borderWidth="1px" 
+    borderColor="border.subtle" 
+    borderRadius="xl" 
+    overflow="hidden" 
+    shadow="sm" 
+    bg="bg.panel"
+  >
     <Table.Root size="md" variant="line">
       <Table.Header bg="bg.muted">
         <Table.Row>
@@ -25,10 +43,24 @@ export const UserTable = ({ users }: { users: User[] }) => (
             </Table.Cell>
             <Table.Cell>
               <HStack gap="2" justify="flex-end">
-                <IconButton aria-label="Edit user" variant="ghost" size="sm">
+                {/* 2. Привязываем клик к onEdit */}
+                <IconButton 
+                  aria-label="Edit user" 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => onEdit(user.id)}
+                >
                   <LuPencil />
                 </IconButton>
-                <IconButton aria-label="Delete user" variant="ghost" size="sm" colorPalette="red">
+                
+                {/* 3. Привязываем клик к onDelete */}
+                <IconButton 
+                  aria-label="Delete user" 
+                  variant="ghost" 
+                  size="sm" 
+                  colorPalette="red"
+                  onClick={() => onDelete(user.id)}
+                >
                   <LuTrash2 />
                 </IconButton>
               </HStack>
