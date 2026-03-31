@@ -1,39 +1,54 @@
 /**
  * @module DepartmentStatisticsPage
+ * Finalized analytics view for department-level metrics.
+ * Integrated with the Midnight Slate design system and shared organisms.
  */
 
 "use client"
 
-import { Container, Heading, VStack, Box, Center, Spinner, Text } from "@chakra-ui/react"
+import { Container } from "@chakra-ui/react"
+import { LuLayoutDashboard } from "react-icons/lu"
+
 import { useDepartmentStats } from "@/services/hooks/use-department-stats"
 import { DepartmentsTable } from "@/components/DepartmentsTable"
+import { PageHeader } from "@/components/shared/molecules/PageHeader"
+import { AppPanel } from "@/components/shared/atoms/AppPanel"
+import { DataStateWrapper } from "@/components/shared/organisms/DataStateWrapper"
 
 const DepartmentStatisticsPage = () => {
-  const { departmentsInfo, isLoading } = useDepartmentStats()
-
-  if (isLoading) {
-    return (
-      <Center h="60vh">
-        <VStack gap="4">
-          <Spinner size="xl" color="blue.500" borderWidth="4px" />
-          <Text color="fg.muted" fontWeight="medium">Fetching analytics...</Text>
-        </VStack>
-      </Center>
-    )
-  }
+  // Destructuring all necessary states from the hook
+  const { 
+    departmentsInfo, 
+    isLoading, 
+    isError, 
+    error, 
+    refetch 
+  } = useDepartmentStats()
 
   return (
     <Container maxW="6xl" py={{ base: "6", md: "10" }}>
-      <VStack align="stretch" gap="8">
-        <Box>
-          <Heading size="2xl" letterSpacing="tight">Department Statistics</Heading>
-          <Text color="fg.muted" mt="2"> Headcount, average salary, and age per department. </Text>
-        </Box>
+      {/* 1. Standardized Page Header */}
+      <PageHeader 
+        title="Department Statistics"
+        description="Headcount, average salary, and age demographics per organizational unit."
+        icon={LuLayoutDashboard}
+      />
 
-        <Box borderWidth="1px" borderRadius="2xl" bg="bg.panel" shadow="sm">
-          <DepartmentsTable departmentsInfo={departmentsInfo} />
-        </Box>
-      </VStack>
+      {/* 2. Logic-heavy state management wrapper */}
+      <DataStateWrapper
+        isLoading={isLoading}
+        isError={isError}
+        error={error}
+        isEmpty={!departmentsInfo || departmentsInfo.length === 0}
+        emptyMessage="No department data found"
+        emptyDescription="Statistics will be generated once employees are assigned to departments."
+        onRetry={refetch}
+      >
+        {/* 3. Success State: Table wrapped in our standard AppPanel */}
+        <AppPanel p={0} overflow="hidden">
+          <DepartmentsTable departmentsInfo={departmentsInfo!} />
+        </AppPanel>
+      </DataStateWrapper>
     </Container>
   )
 }

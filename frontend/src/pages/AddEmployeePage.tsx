@@ -1,16 +1,21 @@
 /**
  * @module AddEmployeePage
+ * Focused view for creating new employee records.
+ * Refactored to use AppPanel and standardized typography.
  */
-
 "use client"
 
-import { Container, Heading, Box, Stack } from "@chakra-ui/react";
+import { Container, Stack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+
 import { EmployeeForm } from "@/components/EmployeeForm";
-import { useAddEmployee } from "@/services/hooks/mutation-hooks/use-add-employee.ts";
-import type { NewEmployee } from "@crm/shared/schemas/employee.schema.js";
-import { ROUTES } from "@/config/navigation";
+import { PageHeader } from "@/components/shared/molecules/PageHeader";
+import { AppPanel } from "@/components/shared/atoms/AppPanel";
 import { CloseButton } from "@/components/ui/close-button";
+
+import { useAddEmployee } from "@/services/hooks/mutation-hooks/use-add-employee.ts";
+import { ROUTES } from "@/config/navigation";
+import type { NewEmployee } from "@crm/shared/schemas/employee.schema.js";
 
 const AddEmployeePage = () => {
   const navigate = useNavigate();
@@ -27,36 +32,39 @@ const AddEmployeePage = () => {
   };
 
   return (
-    <Container maxW="lg" py={{ base: "6", md: "12" }} position="relative">
+    <Container maxW="lg" py={{ base: "8", md: "16" }} position="relative">
+      {/* 1. Global Navigation Exit */}
       <CloseButton 
         position="absolute" 
-        top={{ base: "2", md: "4" }} 
-        right={{ base: "2", md: "4" }} 
+        top={{ base: "2", md: "6" }} 
+        right={{ base: "2", md: "6" }} 
         onClick={handleClose}
         borderRadius="full"
+        variant="ghost"
+        _hover={{ bg: "whiteAlpha.100" }}
       />
 
-      <Stack gap="8">
-        <Box textAlign="center">
-          <Heading size="3xl" letterSpacing="tight">New Hire</Heading>
-          <Box color="fg.muted" fontSize="sm" mt="2">
-            Fill in the details to add a new member to the team.
-          </Box>
-        </Box>
+      <Stack gap="10">
+        {/* 2. Standardized Header (Centered for this focus-view) */}
+        <PageHeader 
+          title="New Hire" 
+          description="Fill in the details to add a new member to the team."
+          textAlign="center"
+          alignItems="center"
+          mb="0" // Reset margin to use Stack gap
+        />
 
-        <Box 
+        {/* 3. Form Container using AppPanel */}
+        <AppPanel 
           p={{ base: "6", md: "10" }} 
-          borderWidth="1px" 
-          borderRadius="2xl" 
-          bg="bg.panel"
-          shadow="sm"
+          shadow="lg" // Slightly stronger shadow for the focus form
         >
           <EmployeeForm 
             onSubmit={handleAdd} 
             isLoading={isPending} 
             onCancel={handleClose} 
           />
-        </Box>
+        </AppPanel>
       </Stack>
     </Container>
   );

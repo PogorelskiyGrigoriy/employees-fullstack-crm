@@ -1,46 +1,51 @@
 /**
  * @module AgeStatisticsPage
+ * Visualizes employee age distribution using standardized state wrappers.
  */
 
 "use client"
 
-import { Container, Center, Spinner, Text, Stack } from "@chakra-ui/react";
+import { Container } from "@chakra-ui/react";
+import { LuTrendingUp } from "react-icons/lu";
+
 import { useStatistics } from "@/services/hooks/use-statistics";
 import { StatisticsChart } from "@/components/StatisticsChart";
+import { PageHeader } from "@/components/shared/molecules/PageHeader";
+import { DataStateWrapper } from "@/components/shared/organisms/DataStateWrapper";
 
 const AgeStatisticsPage = () => {
-  const { data, isLoading } = useStatistics();
+  const { data, isLoading, isError, error, refetch } = useStatistics();
   const chartData = data?.ageDistribution ?? [];
-
-  if (isLoading) {
-    return (
-      <Center h="60vh">
-        <Spinner size="xl" color="blue.500" borderWidth="4px" />
-      </Center>
-    );
-  }
-
-  if (chartData.length === 0) {
-    return (
-      <Center h="60vh">
-        <Stack align="center" gap="2">
-          <Text fontSize="lg" fontWeight="medium">No age data available</Text>
-          <Text color="fg.muted">Add employees to see the demographics chart.</Text>
-        </Stack>
-      </Center>
-    );
-  }
 
   return (
     <Container maxW="6xl" py={{ base: "6", md: "10" }}>
-      <StatisticsChart
-        title="Age Distribution"
-        data={chartData}
-        dataKeyX="xValue"
-        dataKeyY="yValue"
-        labelY="Employees"
-        tooltipLabelKey="tooltipValue"
+      {/* 1. Unified Page Header */}
+      <PageHeader 
+        title="Age Demographics"
+        description="Detailed breakdown of the workforce by age groups."
+        icon={LuTrendingUp}
       />
+
+      {/* 2. Logic-heavy wrapper for API states */}
+      <DataStateWrapper
+        isLoading={isLoading}
+        isError={isError}
+        error={error}
+        isEmpty={chartData.length === 0}
+        emptyMessage="No age data available"
+        emptyDescription="Statistics will appear once employees with valid birth dates are added."
+        onRetry={refetch}
+      >
+        {/* 3. The chart itself (The "Success" path) */}
+        <StatisticsChart
+          title="Age Distribution"
+          data={chartData}
+          dataKeyX="xValue"
+          dataKeyY="yValue"
+          labelY="Employees"
+          tooltipLabelKey="tooltipValue"
+        />
+      </DataStateWrapper>
     </Container>
   );
 };

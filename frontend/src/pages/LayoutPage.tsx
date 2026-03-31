@@ -1,37 +1,31 @@
 /**
  * @module LayoutPage
  * The root shell component of the application.
- * It defines the global visual structure, including the persistent Navbar 
- * and the dynamic content area managed by React Router.
+ * Defines the global visual structure and the "Midnight" backdrop.
  */
-
 "use client";
 
-import { Box, VStack } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { Outlet } from "react-router-dom";
 import { Navbar } from "@/components/NavBar";
 
-/**
- * Main Layout wrapper.
- * Uses a flexbox-based VStack to ensure the main content area expands 
- * to fill at least the full viewport height.
- */
 export const LayoutPage = () => {
   return (
-    <VStack 
-      align="stretch" 
-      gap="0" 
+    <Flex 
+      direction="column"
       minH="100vh" 
       bg="bg.canvas" 
+      color="fg.default"
+      transition="background-color 0.3s ease"
     >
       {/* Global Navigation: 
-        Sticky behavior is handled internally within the Navbar component.
+        Stays fixed at the top via sticky inside Navbar. 
       */}
       <Navbar />
 
       {/* Main Content Area:
-        'flex="1"' ensures this Box grows to push any future footer 
-        to the bottom of the viewport.
+        Using 'as="main"' for SEO/Accessibility.
+        We ensure it fills the space and provides a clean slot for pages.
       */}
       <Box 
         as="main"
@@ -39,16 +33,16 @@ export const LayoutPage = () => {
         flex="1"
         display="flex"
         flexDirection="column"
+        position="relative"
       >
-        {/* React Router Outlet:
-          This is where nested route components (HomePage, AddEmployeePage, etc.) 
-          will be injected based on the current URL.
-        */}
         <Outlet />
       </Box>
 
-      {/* Placeholder for future Global Footer component */}
-    </VStack>
+      {/* Footer placeholder: 
+        If we add a footer later, it will naturally sit at the bottom 
+        due to flex="1" on the main Box. 
+      */}
+    </Flex>
   );
 };
 

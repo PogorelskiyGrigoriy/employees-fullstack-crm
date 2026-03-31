@@ -1,10 +1,11 @@
 import { useStatistics } from "./use-statistics";
 
 export const useDepartmentStats = () => {
-  const { data, isLoading, error } = useStatistics();
+  // We take EVERYTHING that useStatistics gives us
+  const { data, isLoading, isError, error, refetch } = useStatistics();
 
-  // Directly use the analytics calculated by the backend
   const departmentsInfo = data?.departmentAnalytics ?? [];
 
-  return { departmentsInfo, isLoading, error };
+  // And we return EVERYTHING back, so UI components can use these flags
+  return { departmentsInfo, isLoading, isError, error, refetch };
 };
