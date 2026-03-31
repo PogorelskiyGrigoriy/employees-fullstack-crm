@@ -1,11 +1,11 @@
 /**
  * @module EditEmployeeAction
- * Drawer-based action to modify employee information.
- * Integrates shared form logic with TanStack Query mutations.
+ * Drawer-based action for modifying employee information.
+ * Refactored to use ActionButton atom and Midnight Slate design tokens.
  */
 
 import { useState } from "react";
-import { IconButton, Box } from "@chakra-ui/react";
+import { Box, HStack, Icon, Text } from "@chakra-ui/react";
 import { LuPencil } from "react-icons/lu";
 
 import {
@@ -19,27 +19,20 @@ import {
   DrawerTrigger
 } from "@/components/ui/drawer";
 import { EmployeeForm } from "./EmployeeForm";
+import { ActionButton } from "@/components/shared/atoms/ActionButton";
 
 import { useUpdateEmployee } from "@/services/hooks/mutation-hooks/use-update-employee";
 import { toaster } from "@/components/ui/toaster-config";
 import type { Employee, NewEmployee } from "@crm/shared/schemas/employee.schema.js";
 
 interface Props {
-  /** The current employee object to populate the form */
   employee: Employee;
 }
 
-/**
- * Action component that manages the "Edit Profile" drawer flow.
- */
 export const EditEmployeeAction = ({ employee }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const { mutate, isPending } = useUpdateEmployee();
 
-  /**
-   * Submits modified data and closes the drawer on success.
-   * @param formData - The updated values from EmployeeForm.
-   */
   const handleUpdate = (formData: NewEmployee) => {
     mutate(
       {
@@ -63,40 +56,45 @@ export const EditEmployeeAction = ({ employee }: Props) => {
     <DrawerRoot
       open={isOpen}
       onOpenChange={(e) => setIsOpen(e.open)}
-      // Mobile: Slides from bottom | Desktop: Slides from side
       placement={{ base: "bottom", md: "end" }}
       size={{ base: "full", md: "xs" }}
     >
       <DrawerBackdrop />
 
       <DrawerTrigger asChild>
-        <IconButton
-          variant="ghost"
-          colorPalette="blue"
-          size="sm"
-          aria-label="Edit employee"
+        {/* 1. Replacing manual IconButton with our smart ActionButton atom */}
+        <ActionButton 
+          actionType="edit" 
           disabled={isPending}
-        >
-          <LuPencil />
-        </IconButton>
+          label={`Edit profile for ${employee.fullName}`}
+        />
       </DrawerTrigger>
 
       <DrawerContent
+        bg="bg.panel"
         borderTopRadius={{ base: "2xl", md: "none" }}
+        borderLeftWidth={{ base: "0", md: "1px" }}
+        borderColor="border.subtle"
         maxH={{ base: "90vh", md: "100vh" }}
+        boxShadow="2xl"
       >
-        {/* Mobile visual handle (grabber) */}
+        {/* 2. Visual Grabber for Mobile - Styled with subtle border tokens */}
         <Box
           display={{ base: "block", md: "none" }}
-          w="10" h="1" bg="border" borderRadius="full"
+          w="10" h="1" bg="border.subtle" borderRadius="full"
           mx="auto" mt="3"
         />
 
-        <DrawerHeader>
-          <DrawerTitle>Edit Profile</DrawerTitle>
+        <DrawerHeader borderBottomWidth="1px" borderColor="border.subtle" py={5}>
+          <DrawerTitle>
+            <HStack gap={3}>
+              <Icon as={LuPencil} color="brand.500" />
+              <Text letterSpacing="tight">Edit Profile</Text>
+            </HStack>
+          </DrawerTitle>
         </DrawerHeader>
 
-        <DrawerBody pb="8">
+        <DrawerBody pb="8" pt={6}>
           <EmployeeForm
             employee={employee}
             onSubmit={handleUpdate}
@@ -105,7 +103,7 @@ export const EditEmployeeAction = ({ employee }: Props) => {
           />
         </DrawerBody>
 
-        <DrawerCloseTrigger />
+        <DrawerCloseTrigger color="fg.muted" />
       </DrawerContent>
     </DrawerRoot>
   );

@@ -1,7 +1,9 @@
 /**
  * @module ProtectedRoute
- * High-order component (HOC) for authentication and role-based access control.
+ * Route-level security guard for the Midnight Slate ecosystem.
+ * Refactored to support 'readonly' roles and maintain strict RBAC.
  */
+
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore, useIsAuthenticated } from "@/store/auth-store";
 import { ROUTES } from "@/config/navigation";
@@ -9,8 +11,7 @@ import type { UserRole } from "@crm/shared/schemas/auth.schema.js";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  /** Optional: List of roles allowed to access this route */
-  allowedRoles?: UserRole[];
+  readonly allowedRoles?: readonly UserRole[];
 }
 
 export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
@@ -19,9 +20,9 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
   const user = useAuthStore((state) => state.user);
 
   /**
-   * 1. Authentication Guard:
-   * Redirect to Login if not authenticated. 
-   * Includes 'from' state to redirect back after successful login.
+   * 1. Authentication Check
+   * If the user isn't logged in, send them to the Login page.
+   * We store the 'from' location so we can teleport them back after login.
    */
   if (!isAuthenticated) {
     return (
@@ -34,15 +35,19 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
   }
 
   /**
-   * 2. Authorization Guard (RBAC):
-   * Checks if the user's role is permitted for this specific route.
+   * 2. Authorization Check (RBAC)
+   * If the route is restricted, verify the user's clearance level.
    */
   const hasAccess = !allowedRoles || (user && allowedRoles.includes(user.role));
 
   if (!hasAccess) {
-    // Redirect to home if the user lacks the required role
+    /**
+     * If authenticated but unauthorized, kick back to Home.
+     * This happens if a USER tries to manually type /users in the URL.
+     */
     return <Navigate to={ROUTES.HOME} replace />;
   }
 
+  // 3. All checks passed: Welcome to the page!
   return <>{children}</>;
 };

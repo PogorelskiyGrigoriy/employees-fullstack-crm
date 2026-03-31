@@ -1,104 +1,107 @@
 /**
  * @module Employees
- * Main container for the employee list. 
- * Refactored to eliminate prop drilling of auth states.
+ * The central orchestrator for the employee directory.
+ * Refactored using DataStateWrapper for lifecycle management 
+ * and AppPanel for consistent desktop containment.
  */
 
-import { Box, Center, Spinner, Table, Text, VStack, Icon } from "@chakra-ui/react";
-import { LuSearchX } from "react-icons/lu";
-
+import { Box, Table, Text, VStack } from "@chakra-ui/react";
 import { EmployeeCard } from "./EmployeeCard";
 import { EmployeeRow } from "./EmployeeRow";
 import { MobileSortActions } from "./MobileSortActions";
-import { SortableColumn } from "./shared/SortableColumn";
+import { SortableColumn } from "./shared/molecules/SortableColumn";
 
 import { useEmployees } from "@/services/hooks/use-employees";
-import { useUserRole } from "@/store/auth-store";
+import { DataStateWrapper } from "@/components/shared/organisms/DataStateWrapper";
+import { AppPanel } from "@/components/shared/atoms/AppPanel";
+import { RBACGuard } from "@/components/shared/organisms/RBACGuard";
 
 export const Employees = () => {
-  const { employees, isLoading, error, filteredCount, totalCount } = useEmployees();
-  
-  const userRole = useUserRole();
-  const isAdmin = userRole === "ADMIN";
-
-  if (isLoading) return (
-    <Center h="200px"><Spinner size="xl" color="blue.500" borderWidth="4px" /></Center>
-  );
-
-  if (error) return (
-    <Center h="200px">
-      <VStack gap="2">
-        <Text color="red.500" fontWeight="medium">Error loading employees</Text>
-        <Text fontSize="xs" color="fg.muted">{error.message}</Text>
-      </VStack>
-    </Center>
-  );
-
-  if (filteredCount === 0) return (
-    <Center h="300px" borderWidth="1px" borderRadius="xl" borderStyle="dashed" bg="bg.subtle">
-      <VStack gap="3">
-        <Icon as={LuSearchX} boxSize="48px" opacity={0.3} />
-        <VStack gap="0">
-          <Text fontWeight="bold" fontSize="lg">No employees found</Text>
-          <Text color="fg.muted" fontSize="sm">Try adjusting your filters</Text>
-        </VStack>
-      </VStack>
-    </Center>
-  );
+  const { 
+    employees, 
+    isLoading, 
+    error, 
+    filteredCount, 
+    totalCount,
+    refetch
+  } = useEmployees();
 
   return (
-    <Box>
-      {/* MOBILE VIEW */}
-      <Box display={{ base: "block", md: "none" }} mb="4">
-        <MobileSortActions />
-        <VStack gap="3" align="stretch">
-          {employees.map((empl) => (
-            <EmployeeCard key={empl.id} employee={empl} />
-          ))}
-        </VStack>
-      </Box>
-
-      {/* DESKTOP VIEW */}
-      <Box 
-        display={{ base: "none", md: "block" }}
-        borderWidth="1px" 
-        borderRadius="xl" 
-        overflow="hidden" 
-        boxShadow="sm" 
-        bg="bg.panel"
-      >
-        <Table.Root size="md" variant="line" stickyHeader>
-          <Table.Header>
-            <Table.Row bg="bg.subtle">
-              <SortableColumn field="fullName" width="full">Employee</SortableColumn>
-              <Table.ColumnHeader fontWeight="bold">Department</Table.ColumnHeader>
-              <SortableColumn field="birthDate" display={{ base: "none", lg: "table-cell" }}>
-                Birth Date
-              </SortableColumn>
-              <SortableColumn field="salary" textAlign="end">Salary</SortableColumn>
-              
-              {isAdmin && (
-                <Table.ColumnHeader textAlign="end" fontWeight="bold">
-                  Actions
-                </Table.ColumnHeader>
-              )}
-            </Table.Row>
-          </Table.Header>
-
-          <Table.Body>
+    <DataStateWrapper
+      isLoading={isLoading}
+      isError={!!error}
+      error={error}
+      isEmpty={filteredCount === 0}
+      emptyMessage="No employees found"
+      emptyDescription="Try adjusting your filters or search terms to find what you're looking for."
+      onRetry={refetch}
+    >
+      <Box>
+        {/* 1. MOBILE VIEW: Stack of Cards */}
+        <Box display={{ base: "block", md: "none" }} mb={6}>
+          <MobileSortActions />
+          <VStack gap={4} align="stretch">
             {employees.map((empl) => (
-              <EmployeeRow key={empl.id} employee={empl} />
+              <EmployeeCard key={empl.id} employee={empl} />
             ))}
-          </Table.Body>
-        </Table.Root>
-      </Box>
+          </VStack>
+        </Box>
 
-      {/* FOOTER STATS */}
-      <Box p="3" mt="2">
-        <Text fontSize="xs" color="fg.muted" textAlign="right" fontStyle="italic">
-          Showing {filteredCount} of {totalCount} total employees
-        </Text>
+        {/* 2. DESKTOP VIEW: Structured Table in AppPanel */}
+        <AppPanel 
+          display={{ base: "none", md: "block" }}
+          p={0} // Table fills the panel completely
+          overflow="hidden"
+        >
+          <Table.Root size="md" variant="line" stickyHeader>
+            <Table.Header bg="bg.muted">
+              <Table.Row>
+                <SortableColumn field="fullName" width="full">
+                  Employee
+                </SortableColumn>
+                <Table.ColumnHeader fontWeight="bold">
+                  Department
+                </Table.ColumnHeader>
+                <SortableColumn 
+                  field="birthDate" 
+                  display={{ base: "none", lg: "table-cell" }}
+                >
+                  Birth Date
+                </SortableColumn>
+                <SortableColumn field="salary" textAlign="end">
+                  Salary
+                </SortableColumn>
+                
+                {/* Standardized RBAC Protection for the Header Cell */}
+                <RBACGuard roles={["ADMIN"]}>
+                  <Table.ColumnHeader textAlign="end" fontWeight="bold">
+                    Actions
+                  </Table.ColumnHeader>
+                </RBACGuard>
+              </Table.Row>
+            </Table.Header>
+
+            <Table.Body>
+              {employees.map((empl) => (
+                <EmployeeRow key={empl.id} employee={empl} />
+              ))}
+            </Table.Body>
+          </Table.Root>
+        </AppPanel>
+
+        {/* 3. FOOTER: Result counts */}
+        <Box p={4}>
+          <Text 
+            fontSize="xs" 
+            color="fg.muted" 
+            textAlign="right" 
+            fontWeight="medium"
+            letterSpacing="tight"
+          >
+            Showing <Text as="span" color="fg.emphasized" fontWeight="bold">{filteredCount}</Text> of {totalCount} total employees
+          </Text>
+        </Box>
       </Box>
-    </Box>
+    </DataStateWrapper>
   );
 };

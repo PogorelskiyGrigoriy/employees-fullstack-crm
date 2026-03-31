@@ -1,7 +1,7 @@
 /**
  * @module ActiveFilters
- * Orchestrates the display of active filter tags.
- * Synchronizes with Zod schema defaults to identify modified search criteria.
+ * Displays interactive tags for currently applied directory filters.
+ * Refactored for Midnight Slate aesthetics and semantic tokens.
  */
 
 import { HStack, Text, Button } from "@chakra-ui/react";
@@ -10,18 +10,14 @@ import { useFilters } from "@/store/filters-store";
 import { employeeFilterSchema } from "@crm/shared/schemas/employee.schema.js";
 import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees.config";
 
-/**
- * Component that renders removable tags for each active filter.
- */
 export const ActiveFilters = () => {
   const { filters, setFilters, resetFilters } = useFilters();
   
-  // Dynamic default values from schema to ensure consistency
   const defaults = employeeFilterSchema.parse({});
 
   /**
-   * Definition of filter chips.
-   * Logic for 'isActive' depends on comparing current state with schema defaults.
+   * Logic: Compare current store values with schema defaults.
+   * Color Palettes are chosen to be visible but professional on dark slate.
    */
   const activeChips = [
     {
@@ -29,7 +25,7 @@ export const ActiveFilters = () => {
       isActive: filters.department !== defaults.department,
       label: "Dept",
       value: filters.department,
-      color: "blue",
+      color: "brand", // Indigo/Brand identity
       onClear: () => setFilters({ department: defaults.department }),
     },
     {
@@ -37,7 +33,7 @@ export const ActiveFilters = () => {
       isActive: filters.minSalary !== defaults.minSalary || filters.maxSalary !== defaults.maxSalary,
       label: "Salary",
       value: `${EMPLOYEES_CONFIG.salary.currency}${filters.minSalary.toLocaleString()} - ${filters.maxSalary.toLocaleString()}`,
-      color: "green",
+      color: "teal",
       onClear: () => setFilters({ minSalary: defaults.minSalary, maxSalary: defaults.maxSalary }),
     },
     {
@@ -45,17 +41,22 @@ export const ActiveFilters = () => {
       isActive: filters.minAge !== defaults.minAge || filters.maxAge !== defaults.maxAge,
       label: "Age",
       value: `${filters.minAge} - ${filters.maxAge}`,
-      color: "purple",
+      color: "orange",
       onClear: () => setFilters({ minAge: defaults.minAge, maxAge: defaults.maxAge }),
     },
   ].filter(c => c.isActive);
 
-  // Render nothing if no filters deviate from defaults
   if (activeChips.length === 0) return null;
 
   return (
-    <HStack gap="2" wrap="wrap" mb="4">
-      <Text fontSize="xs" fontWeight="bold" color="fg.muted" textTransform="uppercase">
+    <HStack gap="3" wrap="wrap" mb="4">
+      <Text 
+        fontSize="xs" 
+        fontWeight="black" 
+        color="fg.muted" 
+        textTransform="uppercase"
+        letterSpacing="widest"
+      >
         Active Filters:
       </Text>
 
@@ -67,16 +68,28 @@ export const ActiveFilters = () => {
           size="lg"
           closable
           onClose={chip.onClear}
+          borderRadius="full"
+          px={3}
         >
-          <Text as="span" fontWeight="semibold" mr="1">
+          <Text as="span" opacity={0.8} fontWeight="medium" mr="1">
             {chip.label}:
           </Text>
-          {chip.value}
+          <Text as="span" fontWeight="bold">
+            {chip.value}
+          </Text>
         </Tag>
       ))}
 
-      {/* Global reset button */}
-      <Button variant="plain" size="xs" color="blue.500" onClick={resetFilters}>
+      {/* Global Reset using Brand Token */}
+      <Button 
+        variant="plain" 
+        size="xs" 
+        color="brand.500" 
+        fontWeight="bold"
+        onClick={resetFilters}
+        _hover={{ color: "brand.400", textDecoration: "underline" }}
+        transition="all 0.2s"
+      >
         Clear all
       </Button>
     </HStack>

@@ -1,12 +1,21 @@
 /**
  * @module EditUserModal
- * Optimized: Uses existing user data from props to avoid redundant GET requests.
+ * Refactored to align with the "Midnight Slate" design system.
+ * Optimized: Uses existing user data from props and semantic tokens.
  */
 
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack, Input, NativeSelect, HStack } from "@chakra-ui/react";
+import { 
+  Button, 
+  Stack, 
+  Input, 
+  NativeSelect, 
+  HStack, 
+  Text, 
+  Icon 
+} from "@chakra-ui/react";
 import { LuUserCog, LuX, LuSave } from "react-icons/lu";
 
 import {
@@ -42,6 +51,7 @@ export const EditUserModal = ({ user, onOpenChange }: EditUserModalProps) => {
     resolver: zodResolver(updateUserSchema),
   });
 
+  // Hydrate form when user prop changes
   useEffect(() => {
     if (user) {
       reset({
@@ -67,30 +77,48 @@ export const EditUserModal = ({ user, onOpenChange }: EditUserModalProps) => {
       placement="center"
       motionPreset="slide-in-bottom"
     >
-      <DialogContent>
+      <DialogContent 
+        bg="bg.panel" 
+        borderRadius="2xl" 
+        shadow="2xl" 
+        borderWidth="1px" 
+        borderColor="border.subtle"
+      >
         <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader borderBottomWidth="1px">
+          <DialogHeader borderBottomWidth="1px" borderColor="border.subtle" py={5}>
             <DialogTitle>
-              <HStack gap={2}>
-                <LuUserCog />
-                Edit User Account
+              <HStack gap={3}>
+                <Icon as={LuUserCog} color="brand.500" />
+                <Text letterSpacing="tight">Edit User Account</Text>
               </HStack>
             </DialogTitle>
           </DialogHeader>
 
-          <DialogBody py={6}>
-            <Stack gap={5}>
-              <Field label="Username" invalid={!!errors.username} errorText={errors.username?.message}>
-                <Input {...register("username")} />
+          <DialogBody py={8}>
+            <Stack gap={6}>
+              <Field 
+                label="Username" 
+                invalid={!!errors.username} 
+                errorText={errors.username?.message}
+              >
+                <Input {...register("username")} variant="subtle" />
               </Field>
 
-              <Field label="Email Address" invalid={!!errors.email} errorText={errors.email?.message}>
-                <Input {...register("email")} type="email" />
+              <Field 
+                label="Email Address" 
+                invalid={!!errors.email} 
+                errorText={errors.email?.message}
+              >
+                <Input {...register("email")} type="email" variant="subtle" />
               </Field>
 
-              <Field label="System Role" invalid={!!errors.role} errorText={errors.role?.message}>
+              <Field 
+                label="System Role" 
+                invalid={!!errors.role} 
+                errorText={errors.role?.message}
+              >
                 <NativeSelect.Root>
-                  <NativeSelect.Field {...register("role")}>
+                  <NativeSelect.Field {...register("role")} bg="bg.muted">
                     <option value="USER">User (Standard Access)</option>
                     <option value="ADMIN">Admin (Full Control)</option>
                   </NativeSelect.Field>
@@ -99,11 +127,26 @@ export const EditUserModal = ({ user, onOpenChange }: EditUserModalProps) => {
             </Stack>
           </DialogBody>
 
-          <DialogFooter borderTopWidth="1px" gap={3}>
+          <DialogFooter 
+            borderTopWidth="1px" 
+            borderColor="border.subtle" 
+            gap={3} 
+            bg="bg.canvas/50" 
+            py={4}
+          >
             <DialogActionTrigger asChild>
-              <Button variant="ghost" disabled={isUpdating}><LuX /> Cancel</Button>
+              <Button variant="ghost" disabled={isUpdating}>
+                <LuX /> Cancel
+              </Button>
             </DialogActionTrigger>
-            <Button type="submit" colorPalette="blue" loading={isUpdating} disabled={!isDirty}>
+            
+            <Button 
+              type="submit" 
+              colorPalette="brand" 
+              loading={isUpdating} 
+              disabled={!isDirty}
+              px={8}
+            >
               <LuSave /> Save Changes
             </Button>
           </DialogFooter>

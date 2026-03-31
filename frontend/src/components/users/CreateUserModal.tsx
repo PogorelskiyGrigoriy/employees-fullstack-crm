@@ -1,6 +1,7 @@
 /**
  * @module CreateUserModal
- * Updated: Using local Dialog snippets for registration.
+ * Refactored to align with the "Midnight Slate" design system.
+ * Uses semantic tokens and brand color palette.
  */
 
 import { useForm } from "react-hook-form";
@@ -10,7 +11,9 @@ import {
   Stack, 
   Input, 
   NativeSelect,
-  HStack
+  HStack,
+  Text,
+  Icon
 } from "@chakra-ui/react";
 import { LuUserPlus, LuX, LuCheck } from "react-icons/lu";
 
@@ -69,31 +72,39 @@ export const CreateUserModal = ({ isOpen, onOpenChange }: CreateUserModalProps) 
       placement="center"
       motionPreset="slide-in-bottom"
     >
-      <DialogContent>
+      <DialogContent bg="bg.panel" borderRadius="2xl" shadow="2xl" borderWidth="1px" borderColor="border.subtle">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader borderBottomWidth="1px">
+          <DialogHeader borderBottomWidth="1px" borderColor="border.subtle" py={5}>
             <DialogTitle>
-              <HStack gap={2}>
-                <LuUserPlus />
-                Create New User
+              <HStack gap={3}>
+                <Icon as={LuUserPlus} color="brand.500" />
+                <Text letterSpacing="tight">Create New User</Text>
               </HStack>
             </DialogTitle>
           </DialogHeader>
 
-          <DialogBody py={6}>
-            <Stack gap={5}>
-              <Field label="Username" invalid={!!errors.username} errorText={errors.username?.message}>
+          <DialogBody py={8}>
+            <Stack gap={6}>
+              <Field 
+                label="Username" 
+                invalid={!!errors.username} 
+                errorText={errors.username?.message}
+                helperText="How the user will be identified in the system"
+              >
                 <Input {...register("username")} placeholder="e.g. John Doe" />
               </Field>
+
               <Field label="Email Address" invalid={!!errors.email} errorText={errors.email?.message}>
                 <Input {...register("email")} type="email" placeholder="john@company.com" />
               </Field>
+
               <Field label="Password" invalid={!!errors.password} errorText={errors.password?.message}>
                 <Input {...register("password")} type="password" placeholder="••••••••" />
               </Field>
+
               <Field label="System Role" invalid={!!errors.role} errorText={errors.role?.message}>
                 <NativeSelect.Root>
-                  <NativeSelect.Field {...register("role")}>
+                  <NativeSelect.Field {...register("role")} bg="bg.muted">
                     <option value="USER">User (Standard Access)</option>
                     <option value="ADMIN">Admin (Full Control)</option>
                   </NativeSelect.Field>
@@ -102,13 +113,19 @@ export const CreateUserModal = ({ isOpen, onOpenChange }: CreateUserModalProps) 
             </Stack>
           </DialogBody>
 
-          <DialogFooter borderTopWidth="1px" gap={3}>
+          <DialogFooter borderTopWidth="1px" borderColor="border.subtle" gap={3} bg="bg.canvas/50" py={4}>
             <DialogActionTrigger asChild>
               <Button variant="ghost" disabled={isPending}>
                 <LuX /> Cancel
               </Button>
             </DialogActionTrigger>
-            <Button type="submit" colorPalette="blue" loading={isPending}>
+            
+            <Button 
+              type="submit" 
+              colorPalette="brand" 
+              loading={isPending}
+              px={8}
+            >
               <LuCheck /> Create Account
             </Button>
           </DialogFooter>

@@ -1,79 +1,126 @@
 /**
  * @module MobileSortActions
- * Responsive sorting controls for mobile view.
- * Uses a menu-based UI to toggle sorting keys and directions (asc/desc).
+ * Mobile-first sorting controls for the directory.
+ * Refactored with Midnight Slate tokens and consistent "pill" styling.
  */
 
-import { HStack, MenuRoot, MenuTrigger, MenuContent, MenuItem, Button, Text } from "@chakra-ui/react";
-import { LuArrowDownAZ, LuArrowDownWideNarrow, LuCalendarDays, LuArrowUp, LuArrowDown, LuArrowUpDown } from "react-icons/lu";
+import { HStack, MenuRoot, MenuTrigger, MenuContent, MenuItem, Button, Text, Icon, Box } from "@chakra-ui/react";
+import { 
+  LuArrowDownAZ, 
+  LuArrowDownWideNarrow, 
+  LuCalendarDays, 
+  LuArrowUp, 
+  LuArrowDown, 
+  LuArrowUpDown 
+} from "react-icons/lu";
 import { useSortStore } from "@/store/sort-store";
 
-/**
- * Renders a compact sorting interface visible only on mobile screens (<md).
- */
 export const MobileSortActions = () => {
   const { sort, toggleSort } = useSortStore();
 
-  /**
-   * Configuration for sortable fields with their respective icons.
-   */
   const sortOptions = [
-    { key: "fullName", label: "Name", icon: <LuArrowDownAZ /> },
-    { key: "salary", label: "Salary", icon: <LuArrowDownWideNarrow /> },
-    { key: "birthDate", label: "Age", icon: <LuCalendarDays /> },
+    { key: "fullName", label: "Name", icon: LuArrowDownAZ },
+    { key: "salary", label: "Salary", icon: LuArrowDownWideNarrow },
+    { key: "birthDate", label: "Age", icon: LuCalendarDays },
   ] as const;
 
-  // Identify the currently active sorting strategy for the button label
   const currentOption = sortOptions.find(opt => opt.key === sort.key);
 
   return (
-    <HStack justify="space-between" py="2" display={{ base: "flex", md: "none" }}>
-      <Text fontSize="sm" fontWeight="bold" color="fg.muted">Sort by:</Text>
+    <HStack justify="space-between" py="3" display={{ base: "flex", md: "none" }}>
+      <Text 
+        fontSize="xs" 
+        fontWeight="black" 
+        color="fg.muted" 
+        textTransform="uppercase" 
+        letterSpacing="widest"
+      >
+        Sort by:
+      </Text>
       
-      <MenuRoot>
+      <MenuRoot positioning={{ placement: "bottom-end" }}>
         <MenuTrigger asChild>
-          <Button variant="outline" size="sm" gap="2" borderRadius="full" minW="120px">
+          <Button 
+            variant="subtle" 
+            size="sm" 
+            gap="2" 
+            borderRadius="full" 
+            minW="130px"
+            bg="bg.panel"
+            borderWidth="1px"
+            borderColor="border.subtle"
+            _active={{ transform: "scale(0.95)" }}
+          >
             {currentOption ? (
               <>
-                {currentOption.icon}
-                {currentOption.label}
-                {/* Visual feedback for sorting direction */}
-                {sort.order === "asc" && <LuArrowUp size="14" />}
-                {sort.order === "desc" && <LuArrowDown size="14" />}
+                <Icon as={currentOption.icon} color="brand.500" />
+                <Text fontWeight="bold">{currentOption.label}</Text>
+                <Box color="brand.500">
+                  {sort.order === "asc" ? <LuArrowUp size="14" /> : <LuArrowDown size="14" />}
+                </Box>
               </>
             ) : (
               <>
                 <LuArrowUpDown size="14" />
-                Default
+                <Text>Default</Text>
               </>
             )}
           </Button>
         </MenuTrigger>
         
-        <MenuContent minW="150px">
-          {sortOptions.map((option) => (
-            <MenuItem 
-              key={option.key} 
-              value={option.key}
-              onClick={() => toggleSort(option.key)}
-              // Keeps the menu open for easier multi-step sorting changes if needed
-              closeOnSelect={false}
-              cursor="pointer"
-            >
-              <HStack justify="space-between" width="full">
-                <HStack gap="2">
-                  {option.icon}
-                  <Text>{option.label}</Text>
+        <MenuContent 
+          minW="180px" 
+          bg="bg.panel" 
+          borderRadius="xl" 
+          shadow="xl"
+          borderColor="border.subtle"
+        >
+          {sortOptions.map((option) => {
+            const isActive = sort.key === option.key;
+            
+            return (
+              <MenuItem 
+                key={option.key} 
+                value={option.key}
+                onClick={() => toggleSort(option.key)}
+                closeOnSelect={false}
+                cursor="pointer"
+                py="3"
+                _hover={{ bg: "bg.muted" }}
+                bg={isActive ? "brand.500/5" : "transparent"}
+              >
+                <HStack justify="space-between" width="full">
+                  <HStack gap="3">
+                    <Icon 
+                      as={option.icon} 
+                      color={isActive ? "brand.500" : "fg.muted"} 
+                    />
+                    <Text 
+                      fontWeight={isActive ? "bold" : "medium"}
+                      color={isActive ? "fg.emphasized" : "inherit"}
+                    >
+                      {option.label}
+                    </Text>
+                  </HStack>
+                  
+                  {isActive && (
+                    <Text 
+                      fontSize="2xs" 
+                      fontWeight="black" 
+                      color="brand.500" 
+                      textTransform="uppercase"
+                      bg="brand.500/10"
+                      px="2"
+                      py="0.5"
+                      borderRadius="sm"
+                    >
+                      {sort.order}
+                    </Text>
+                  )}
                 </HStack>
-                {/* Highlight the active sort order in the list */}
-                {sort.key === option.key && sort.order && (
-                  <Text fontSize="2xs" fontWeight="black" color="blue.500" textTransform="uppercase">
-                    {sort.order}
-                  </Text>
-                )}
-              </HStack>
-            </MenuItem>
-          ))}
+              </MenuItem>
+            );
+          })}
         </MenuContent>
       </MenuRoot>
     </HStack>

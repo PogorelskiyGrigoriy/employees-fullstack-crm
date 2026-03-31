@@ -1,23 +1,27 @@
 /**
  * @module Navbar
- * Refactored for AAA: High-precision role-based navigation.
+ * Fully declarative version using RBACGuard.
+ * Eliminated manual filtering logic for cleaner component state.
  */
 
-import { useMemo } from "react";
-import { NavLink } from "react-router-dom";
-import { 
-  HStack, 
-  Link as ChakraLink, 
-  Spacer, 
-  Box, 
-  Button, 
+import {
+  HStack,
+  Spacer,
+  Box,
+  Button,
   Text,
   Separator,
   Stack,
   Container,
+  Icon,
 } from "@chakra-ui/react";
+import { LuLogOut, LuUser } from "react-icons/lu";
 
+import { AppNavLink } from "@/components/shared/atoms/AppNavLink";
 import { StatisticsSelector } from "./StatisticsSelector";
+import { AppBadge } from "@/components/shared/atoms/AppBadge";
+import { RBACGuard } from "@/components/shared/organisms/RBACGuard";
+
 import { useAuthStore, useIsAuthenticated, useUserRole } from "@/store/auth-store";
 import { useLogout } from "@/services/hooks/auth-hooks/use-logout";
 import { MAIN_NAV_LINKS, ROUTES } from "@/config/navigation";
@@ -26,16 +30,7 @@ export const Navbar = () => {
   const role = useUserRole();
   const isAuthenticated = useIsAuthenticated();
   const username = useAuthStore((state) => state.user?.username);
-  
   const { mutate: logout, isPending } = useLogout();
-
-  /**
-   * RBAC Logic: Filtering links based on strict UserRole comparison.
-   */
-  const visibleLinks = useMemo(() => {
-    if (!isAuthenticated || !role) return [];
-    return MAIN_NAV_LINKS.filter((link) => link.roles.includes(role));
-  }, [isAuthenticated, role]);
 
   return (
     <Box 
@@ -47,76 +42,57 @@ export const Navbar = () => {
       top="0"
       zIndex="sticky"
       w="full"
+      backdropFilter="blur(10px)"
     >
       <Container maxW="6xl" px={{ base: "4", md: "8" }}> 
         <HStack justify="space-between" py="3">
           
-          {/* Left Side: Navigation Links */}
+          {/* 1. Brand & Navigation Links */}
           <HStack gap={{ base: "4", md: "8" }}>
             {!isAuthenticated ? (
-              <ChakraLink asChild variant="plain" fontWeight="bold" color="blue.600">
-                <NavLink to={ROUTES.LOGIN}>Sign In</NavLink>
-              </ChakraLink>
+              <AppNavLink to={ROUTES.LOGIN}>Sign In</AppNavLink>
             ) : (
-              visibleLinks.map((link) => (
-                <ChakraLink 
-                  key={link.to} 
-                  asChild 
-                  variant="plain"
-                  fontSize="sm"
-                  fontWeight="medium"
-                  css={{
-                    "&.active": {
-                      color: "blue.600",
-                      fontWeight: "bold",
-                      position: "relative",
-                      _after: {
-                        content: '""',
-                        position: "absolute",
-                        bottom: "-14px",
-                        left: 0,
-                        width: "100%",
-                        height: "2px",
-                        bg: "blue.600",
-                      }
-                    }
-                  }}
-                >
-                  <NavLink to={link.to}>{link.label}</NavLink>
-                </ChakraLink>
+              MAIN_NAV_LINKS.map((link) => (
+                <RBACGuard key={link.to} roles={link.roles}>
+                  <AppNavLink to={link.to}>
+                    {link.label}
+                  </AppNavLink>
+                </RBACGuard>
               ))
             )}
           </HStack>
 
           <Spacer />
 
-          {/* Right Side: Profile & Global Actions */}
+          {/* 2. Global Actions & Profile Context */}
           {isAuthenticated && (
             <HStack gap={{ base: "3", md: "5" }}>
-              <Box maxW={{ base: "100px", md: "200px" }}>
+              <Box maxW={{ base: "120px", md: "200px" }}>
                 <StatisticsSelector />
               </Box>
 
-              <Separator orientation="vertical" height="20px" />
+              <Separator orientation="vertical" height="24px" borderColor="border.subtle" />
 
-              <Stack gap="0" align="flex-end" hideBelow="sm">
-                <Text fontSize="xs" fontWeight="bold" lineHeight="tight">
-                  {username}
-                </Text>
-                <Text fontSize="10px" color="fg.muted" textTransform="uppercase" letterSpacing="wider">
-                  {role}
-                </Text>
-              </Stack>
+              <HStack gap="3" hideBelow="sm">
+                <Stack gap="0" align="flex-end">
+                  <Text fontSize="sm" fontWeight="bold" color="fg.emphasized">
+                    {username}
+                  </Text>
+                  <AppBadge type="role" value={role ?? "USER"} size="xs" variant="subtle" />
+                </Stack>
+                <Icon as={LuUser} color="brand.500" boxSize="5" opacity={0.8} />
+              </HStack>
 
               <Button 
                 size="xs" 
-                variant="subtle" 
+                variant="ghost" 
                 colorPalette="red" 
                 onClick={() => logout()}
                 loading={isPending}
                 px="3"
               >
-                Logout
+                <LuLogOut />
+                <Text hideBelow="md">Logout</Text>
               </Button>
             </HStack>
           )}

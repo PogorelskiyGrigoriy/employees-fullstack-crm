@@ -1,6 +1,7 @@
 /**
  * @module LoginForm
- * Centralized authentication form with integrated Demo Credentials helper.
+ * Authentication entry point for the CRM.
+ * Refactored with AppPanel and branded Midnight Slate tokens.
  */
 
 import { useEffect } from "react";
@@ -12,15 +13,17 @@ import {
   Stack,
   HStack, 
   Heading, 
-  Box, 
   Alert,
   Fieldset,
   Text,
   VStack,
-  Separator
+  Separator,
+  Icon
 } from "@chakra-ui/react";
+import { LuLogIn, LuInfo } from "react-icons/lu";
 
 import { Field } from "@/components/ui/field";
+import { AppPanel } from "@/components/shared/atoms/AppPanel";
 import { useLogin } from "@/services/hooks/auth-hooks/use-login";
 import { loginSchema, type LoginData } from "@crm/shared/schemas/auth.schema.js";
 
@@ -51,31 +54,28 @@ export const LoginForm = () => {
   const serverErrorMessage = (error as any)?.response?.data?.error || error?.message || "Invalid credentials";
 
   return (
-    <Box 
-      maxW="400px" 
-      w="full" 
+    <AppPanel 
+      maxW="420px" 
       mx="auto" 
-      p={{ base: "6", md: "8" }} 
-      borderRadius="2xl" 
-      shadow="md" 
-      border="1px solid" 
-      borderColor="border.subtle"
-      bg="bg.panel"
+      p={{ base: "8", md: "10" }} 
+      shadow="2xl"
     >
       <form onSubmit={handleSubmit(handleLogin)}>
         <Fieldset.Root disabled={isPending}>
-          <Stack gap="6">
-            <Stack gap="1" textAlign="center">
-              <Heading size="xl" letterSpacing="tight">
+          <Stack gap="8">
+            {/* 1. Header Section */}
+            <Stack gap="2" textAlign="center">
+              <Heading size="2xl" letterSpacing="tight" fontWeight="black">
                 Welcome Back
               </Heading>
               <Text fontSize="sm" color="fg.muted">
-                Enter your credentials to access the CRM
+                Access your dashboard and manage your workforce
               </Text>
             </Stack>
 
+            {/* 2. Error Display */}
             {isError && (
-              <Alert.Root status="error" variant="subtle" borderRadius="lg">
+              <Alert.Root status="error" variant="subtle" borderRadius="xl">
                 <Alert.Indicator />
                 <Alert.Content>
                   <Alert.Title fontSize="xs">{serverErrorMessage}</Alert.Title>
@@ -83,7 +83,8 @@ export const LoginForm = () => {
               </Alert.Root>
             )}
 
-            <Stack gap="4">
+            {/* 3. Inputs using Subtle Variant */}
+            <Stack gap="5">
               <Field 
                 label="Email address" 
                 invalid={!!errors.email} 
@@ -91,6 +92,7 @@ export const LoginForm = () => {
               >
                 <Input
                   type="email"
+                  variant="subtle"
                   autoComplete="email"
                   placeholder="admin@crm.com"
                   size="lg"
@@ -105,6 +107,7 @@ export const LoginForm = () => {
               >
                 <Input
                   type="password"
+                  variant="subtle"
                   autoComplete="current-password"
                   placeholder="••••••••"
                   size="lg"
@@ -113,44 +116,62 @@ export const LoginForm = () => {
               </Field>
             </Stack>
 
+            {/* 4. Branded Sign In Button */}
             <Button 
               type="submit" 
-              colorPalette="blue" 
+              colorPalette="brand" 
               loading={isPending} 
               disabled={!isValid || !isDirty}
               width="full"
               size="xl"
               mt="2"
+              shadow="lg"
             >
-              Sign In
+              <LuLogIn /> Sign In
             </Button>
           </Stack>
         </Fieldset.Root>
       </form>
 
-      {/* --- DEMO CREDENTIALS HELPER --- */}
-      <Stack gap="4" mt="8">
-        <HStack>
-          <Separator flex="1" />
-          <Text fontSize="2xs" fontWeight="bold" color="fg.muted" textTransform="uppercase" whiteSpace="nowrap">
-            Demo Access
-          </Text>
-          <Separator flex="1" />
+      {/* --- 5. DEMO CREDENTIALS HELPER --- */}
+      <Stack gap="5" mt="10">
+        <HStack gap="4">
+          <Separator flex="1" borderColor="border.subtle" />
+          <HStack gap="1" color="fg.muted">
+            <Icon as={LuInfo} boxSize="3" />
+            <Text fontSize="2xs" fontWeight="black" textTransform="uppercase" letterSpacing="widest">
+              Quick Access
+            </Text>
+          </HStack>
+          <Separator flex="1" borderColor="border.subtle" />
         </HStack>
         
-        <VStack gap="1" align="stretch">
-          <Box p="2" bg="bg.muted" borderRadius="md" border="1px dashed" borderColor="border.subtle">
-            <Text fontSize="xs" color="fg.subtle">
-              <b>Admin:</b> admin@crm.com / password
-            </Text>
-          </Box>
-          <Box p="2" bg="bg.muted" borderRadius="md" border="1px dashed" borderColor="border.subtle">
-            <Text fontSize="xs" color="fg.subtle">
-              <b>User:</b> user@crm.com / password
-            </Text>
-          </Box>
+        <VStack gap="2" align="stretch">
+          <HStack 
+            p="3" 
+            bg="bg.muted/30" 
+            borderRadius="xl" 
+            borderWidth="1px" 
+            borderColor="border.subtle" 
+            justify="space-between"
+          >
+            <Text fontSize="xs" color="fg.muted">Admin</Text>
+            <Text fontSize="xs" fontWeight="bold">admin@crm.com / password</Text>
+          </HStack>
+          
+          <HStack 
+            p="3" 
+            bg="bg.muted/30" 
+            borderRadius="xl" 
+            borderWidth="1px" 
+            borderColor="border.subtle" 
+            justify="space-between"
+          >
+            <Text fontSize="xs" color="fg.muted">User</Text>
+            <Text fontSize="xs" fontWeight="bold">user@crm.com / password</Text>
+          </HStack>
         </VStack>
       </Stack>
-    </Box>
+    </AppPanel>
   );
 };

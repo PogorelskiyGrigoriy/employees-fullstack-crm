@@ -1,14 +1,13 @@
 /**
  * @module StatisticsChart
- * A generic, responsive bar chart component.
- * Deeply integrated with Chakra UI theme tokens for consistent styling of colors, 
- * typography, and spacing.
+ * Refactored for the "Midnight Slate" design system.
+ * Uses AppPanel for consistency and brand tokens for data visualization.
  */
 
 "use client";
 
 import { useMemo } from "react";
-import { Box, Heading, Container, useToken } from "@chakra-ui/react";
+import { Heading, useToken, VStack } from "@chakra-ui/react";
 import {
   BarChart,
   Bar,
@@ -19,9 +18,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import { AppPanel } from "@/components/shared/atoms/AppPanel";
 import type { StatsChartProps } from "@/types/stats";
 
-/** Constant margin config to maximize usable chart area while keeping labels visible */
 const CHART_MARGIN = { top: 10, right: 10, left: -20, bottom: 0 } as const;
 
 export const StatisticsChart = ({
@@ -33,93 +32,94 @@ export const StatisticsChart = ({
   tooltipLabelKey = "tooltipValue",
 }: StatsChartProps) => {
   /**
-   * Accessing Chakra UI Design Tokens:
-   * This ensures the chart colors match the rest of the application's UI perfectly.
+   * 1. Dynamic Token Extraction:
+   * Switching from 'blue.500' to our semantic 'brand.500'.
    */
-  const [accent, grayMuted, gridColor, textPrimary] = useToken("colors", [
-    "blue.500",
-    "fg.muted",
-    "border.subtle",
-    "fg.emphasized",
+  const [accent, grayMuted, gridColor, textPrimary, panelBg] = useToken("colors", [
+    "brand.500",      // Main brand color for bars
+    "fg.muted",       // Labels color
+    "border.subtle",  // Grid lines
+    "fg.emphasized",  // Tooltip text
+    "bg.panel",       // Tooltip background
   ]);
 
   /**
-   * Performance Optimization:
-   * Memoizing styles to prevent unnecessary Recharts recalculations 
-   * unless the primary text color changes.
+   * 2. Premium Tooltip Styling:
+   * Matching the Midnight Slate panel aesthetic.
    */
   const tooltipStyles = useMemo(() => ({
     contentStyle: {
       borderRadius: "12px",
-      border: "none",
-      boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-      backgroundColor: "var(--chakra-colors-bg-panel)", // CSS Variable for dynamic dark/light mode
-      padding: "8px 12px",
+      border: `1px solid ${gridColor}`,
+      boxShadow: "var(--chakra-shadows-xl)",
+      backgroundColor: panelBg,
+      padding: "10px 14px",
     },
     labelStyle: {
       color: textPrimary,
-      fontWeight: "bold",
+      fontWeight: "800",
       fontSize: "13px",
-      marginBottom: "2px",
+      marginBottom: "4px",
+      letterSpacing: "-0.02em",
     },
     itemStyle: { 
-      color: textPrimary, 
+      color: accent, 
       fontSize: "12px",
+      fontWeight: "600",
       padding: "0" 
     }
-  }), [textPrimary]);
+  }), [textPrimary, accent, gridColor, panelBg]);
 
   return (
-    <Container>
-      <Heading 
-        size={{ base: "md", md: "xl" }} 
-        mb={{ base: "4", md: "6" }} 
-        fontWeight="bold"
-        letterSpacing="tight"
-      >
-        {title}
-      </Heading>
+    <VStack align="stretch" gap={5} width="full">
+      {/* 3. Section Title with specific typography */}
+      {title && (
+        <Heading 
+          size="md" 
+          fontWeight="black" 
+          letterSpacing="tight"
+          color="fg.emphasized"
+        >
+          {title}
+        </Heading>
+      )}
 
-      <Box
-        p={{ base: "2", md: "5" }}
-        borderWidth="1px"
-        borderColor="border.subtle"
-        borderRadius="2xl"
-        bg="bg.panel"
-        height={{ base: "280px", md: "400px" }}
-        shadow="xs"
+      {/* 4. Themed Container: Replaced manual Box with AppPanel */}
+      <AppPanel 
+        height={{ base: "300px", md: "420px" }}
+        p={{ base: "3", md: "6" }}
         position="relative"
       >
-        <ResponsiveContainer>
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={CHART_MARGIN}>
             <CartesianGrid
-              strokeDasharray="3 3"
-              vertical={false} // Clean look with horizontal grid lines only
+              strokeDasharray="4 4"
+              vertical={false}
               stroke={gridColor}
+              opacity={0.6}
             />
             
             <XAxis
               dataKey={dataKeyX as string}
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 11, fill: grayMuted }}
-              dy={10}
+              tick={{ fontSize: 11, fill: grayMuted, fontWeight: 500 }}
+              dy={12}
             />
             
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 11, fill: grayMuted }}
-              allowDecimals={false} // Best for headcount/integer statistics
-              dx={-5}
+              tick={{ fontSize: 11, fill: grayMuted, fontWeight: 500 }}
+              allowDecimals={false}
+              dx={-8}
             />
             
             <Tooltip
-              cursor={{ fill: gridColor, opacity: 0.4 }}
+              cursor={{ fill: accent, opacity: 0.05 }} // Subtle highlight on hover
               contentStyle={tooltipStyles.contentStyle}
               labelStyle={tooltipStyles.labelStyle}
               itemStyle={tooltipStyles.itemStyle}
-              /** Logic to pull custom descriptive text into the tooltip header */
               labelFormatter={(_, payload) =>
                 payload?.[0]?.payload?.[tooltipLabelKey as string] ?? ""
               }
@@ -129,13 +129,15 @@ export const StatisticsChart = ({
               dataKey={dataKeyY as string}
               name={labelY}
               fill={accent}
-              radius={[4, 4, 0, 0]} // Modern rounded top corners
-              barSize={32}
-              minPointSize={3} // Ensures very small bars remain visible/interactable
+              radius={[6, 6, 0, 0]} // Slightly smoother corners
+              barSize={28} // More elegant bar width
+              minPointSize={4}
+              // Hover effect via CSS in JS
+              style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
             />
           </BarChart>
         </ResponsiveContainer>
-      </Box>
-    </Container>
+      </AppPanel>
+    </VStack>
   );
 };

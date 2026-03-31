@@ -1,16 +1,20 @@
 /**
  * @module EmployeeCard
- * Mobile-first card component with integrated RBAC via useUserRole.
+ * Mobile-optimized card for the employee directory.
+ * Refactored using AppPanel and RBACGuard for consistent security and styling.
  */
 
 import { useRef } from "react";
-import { Box, HStack, Spacer, Text, VStack } from "@chakra-ui/react";
-import { EmployeeIdentity } from "./shared/DataDisplay";
+import { HStack, Spacer, Text, VStack, Box } from "@chakra-ui/react";
+
+import { EmployeeIdentity } from "@/components/shared/molecules/EmployeeIdentity";
+import { AppPanel } from "@/components/shared/atoms/AppPanel";
+import { RBACGuard } from "@/components/shared/organisms/RBACGuard";
+
 import { DeleteEmployeeAction } from "./DeleteEmployeeAction";
 import { EditEmployeeAction } from "./EditEmployeeAction";
 import { EmployeeDetailsDialog } from "./EmployeeDetailsDialog";
 
-import { useUserRole } from "@/store/auth-store";
 import type { Employee } from "@crm/shared/schemas/employee.schema.js";
 
 interface EmployeeCardProps {
@@ -18,25 +22,25 @@ interface EmployeeCardProps {
 }
 
 export const EmployeeCard = ({ employee }: EmployeeCardProps) => {
-  const role = useUserRole();
-  const isAdmin = role === "ADMIN";
-
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <Box
+    <AppPanel
       p={{ base: "3", sm: "4" }}
-      bg="bg.panel"
-      borderWidth="1px"
-      borderRadius="xl"
-      boxShadow="sm"
-      _active={{ bg: "bg.muted", transform: "scale(0.98)" }}
-      transition="all 0.15s ease-out"
+      // Interactive feedback
       cursor="pointer"
+      _active={{ 
+        bg: "bg.muted", 
+        transform: "scale(0.98)",
+        transition: "all 0.1s ease-in" 
+      }}
+      transition="all 0.2s ease-out"
       onClick={() => triggerRef.current?.click()}
+      position="relative"
       overflow="hidden"
     >
-      <HStack gap={{ base: "2", sm: "4" }} width="full" align="center">
+      <HStack gap={{ base: "3", sm: "4" }} width="full" align="center">
+        {/* 1. Primary Info Section */}
         <VStack align="start" gap="0" minW="0" flex="1">
           <EmployeeIdentity 
             name={employee.fullName} 
@@ -45,8 +49,10 @@ export const EmployeeCard = ({ employee }: EmployeeCardProps) => {
           <Text 
             fontSize="xs" 
             color="fg.muted" 
-            ml="12" 
-            lineClamp={1}
+            ml="11"
+            fontWeight="medium"
+            letterSpacing="tight"
+            truncate
           >
             {employee.department}
           </Text>
@@ -54,19 +60,24 @@ export const EmployeeCard = ({ employee }: EmployeeCardProps) => {
         
         <Spacer />
 
-        <HStack gap="1" flexShrink={0} onClick={(e) => e.stopPropagation()}>
-          {isAdmin && (
-            <>
-              <EditEmployeeAction employee={employee} />
-              <DeleteEmployeeAction id={employee.id} name={employee.fullName} />
-            </>
-          )}
+        {/* 2. Action Toolbar */}
+        <HStack 
+          gap="1" 
+          flexShrink={0} 
+          onClick={(e) => e.stopPropagation()} // Prevents dialog from opening when clicking buttons
+        >
+          {/* Using RBACGuard instead of manual isAdmin checks */}
+          <RBACGuard roles={["ADMIN"]}>
+            <EditEmployeeAction employee={employee} />
+            <DeleteEmployeeAction id={employee.id} name={employee.fullName} />
+          </RBACGuard>
           
-          <Box ref={triggerRef}>
+          {/* Hidden trigger for the full-card click interaction */}
+          <Box ref={triggerRef} visibility="hidden" position="absolute" width="0" height="0">
             <EmployeeDetailsDialog employee={employee} />
           </Box>
         </HStack>
       </HStack>
-    </Box>
+    </AppPanel>
   );
 };

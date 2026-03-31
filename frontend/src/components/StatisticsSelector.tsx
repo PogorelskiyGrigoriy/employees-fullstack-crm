@@ -1,15 +1,15 @@
 /**
  * @module StatisticsSelector
- * Role-based dropdown for switching between different statistics dashboards.
- * Provides visual feedback for the currently active analytics view.
+ * Role-based analytics switcher.
+ * Refactored for Midnight Slate aesthetics and standardized design tokens.
  */
 
 "use client";
 
 import { useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, Icon } from "@chakra-ui/react";
-import { LuChevronDown } from "react-icons/lu";
+import { Button, Icon, Text, HStack, Box } from "@chakra-ui/react";
+import { LuChevronDown, LuChartColumn } from "react-icons/lu";
 
 import { 
   MenuContent, 
@@ -22,10 +22,6 @@ import { STATS_NAV_LINKS } from "@/config/navigation";
 import { useIsAuthenticated, useUserRole } from "@/store/auth-store";
 import type { UserRole } from "@crm/shared/schemas/auth.schema.js";
 
-/**
- * Dropdown selector for statistical views.
- * Automatically filters options based on the user's role and highlights the active route.
- */
 export const StatisticsSelector = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,59 +30,62 @@ export const StatisticsSelector = () => {
   const userRole = useUserRole() as UserRole | null;
 
   /**
-   * RBAC filtering for statistics links.
-   * Ensures users only see dashboards they are authorized to view.
+   * Filter stats based on role to decide if we should render the component.
    */
   const allowedStats = useMemo(() => {
     if (!isAuthenticated || !userRole) return [];
-    
     return STATS_NAV_LINKS.filter(link => 
-      (link.roles as string[]).includes(userRole)
+      (link.roles as readonly string[]).includes(userRole)
     );
   }, [isAuthenticated, userRole]);
 
-  /**
-   * Active State Tracking:
-   * Compares the current URL path with defined statistic routes to determine
-   * if the selector should be in its "active" (highlighted) state.
-   */
   const activeStat = useMemo(() => {
     return allowedStats.find(link => link.to === location.pathname);
   }, [allowedStats, location.pathname]);
 
-  // If the user has no permissions for any stats, don't render the selector at all.
   if (allowedStats.length === 0) return null;
 
   return (
     <MenuRoot positioning={{ placement: "bottom-end" }}>
       <MenuTrigger asChild>
         <Button 
-          variant="outline" 
+          variant="subtle" 
           size="sm"
-          bg="bg.panel" 
-          borderColor={activeStat ? "blue.500" : "border.emphasized"}
-          color={activeStat ? "blue.600" : "fg.emphasized"}
+          bg={activeStat ? "brand.500/10" : "bg.panel"} 
+          borderWidth="1px"
+          borderColor={activeStat ? "brand.500/40" : "border.subtle"}
+          color={activeStat ? "brand.500" : "fg.emphasized"}
           fontWeight={activeStat ? "bold" : "medium"}
           px="4"
           height="36px"
+          borderRadius="full"
           _hover={{ 
-            bg: "blue.50", 
-            borderColor: "blue.400",
+            bg: "brand.500/20", 
+            borderColor: "brand.500",
           }}
+          transition="all 0.2s"
         >
-          {activeStat ? activeStat.label : "Statistics"} 
-          <Icon 
-            as={LuChevronDown} 
-            ms="2" 
-            transition="transform 0.2s"
-            color={activeStat ? "blue.500" : "fg.muted"} 
-            // Simple visual cue: icon color deepens when active
-            transform={activeStat ? "rotate(0deg)" : "none"} 
-          />
+          <HStack gap="2">
+            <Icon as={LuChartColumn} color={activeStat ? "brand.500" : "fg.muted"} />
+            <Text letterSpacing="tight">
+              {activeStat ? activeStat.label : "Analytics"} 
+            </Text>
+            <Icon 
+              as={LuChevronDown} 
+              transition="transform 0.2s"
+              opacity={0.6}
+            />
+          </HStack>
         </Button>
       </MenuTrigger>
       
-      <MenuContent minW="180px">
+      <MenuContent 
+        minW="200px" 
+        bg="bg.panel" 
+        borderRadius="xl" 
+        shadow="2xl"
+        borderColor="border.subtle"
+      >
         {allowedStats.map((item) => {
           const isSelected = item.to === location.pathname;
           
@@ -95,11 +94,19 @@ export const StatisticsSelector = () => {
               key={item.to} 
               value={item.to}
               onClick={() => navigate(item.to)}
-              color={isSelected ? "blue.600" : "inherit"}
-              fontWeight={isSelected ? "bold" : "normal"}
+              color={isSelected ? "brand.500" : "fg.muted"}
+              fontWeight={isSelected ? "black" : "medium"}
+              bg={isSelected ? "brand.500/5" : "transparent"}
+              _hover={{ bg: "bg.muted", color: "fg.emphasized" }}
               cursor="pointer"
+              py="3"
             >
-              {item.label}
+              <HStack justify="space-between" width="full">
+                <Text>{item.label}</Text>
+                {isSelected && (
+                  <Box boxSize="1.5" borderRadius="full" bg="brand.500" />
+                )}
+              </HStack>
             </MenuItem>
           );
         })}

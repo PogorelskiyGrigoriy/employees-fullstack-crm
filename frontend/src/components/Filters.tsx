@@ -1,35 +1,29 @@
 /**
  * @module Filters
- * A specialized form for filtering employee data.
- * Bridges global Zustand state with local validation using Zod and React Hook Form.
+ * A refined search interface for the employee directory.
+ * Refactored for Midnight Slate aesthetics using standardized molecules.
  */
 
-import { VStack, HStack, Input, Button } from "@chakra-ui/react";
+import { VStack, HStack, Input, Button, Text } from "@chakra-ui/react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Field } from "@/components/ui/field";
-import { DepartmentSelect } from "@/components/shared/DepartmentSelect";
+import { DepartmentSelect } from "@/components/shared/molecules/DepartmentSelect";
 
 import { useFilters } from "@/store/filters-store";
 import { employeeFilterSchema, type EmployeeFilter } from "@crm/shared/schemas/employee.schema.js";
 import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees.config";
 
 interface Props {
-  /** Callback to close the filter overlay or modal upon application */
   readonly onClose: () => void;
 }
 
-/**
- * Filter form component providing inputs for department, salary range, and age.
- */
 export const Filters = ({ onClose }: Props) => {
-  // Syncing with global filter store
   const currentFilters = useFilters((state) => state.filters);
   const { setFilters, resetFilters } = useFilters();
   const { salary: salConf } = EMPLOYEES_CONFIG;
 
-  // Derive initial/empty values directly from schema definitions
   const defaultValues = employeeFilterSchema.parse({});
 
   const { 
@@ -43,17 +37,11 @@ export const Filters = ({ onClose }: Props) => {
     defaultValues: currentFilters
   });
 
-  /**
-   * Updates the global store and triggers the close callback.
-   */
   const handleApply = (data: EmployeeFilter) => {
     setFilters(data);
     onClose();
   };
 
-  /**
-   * Clears both global store and local form state.
-   */
   const handleReset = () => {
     resetFilters();
     reset(defaultValues);
@@ -61,27 +49,31 @@ export const Filters = ({ onClose }: Props) => {
 
   return (
     <form onSubmit={handleSubmit(handleApply)}>
-      <VStack gap="6" align="stretch" py="4">
+      <VStack gap={6} align="stretch" py={2}>
         
-        {/* Department filter using specialized 'filter' variant (includes "All") */}
+        {/* 1. Department: Uses 'filter' variant which includes "All" option */}
         <DepartmentSelect 
           variant="filter"
+          label="Organization Unit"
           registration={register("department")} 
         />
 
-        {/* Salary Range Inputs */}
+        {/* 2. Salary Range: Subtle paired inputs */}
         <Field 
-          label={`Salary (${salConf.currency})`}
+          label={`Salary Range (${salConf.currency})`}
           invalid={!!errors.minSalary || !!errors.maxSalary}
           errorText={errors.minSalary?.message || errors.maxSalary?.message}
         >
-          <HStack gap="3">
+          <HStack gap={3}>
             <Input 
+              variant="subtle"
               type="number"
               placeholder="Min"
               {...register("minSalary", { valueAsNumber: true })} 
             />
+            <Text color="fg.muted" fontSize="sm">to</Text>
             <Input 
+              variant="subtle"
               type="number"
               placeholder="Max"
               {...register("maxSalary", { valueAsNumber: true })} 
@@ -89,19 +81,22 @@ export const Filters = ({ onClose }: Props) => {
           </HStack>
         </Field>
 
-        {/* Age Range Inputs */}
+        {/* 3. Age Range: Subtle paired inputs */}
         <Field 
-          label="Age Range"
+          label="Age Demographics"
           invalid={!!errors.minAge || !!errors.maxAge}
           errorText={errors.minAge?.message || errors.maxAge?.message}
         >
-          <HStack gap="3">
+          <HStack gap={3}>
             <Input 
+              variant="subtle"
               type="number"
               placeholder="Min"
               {...register("minAge", { valueAsNumber: true })} 
             />
+            <Text color="fg.muted" fontSize="sm">to</Text>
             <Input 
+              variant="subtle"
               type="number"
               placeholder="Max"
               {...register("maxAge", { valueAsNumber: true })} 
@@ -109,23 +104,24 @@ export const Filters = ({ onClose }: Props) => {
           </HStack>
         </Field>
 
-        {/* Action Buttons */}
-        <HStack gap="4" mt="4">
+        {/* 4. Action Bar: Standardized branded buttons */}
+        <HStack gap={4} mt={6}>
           <Button 
             variant="ghost" 
-            colorPalette="gray" 
             onClick={handleReset} 
             flex="1"
+            _hover={{ bg: "whiteAlpha.100" }}
           >
-            Reset
+            Reset All
           </Button>
           <Button 
             type="submit" 
-            colorPalette="blue" 
+            colorPalette="brand" 
             disabled={!isValid}
             flex="2"
+            shadow="md"
           >
-            Apply
+            Apply Filters
           </Button>
         </HStack>
       </VStack>

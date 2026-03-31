@@ -1,11 +1,15 @@
 /**
  * @module UserCardList
- * Updated: Mobile actions now pass full context to parent page.
+ * Mobile-optimized view for identity management.
+ * Refactored using AppPanel and AppBadge for consistent visual language.
  */
 
-import { Box, Stack, HStack, Text, Badge, Button, Spacer } from "@chakra-ui/react";
-import { LuPencil, LuTrash2 } from "react-icons/lu"; 
+import { Stack, HStack, Text, Spacer, Button, Icon } from "@chakra-ui/react";
+import { LuPencil, LuTrash2, LuMail } from "react-icons/lu"; 
 import type { User } from "@crm/shared/schemas/auth.schema.js";
+
+import { AppPanel } from "@/components/shared/atoms/AppPanel";
+import { AppBadge } from "@/components/shared/atoms/AppBadge";
 
 interface UserCardListProps {
   readonly users: User[];
@@ -14,32 +18,45 @@ interface UserCardListProps {
 }
 
 export const UserCardList = ({ users, onEdit, onDelete }: UserCardListProps) => (
-  <Stack gap="4">
+  <Stack gap={4}>
     {users.map((user) => (
-      <Box 
+      <AppPanel 
         key={user.id} 
-        p="4" 
-        bg="bg.panel" 
-        borderRadius="xl" 
-        borderWidth="1px" 
-        shadow="sm"
+        p={4} 
+        shadow="md"
+        _active={{ scale: 0.98 }} // Tactile feedback for mobile
+        transition="transform 0.1s"
       >
-        <HStack align="flex-start" mb="2">
-          <Stack gap="0">
-            <Text fontWeight="bold" fontSize="lg">{user.username}</Text>
-            <Text fontSize="xs" color="fg.muted">{user.email}</Text>
+        {/* Header Section */}
+        <HStack align="flex-start" mb={3}>
+          <Stack gap={0}>
+            <Text 
+              fontWeight="bold" 
+              fontSize="md" 
+              color="fg.emphasized"
+              letterSpacing="tight"
+            >
+              {user.username}
+            </Text>
+            <HStack gap={1} color="fg.muted">
+              <Icon as={LuMail} boxSize={3} />
+              <Text fontSize="xs">{user.email}</Text>
+            </HStack>
           </Stack>
+          
           <Spacer />
-          <Badge colorPalette={user.role === "ADMIN" ? "purple" : "gray"} size="sm">
-            {user.role}
-          </Badge>
+          
+          {/* Smart Badge: encapsulates color logic for "ADMIN" vs "USER" */}
+          <AppBadge type="role" value={user.role} size="sm" variant="subtle" />
         </HStack>
         
-        <HStack borderTopWidth="1px" pt="3" mt="3" gap="4">
+        {/* Actions Section */}
+        <HStack borderTopWidth="1px" borderColor="border.subtle" pt={3} mt={1} gap={3}>
           <Button 
             size="sm" 
-            variant="outline" 
+            variant="ghost" 
             flex="1"
+            colorPalette="brand" // Indigo accent
             onClick={() => onEdit(user.id)}
           >
             <LuPencil />
@@ -48,7 +65,7 @@ export const UserCardList = ({ users, onEdit, onDelete }: UserCardListProps) => 
           
           <Button 
             size="sm" 
-            variant="outline" 
+            variant="ghost" 
             colorPalette="red" 
             flex="1"
             onClick={() => onDelete(user.id, user.username)} 
@@ -57,7 +74,7 @@ export const UserCardList = ({ users, onEdit, onDelete }: UserCardListProps) => 
             Delete
           </Button>
         </HStack>
-      </Box>
+      </AppPanel>
     ))}
   </Stack>
 );

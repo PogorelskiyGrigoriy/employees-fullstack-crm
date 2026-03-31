@@ -1,9 +1,10 @@
 /**
  * @module DeleteUserDialog
- * Zero-fetch implementation: uses data passed from the list.
+ * Confirmative destruction dialog for the "Midnight Slate" theme.
+ * Zero-fetch implementation: uses data passed from the parent.
  */
 
-import { Button, Text, HStack, Stack } from "@chakra-ui/react";
+import { Button, Text, HStack, Stack, Icon } from "@chakra-ui/react";
 import { LuTrash2, LuTriangleAlert } from "react-icons/lu";
 
 import {
@@ -41,43 +42,61 @@ export const DeleteUserDialog = ({ user, onOpenChange }: DeleteUserDialogProps) 
       role="alertdialog"
       placement="center"
     >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle color="red.600">
-            <HStack gap={2}>
-              <LuTriangleAlert />
-              Confirm Deletion
+      {/* 1. Themed Shell */}
+      <DialogContent 
+        bg="bg.panel" 
+        borderRadius="2xl" 
+        borderWidth="1px" 
+        borderColor="red.500/20" // Subtle red border to indicate danger
+        shadow="2xl"
+      >
+        <DialogHeader borderBottomWidth="1px" borderColor="border.subtle" py={5}>
+          <DialogTitle>
+            <HStack gap={3} color="red.500">
+              <Icon as={LuTriangleAlert} />
+              <Text letterSpacing="tight">Confirm Deletion</Text>
             </HStack>
           </DialogTitle>
         </DialogHeader>
 
-        <DialogBody>
-          <Stack gap={3}>
-            <Text>
-              Are you sure you want to delete user <b>{user?.username}</b>?
+        <DialogBody py={8}>
+          <Stack gap={5}>
+            <Text fontSize="md">
+              Are you sure you want to delete user <Text as="span" fontWeight="black" color="fg.emphasized">{user?.username}</Text>?
             </Text>
-            <Text 
-              fontSize="xs" 
-              color="fg.muted" 
-              bg="red.50" 
-              p={2} 
-              borderRadius="md" 
+            
+            {/* 2. Redesigned Warning Box for Dark Mode */}
+            <HStack 
+              gap={3}
+              fontSize="sm" 
+              color="red.200" 
+              bg="red.500/10" 
+              p={4} 
+              borderRadius="xl" 
               borderLeftWidth="4px" 
               borderLeftColor="red.500"
             >
-              This action is permanent and will be logged in the system audit trail.
-            </Text>
+              <LuTriangleAlert size={20} />
+              <Text>
+                This action is <b>permanent</b> and will be logged in the system audit trail.
+              </Text>
+            </HStack>
           </Stack>
         </DialogBody>
 
-        <DialogFooter gap={3}>
+        {/* 3. Themed Footer Actions */}
+        <DialogFooter borderTopWidth="1px" borderColor="border.subtle" gap={3} bg="bg.canvas/50" py={4}>
           <DialogActionTrigger asChild>
-            <Button variant="ghost" disabled={isPending}>Cancel</Button>
+            <Button variant="ghost" disabled={isPending}>
+              Cancel
+            </Button>
           </DialogActionTrigger>
+          
           <Button 
             colorPalette="red" 
             loading={isPending}
             onClick={handleDelete}
+            px={8}
           >
             <LuTrash2 />
             Delete Account
