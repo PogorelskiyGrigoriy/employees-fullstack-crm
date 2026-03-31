@@ -1,7 +1,6 @@
 /**
  * @module EditUserModal
- * Adaptive modal for updating user profiles.
- * Implements data pre-fetching and responsive full-screen/centered layouts.
+ * Updated: Using local Dialog snippets for proper layering and visibility.
  */
 
 import { useEffect } from "react";
@@ -12,19 +11,23 @@ import {
   Stack, 
   Input, 
   NativeSelect, 
-  DialogRoot, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogBody, 
-  DialogFooter, 
-  DialogActionTrigger,
-  DialogCloseTrigger,
-  Spinner,
-  Center,
-  Text
+  Spinner, 
+  Center, 
+  Text,
+  HStack
 } from "@chakra-ui/react";
 import { LuUserCog, LuX, LuSave } from "react-icons/lu";
+
+import {
+  DialogActionTrigger,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import { Field } from "@/components/ui/field";
 import { updateUserSchema, type UpdateUserDto } from "@crm/shared/schemas/auth.schema.js";
@@ -36,7 +39,6 @@ interface EditUserModalProps {
 }
 
 export const EditUserModal = ({ userId, onOpenChange }: EditUserModalProps) => {
-  // 1. Data Fetching & Mutations
   const { data: user, isLoading, isError } = useUser(userId ?? undefined);
   const { mutate: update, isPending: isUpdating } = useUpdateUser();
 
@@ -49,7 +51,6 @@ export const EditUserModal = ({ userId, onOpenChange }: EditUserModalProps) => {
     resolver: zodResolver(updateUserSchema),
   });
 
-  // 2. Effect: Sync form state with fetched data
   useEffect(() => {
     if (user) {
       reset({
@@ -67,13 +68,11 @@ export const EditUserModal = ({ userId, onOpenChange }: EditUserModalProps) => {
     });
   };
 
-  const isOpen = !!userId;
-
   return (
     <DialogRoot 
-      open={isOpen} 
+      open={!!userId} 
       onOpenChange={onOpenChange}
-      size={{ base: "full", md: "md" }} // ADAPTIVE RULE: Fullscreen on mobile
+      size={{ base: "full", md: "md" }}
       placement="center"
       motionPreset="slide-in-bottom"
     >
@@ -81,10 +80,10 @@ export const EditUserModal = ({ userId, onOpenChange }: EditUserModalProps) => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader borderBottomWidth="1px">
             <DialogTitle>
-              <Stack direction="row" align="center" gap={2}>
+              <HStack gap={2}>
                 <LuUserCog />
                 Edit User Account
-              </Stack>
+              </HStack>
             </DialogTitle>
           </DialogHeader>
 
@@ -103,7 +102,6 @@ export const EditUserModal = ({ userId, onOpenChange }: EditUserModalProps) => {
                   label="Username" 
                   invalid={!!errors.username} 
                   errorText={errors.username?.message}
-                  helperText="User's display name in the system"
                 >
                   <Input {...register("username")} />
                 </Field>
@@ -128,10 +126,6 @@ export const EditUserModal = ({ userId, onOpenChange }: EditUserModalProps) => {
                     </NativeSelect.Field>
                   </NativeSelect.Root>
                 </Field>
-                
-                <Text fontSize="xs" color="fg.muted" fontStyle="italic">
-                  * Password changes should be handled through the security portal.
-                </Text>
               </Stack>
             )}
           </DialogBody>
@@ -147,13 +141,12 @@ export const EditUserModal = ({ userId, onOpenChange }: EditUserModalProps) => {
               type="submit" 
               colorPalette="blue" 
               loading={isUpdating}
-              disabled={!isDirty || isLoading} // Disable if no changes made
+              disabled={!isDirty || isLoading}
             >
               <LuSave /> Save Changes
             </Button>
           </DialogFooter>
         </form>
-        
         <DialogCloseTrigger />
       </DialogContent>
     </DialogRoot>

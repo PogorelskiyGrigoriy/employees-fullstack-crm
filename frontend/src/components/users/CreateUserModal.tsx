@@ -1,7 +1,6 @@
 /**
  * @module CreateUserModal
- * Adaptive modal for user registration. 
- * Features: Zod validation, responsive sizing, and integrated mutation.
+ * Updated: Using local Dialog snippets for registration.
  */
 
 import { useForm } from "react-hook-form";
@@ -10,17 +9,21 @@ import {
   Button, 
   Stack, 
   Input, 
-  NativeSelect, 
-  DialogRoot, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogBody, 
-  DialogFooter, 
-  DialogActionTrigger,
-  DialogCloseTrigger
+  NativeSelect,
+  HStack
 } from "@chakra-ui/react";
 import { LuUserPlus, LuX, LuCheck } from "react-icons/lu";
+
+import {
+  DialogActionTrigger,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import { Field } from "@/components/ui/field";
 import { createUserSchema, type CreateUserDto } from "@crm/shared/schemas/auth.schema.js";
@@ -62,7 +65,6 @@ export const CreateUserModal = ({ isOpen, onOpenChange }: CreateUserModalProps) 
     <DialogRoot 
       open={isOpen} 
       onOpenChange={onOpenChange}
-      // ADAPTIVE: Fullscreen on mobile, centered on desktop
       size={{ base: "full", md: "md" }}
       placement="center"
       motionPreset="slide-in-bottom"
@@ -71,56 +73,25 @@ export const CreateUserModal = ({ isOpen, onOpenChange }: CreateUserModalProps) 
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader borderBottomWidth="1px">
             <DialogTitle>
-              <Stack direction="row" align="center" gap={2}>
+              <HStack gap={2}>
                 <LuUserPlus />
                 Create New User
-              </Stack>
+              </HStack>
             </DialogTitle>
           </DialogHeader>
 
           <DialogBody py={6}>
             <Stack gap={5}>
-              <Field 
-                label="Username" 
-                invalid={!!errors.username} 
-                errorText={errors.username?.message}
-              >
-                <Input 
-                  {...register("username")} 
-                  placeholder="e.g. John Doe" 
-                  autoComplete="off"
-                />
+              <Field label="Username" invalid={!!errors.username} errorText={errors.username?.message}>
+                <Input {...register("username")} placeholder="e.g. John Doe" />
               </Field>
-
-              <Field 
-                label="Email Address" 
-                invalid={!!errors.email} 
-                errorText={errors.email?.message}
-              >
-                <Input 
-                  {...register("email")} 
-                  type="email" 
-                  placeholder="john@company.com" 
-                />
+              <Field label="Email Address" invalid={!!errors.email} errorText={errors.email?.message}>
+                <Input {...register("email")} type="email" placeholder="john@company.com" />
               </Field>
-
-              <Field 
-                label="Password" 
-                invalid={!!errors.password} 
-                errorText={errors.password?.message}
-              >
-                <Input 
-                  {...register("password")} 
-                  type="password" 
-                  placeholder="••••••••" 
-                />
+              <Field label="Password" invalid={!!errors.password} errorText={errors.password?.message}>
+                <Input {...register("password")} type="password" placeholder="••••••••" />
               </Field>
-
-              <Field 
-                label="System Role" 
-                invalid={!!errors.role} 
-                errorText={errors.role?.message}
-              >
+              <Field label="System Role" invalid={!!errors.role} errorText={errors.role?.message}>
                 <NativeSelect.Root>
                   <NativeSelect.Field {...register("role")}>
                     <option value="USER">User (Standard Access)</option>
@@ -134,23 +105,14 @@ export const CreateUserModal = ({ isOpen, onOpenChange }: CreateUserModalProps) 
           <DialogFooter borderTopWidth="1px" gap={3}>
             <DialogActionTrigger asChild>
               <Button variant="ghost" disabled={isPending}>
-                <LuX />
-                Cancel
+                <LuX /> Cancel
               </Button>
             </DialogActionTrigger>
-            
-            <Button 
-              type="submit" 
-              colorPalette="blue" 
-              loading={isPending}
-              loadingText="Creating..."
-            >
-              <LuCheck />
-              Create Account
+            <Button type="submit" colorPalette="blue" loading={isPending}>
+              <LuCheck /> Create Account
             </Button>
           </DialogFooter>
         </form>
-        
         <DialogCloseTrigger />
       </DialogContent>
     </DialogRoot>

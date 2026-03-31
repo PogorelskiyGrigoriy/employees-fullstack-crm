@@ -1,17 +1,10 @@
 /**
  * @module DeleteUserDialog
- * Safety-first confirmation dialog for user deletion.
+ * Updated: Using local Dialog snippets for proper alerts.
  */
 
 import { 
   Button, 
-  DialogRoot, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogBody, 
-  DialogFooter, 
-  DialogActionTrigger,
   Text,
   Spinner,
   Center,
@@ -19,6 +12,18 @@ import {
   Stack
 } from "@chakra-ui/react";
 import { LuTrash2, LuTriangleAlert } from "react-icons/lu";
+
+import {
+  DialogActionTrigger,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
 import { useDeleteUser, useUser } from "@/services/hooks/user-hooks/use-users";
 
 interface DeleteUserDialogProps {
@@ -37,16 +42,14 @@ export const DeleteUserDialog = ({ userId, onOpenChange }: DeleteUserDialogProps
     });
   };
 
-  const isOpen = !!userId;
-
   return (
     <DialogRoot 
-      open={isOpen} 
+      open={!!userId} 
       onOpenChange={onOpenChange}
       role="alertdialog"
       placement="center"
     >
-      <DialogContent borderColor="red.subtle">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle color="red.600">
             <HStack gap={2}>
@@ -64,7 +67,15 @@ export const DeleteUserDialog = ({ userId, onOpenChange }: DeleteUserDialogProps
               <Text>
                 Are you sure you want to delete user <b>{user?.username}</b>?
               </Text>
-              <Text fontSize="xs" color="fg.muted" bg="red.50" p={2} borderRadius="md" borderLeftWidth="4px" borderLeftColor="red.500">
+              <Text 
+                fontSize="xs" 
+                color="fg.muted" 
+                bg="red.50" 
+                p={2} 
+                borderRadius="md" 
+                borderLeftWidth="4px" 
+                borderLeftColor="red.500"
+              >
                 This action is permanent and will be logged in the system audit trail.
               </Text>
             </Stack>
@@ -84,6 +95,7 @@ export const DeleteUserDialog = ({ userId, onOpenChange }: DeleteUserDialogProps
             Delete Account
           </Button>
         </DialogFooter>
+        <DialogCloseTrigger />
       </DialogContent>
     </DialogRoot>
   );
