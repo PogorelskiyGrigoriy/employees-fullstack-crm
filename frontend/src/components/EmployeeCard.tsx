@@ -5,7 +5,7 @@
 
 import { useRef } from "react";
 import { Box, HStack, Spacer, Text, VStack } from "@chakra-ui/react";
-import { EmployeeIdentity } from "./ui/DataDisplay";
+import { EmployeeIdentity } from "./shared/DataDisplay";
 import { DeleteEmployeeAction } from "./DeleteEmployeeAction";
 import { EditEmployeeAction } from "./EditEmployeeAction";
 import { EmployeeDetailsDialog } from "./EmployeeDetailsDialog";

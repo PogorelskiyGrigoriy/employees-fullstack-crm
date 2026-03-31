@@ -5,7 +5,7 @@
  */
 
 import { Table, HStack, VStack, Text } from "@chakra-ui/react";
-import { CurrencyText, DateText, EmployeeIdentity, DeptBadge } from "./ui/DataDisplay";
+import { CurrencyText, DateText, EmployeeIdentity, DeptBadge } from "./shared/DataDisplay";
 import { DeleteEmployeeAction } from "./DeleteEmployeeAction";
 import { EditEmployeeAction } from "./EditEmployeeAction";
 import { calculateAge } from "@crm/shared/utils/date-utils";

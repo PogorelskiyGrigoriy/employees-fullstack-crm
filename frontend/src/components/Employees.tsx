@@ -10,7 +10,7 @@ import { LuSearchX } from "react-icons/lu";
 import { EmployeeCard } from "./EmployeeCard";
 import { EmployeeRow } from "./EmployeeRow";
 import { MobileSortActions } from "./MobileSortActions";
-import { SortableColumn } from "./ui/SortableColumn";
+import { SortableColumn } from "./shared/SortableColumn";
 
 import { useEmployees } from "@/services/hooks/use-employees";
 import { useUserRole } from "@/store/auth-store";
