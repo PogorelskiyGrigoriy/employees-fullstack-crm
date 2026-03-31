@@ -1,21 +1,12 @@
 /**
  * @module EditUserModal
- * Updated: Using local Dialog snippets for proper layering and visibility.
+ * Optimized: Uses existing user data from props to avoid redundant GET requests.
  */
 
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { 
-  Button, 
-  Stack, 
-  Input, 
-  NativeSelect, 
-  Spinner, 
-  Center, 
-  Text,
-  HStack
-} from "@chakra-ui/react";
+import { Button, Stack, Input, NativeSelect, HStack } from "@chakra-ui/react";
 import { LuUserCog, LuX, LuSave } from "react-icons/lu";
 
 import {
@@ -31,15 +22,15 @@ import {
 
 import { Field } from "@/components/ui/field";
 import { updateUserSchema, type UpdateUserDto } from "@crm/shared/schemas/auth.schema.js";
-import { useUser, useUpdateUser } from "@/services/hooks/user-hooks/use-users";
+import { useUpdateUser } from "@/services/hooks/user-hooks/use-users";
+import type { User } from "@crm/shared/schemas/auth.schema.js";
 
 interface EditUserModalProps {
-  userId: string | null;
+  user: User | null; 
   onOpenChange: (details: { open: boolean }) => void;
 }
 
-export const EditUserModal = ({ userId, onOpenChange }: EditUserModalProps) => {
-  const { data: user, isLoading, isError } = useUser(userId ?? undefined);
+export const EditUserModal = ({ user, onOpenChange }: EditUserModalProps) => {
   const { mutate: update, isPending: isUpdating } = useUpdateUser();
 
   const {
@@ -62,15 +53,15 @@ export const EditUserModal = ({ userId, onOpenChange }: EditUserModalProps) => {
   }, [user, reset]);
 
   const onSubmit = (data: UpdateUserDto) => {
-    if (!userId) return;
-    update({ id: userId, data }, {
+    if (!user) return;
+    update({ id: user.id, data }, {
       onSuccess: () => onOpenChange({ open: false })
     });
   };
 
   return (
     <DialogRoot 
-      open={!!userId} 
+      open={!!user} 
       onOpenChange={onOpenChange}
       size={{ base: "full", md: "md" }}
       placement="center"
@@ -88,61 +79,31 @@ export const EditUserModal = ({ userId, onOpenChange }: EditUserModalProps) => {
           </DialogHeader>
 
           <DialogBody py={6}>
-            {isLoading ? (
-              <Center h="200px">
-                <Spinner color="blue.500" />
-              </Center>
-            ) : isError ? (
-              <Center h="200px">
-                <Text color="red.500">Failed to load user data</Text>
-              </Center>
-            ) : (
-              <Stack gap={5}>
-                <Field 
-                  label="Username" 
-                  invalid={!!errors.username} 
-                  errorText={errors.username?.message}
-                >
-                  <Input {...register("username")} />
-                </Field>
+            <Stack gap={5}>
+              <Field label="Username" invalid={!!errors.username} errorText={errors.username?.message}>
+                <Input {...register("username")} />
+              </Field>
 
-                <Field 
-                  label="Email Address" 
-                  invalid={!!errors.email} 
-                  errorText={errors.email?.message}
-                >
-                  <Input {...register("email")} type="email" />
-                </Field>
+              <Field label="Email Address" invalid={!!errors.email} errorText={errors.email?.message}>
+                <Input {...register("email")} type="email" />
+              </Field>
 
-                <Field 
-                  label="System Role" 
-                  invalid={!!errors.role} 
-                  errorText={errors.role?.message}
-                >
-                  <NativeSelect.Root>
-                    <NativeSelect.Field {...register("role")}>
-                      <option value="USER">User (Standard Access)</option>
-                      <option value="ADMIN">Admin (Full Control)</option>
-                    </NativeSelect.Field>
-                  </NativeSelect.Root>
-                </Field>
-              </Stack>
-            )}
+              <Field label="System Role" invalid={!!errors.role} errorText={errors.role?.message}>
+                <NativeSelect.Root>
+                  <NativeSelect.Field {...register("role")}>
+                    <option value="USER">User (Standard Access)</option>
+                    <option value="ADMIN">Admin (Full Control)</option>
+                  </NativeSelect.Field>
+                </NativeSelect.Root>
+              </Field>
+            </Stack>
           </DialogBody>
 
           <DialogFooter borderTopWidth="1px" gap={3}>
             <DialogActionTrigger asChild>
-              <Button variant="ghost" disabled={isUpdating}>
-                <LuX /> Cancel
-              </Button>
+              <Button variant="ghost" disabled={isUpdating}><LuX /> Cancel</Button>
             </DialogActionTrigger>
-            
-            <Button 
-              type="submit" 
-              colorPalette="blue" 
-              loading={isUpdating}
-              disabled={!isDirty || isLoading}
-            >
+            <Button type="submit" colorPalette="blue" loading={isUpdating} disabled={!isDirty}>
               <LuSave /> Save Changes
             </Button>
           </DialogFooter>

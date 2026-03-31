@@ -1,6 +1,6 @@
 /**
  * @module UserCardList
- * Mobile-optimized user cards with action callbacks for CRUD.
+ * Updated: Mobile actions now pass full context to parent page.
  */
 
 import { Box, Stack, HStack, Text, Badge, Button, Spacer } from "@chakra-ui/react";
@@ -10,7 +10,7 @@ import type { User } from "@crm/shared/schemas/auth.schema.js";
 interface UserCardListProps {
   readonly users: User[];
   readonly onEdit: (id: string) => void;
-  readonly onDelete: (id: string) => void;
+  readonly onDelete: (id: string, username: string) => void;
 }
 
 export const UserCardList = ({ users, onEdit, onDelete }: UserCardListProps) => (
@@ -36,7 +36,6 @@ export const UserCardList = ({ users, onEdit, onDelete }: UserCardListProps) => 
         </HStack>
         
         <HStack borderTopWidth="1px" pt="3" mt="3" gap="4">
-          {/* 2. Привязываем клик к onEdit */}
           <Button 
             size="sm" 
             variant="outline" 
@@ -47,13 +46,12 @@ export const UserCardList = ({ users, onEdit, onDelete }: UserCardListProps) => 
             Edit
           </Button>
           
-          {/* 3. Привязываем клик к onDelete */}
           <Button 
             size="sm" 
             variant="outline" 
             colorPalette="red" 
             flex="1"
-            onClick={() => onDelete(user.id)}
+            onClick={() => onDelete(user.id, user.username)} 
           >
             <LuTrash2 />
             Delete

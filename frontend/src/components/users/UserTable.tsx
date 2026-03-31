@@ -1,6 +1,6 @@
 /**
  * @module UserTable
- * Updated with action callbacks for CRUD integration.
+ * Updated: Action callbacks now include username for zero-fetch modals.
  */
 
 import { Table, Badge, HStack, IconButton, Box } from "@chakra-ui/react";
@@ -10,7 +10,7 @@ import type { User } from "@crm/shared/schemas/auth.schema.js";
 interface UserTableProps {
   readonly users: User[];
   readonly onEdit: (id: string) => void;
-  readonly onDelete: (id: string) => void;
+  readonly onDelete: (id: string, username: string) => void; 
 }
 
 export const UserTable = ({ users, onEdit, onDelete }: UserTableProps) => (
@@ -43,7 +43,6 @@ export const UserTable = ({ users, onEdit, onDelete }: UserTableProps) => (
             </Table.Cell>
             <Table.Cell>
               <HStack gap="2" justify="flex-end">
-                {/* 2. Привязываем клик к onEdit */}
                 <IconButton 
                   aria-label="Edit user" 
                   variant="ghost" 
@@ -53,13 +52,12 @@ export const UserTable = ({ users, onEdit, onDelete }: UserTableProps) => (
                   <LuPencil />
                 </IconButton>
                 
-                {/* 3. Привязываем клик к onDelete */}
                 <IconButton 
                   aria-label="Delete user" 
                   variant="ghost" 
                   size="sm" 
                   colorPalette="red"
-                  onClick={() => onDelete(user.id)}
+                  onClick={() => onDelete(user.id, user.username)} 
                 >
                   <LuTrash2 />
                 </IconButton>

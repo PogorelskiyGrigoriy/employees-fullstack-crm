@@ -1,16 +1,9 @@
 /**
  * @module DeleteUserDialog
- * Updated: Using local Dialog snippets for proper alerts.
+ * Zero-fetch implementation: uses data passed from the list.
  */
 
-import { 
-  Button, 
-  Text,
-  Spinner,
-  Center,
-  HStack,
-  Stack
-} from "@chakra-ui/react";
+import { Button, Text, HStack, Stack } from "@chakra-ui/react";
 import { LuTrash2, LuTriangleAlert } from "react-icons/lu";
 
 import {
@@ -24,27 +17,26 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { useDeleteUser, useUser } from "@/services/hooks/user-hooks/use-users";
+import { useDeleteUser } from "@/services/hooks/user-hooks/use-users";
 
 interface DeleteUserDialogProps {
-  userId: string | null;
+  user: { id: string; username: string } | null; 
   onOpenChange: (details: { open: boolean }) => void;
 }
 
-export const DeleteUserDialog = ({ userId, onOpenChange }: DeleteUserDialogProps) => {
-  const { data: user, isLoading } = useUser(userId ?? undefined);
+export const DeleteUserDialog = ({ user, onOpenChange }: DeleteUserDialogProps) => {
   const { mutate: deleteUser, isPending } = useDeleteUser();
 
   const handleDelete = () => {
-    if (!userId) return;
-    deleteUser(userId, {
+    if (!user) return;
+    deleteUser(user.id, {
       onSuccess: () => onOpenChange({ open: false })
     });
   };
 
   return (
     <DialogRoot 
-      open={!!userId} 
+      open={!!user} 
       onOpenChange={onOpenChange}
       role="alertdialog"
       placement="center"
@@ -60,26 +52,22 @@ export const DeleteUserDialog = ({ userId, onOpenChange }: DeleteUserDialogProps
         </DialogHeader>
 
         <DialogBody>
-          {isLoading ? (
-            <Center py={4}><Spinner size="sm" /></Center>
-          ) : (
-            <Stack gap={3}>
-              <Text>
-                Are you sure you want to delete user <b>{user?.username}</b>?
-              </Text>
-              <Text 
-                fontSize="xs" 
-                color="fg.muted" 
-                bg="red.50" 
-                p={2} 
-                borderRadius="md" 
-                borderLeftWidth="4px" 
-                borderLeftColor="red.500"
-              >
-                This action is permanent and will be logged in the system audit trail.
-              </Text>
-            </Stack>
-          )}
+          <Stack gap={3}>
+            <Text>
+              Are you sure you want to delete user <b>{user?.username}</b>?
+            </Text>
+            <Text 
+              fontSize="xs" 
+              color="fg.muted" 
+              bg="red.50" 
+              p={2} 
+              borderRadius="md" 
+              borderLeftWidth="4px" 
+              borderLeftColor="red.500"
+            >
+              This action is permanent and will be logged in the system audit trail.
+            </Text>
+          </Stack>
         </DialogBody>
 
         <DialogFooter gap={3}>

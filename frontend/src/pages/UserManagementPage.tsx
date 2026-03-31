@@ -1,6 +1,7 @@
 /**
  * @module UserManagementPage
- * Finalized with full CRUD state orchestration: Create, Edit, and Delete.
+ * Finalized administrative hub.
+ * Optimized to pass full context to modals, eliminating 404s and redundant GETs.
  */
 
 import { useState } from "react";
@@ -25,14 +26,13 @@ import { UserCardList } from "@/components/users/UserCardList";
 import { CreateUserModal } from "@/components/users/CreateUserModal";
 import { EditUserModal } from "@/components/users/EditUserModal";
 import { DeleteUserDialog } from "@/components/users/DeleteUserDialog";
+import type { User } from "@crm/shared/schemas/auth.schema.js";
 
 export const UserManagementPage = () => {
-  const { data: users, isLoading, isError, error } = useUsers();
-  
-  // States for Modals
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+  const { data: users, isLoading, isError, error } = useUsers(); 
+  const [isCreateOpen, setIsCreateOpen] = useState(false); 
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [deletingUser, setDeletingUser] = useState<{ id: string; username: string } | null>(null);
 
   if (isLoading) {
     return (
@@ -61,7 +61,9 @@ export const UserManagementPage = () => {
           <Stack gap={1}>
             <HStack color="blue.600">
               <Icon as={LuUsers} />
-              <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="widest">Identity Management</Text>
+              <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="widest">
+                Identity Management
+              </Text>
             </HStack>
             <Heading size={{ base: "xl", md: "2xl" }}>User Accounts</Heading>
           </Stack>
@@ -71,22 +73,22 @@ export const UserManagementPage = () => {
           </Button>
         </Stack>
 
-        {/* Content */}
+        {/* Content Section */}
         {users && users.length > 0 ? (
           <>
             <Box display={{ base: "none", md: "block" }}>
               <UserTable 
                 users={users} 
-                onEdit={setEditingUserId} 
-                onDelete={setDeletingUserId}
+                onEdit={(id) => setEditingUser(users.find(u => u.id === id) ?? null)} 
+                onDelete={(id, username) => setDeletingUser({ id, username })}
               />
             </Box>
 
             <Box display={{ base: "block", md: "none" }}>
               <UserCardList 
                 users={users} 
-                onEdit={setEditingUserId} 
-                onDelete={setDeletingUserId}
+                onEdit={(id) => setEditingUser(users.find(u => u.id === id) ?? null)} 
+                onDelete={(id, username) => setDeletingUser({ id, username })}
               />
             </Box>
           </>
@@ -98,19 +100,20 @@ export const UserManagementPage = () => {
       </Stack>
 
       {/* --- Modals Layer --- */}
+      
       <CreateUserModal 
         isOpen={isCreateOpen} 
         onOpenChange={(e) => setIsCreateOpen(e.open)} 
       />
 
       <EditUserModal 
-        userId={editingUserId} 
-        onOpenChange={(e) => !e.open && setEditingUserId(null)} 
+        user={editingUser} 
+        onOpenChange={(e) => !e.open && setEditingUser(null)} 
       />
 
       <DeleteUserDialog 
-        userId={deletingUserId}
-        onOpenChange={(e) => !e.open && setDeletingUserId(null)}
+        user={deletingUser}
+        onOpenChange={(e) => !e.open && setDeletingUser(null)}
       />
     </Container>
   );
