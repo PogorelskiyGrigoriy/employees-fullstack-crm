@@ -1,7 +1,6 @@
 /**
  * @module DepartmentSelect
- * Reusable select component for departments.
- * Fixed to use the correct DEPARTMENTS_LIST and DEPARTMENT_FILTER_LIST constants.
+ * Final Clean Version: High-contrast NativeSelect.
  */
 
 import { NativeSelect } from "@chakra-ui/react";
@@ -12,14 +11,10 @@ import {
 } from "@crm/shared/schemas/department.schema.js";
 
 interface DepartmentSelectProps {
-  /** Registration object from react-hook-form */
   registration: any;
-  /** Error message from formState.errors */
   errorText?: string;
-  /** 'form' for new/edit employee, 'filter' for the search drawer */
   variant?: "form" | "filter";
-  /** Custom label (defaults to "Department") */
-  label?: string;
+  label?: React.ReactNode;
 }
 
 export const DepartmentSelect = ({ 
@@ -29,32 +24,34 @@ export const DepartmentSelect = ({
   label = "Department"
 }: DepartmentSelectProps) => {
   const isFilter = variant === "filter";
-  
-  // Decide which list to use based on the context
   const options = isFilter ? DEPARTMENT_FILTER_LIST : DEPARTMENTS_LIST;
 
   return (
-    <Field 
-      label={isFilter ? undefined : label} 
-      invalid={!!errorText} 
-      errorText={errorText}
-    >
-      <NativeSelect.Root>
+    <Field label={label} invalid={!!errorText} errorText={errorText}>
+      <NativeSelect.Root size="md">
         <NativeSelect.Field 
           {...registration} 
-          variant="subtle"
-          bg={isFilter ? "transparent" : "bg.muted"}
-          _focus={{ borderColor: "brand.500" }}
+          variant="outline"
+          bg="bg.panel"
+          color="fg.emphasized"
+          borderRadius="md"
+          borderWidth="1px"
+          borderColor="border.emphasized"
+          _focus={{ 
+            borderColor: "brand.500",
+            boxShadow: "0 0 0 1px var(--chakra-colors-brand-500)" 
+          }}
+          css={{ colorScheme: "dark" }}
         >
-          {/* If it's not a filter, we might want an empty placeholder first */}
           {!isFilter && <option value="">Select Department</option>}
-          
           {options.map((dept) => (
             <option key={dept} value={dept}>
               {dept}
             </option>
           ))}
         </NativeSelect.Field>
+        
+        <NativeSelect.Indicator color="brand.500" /> 
       </NativeSelect.Root>
     </Field>
   );

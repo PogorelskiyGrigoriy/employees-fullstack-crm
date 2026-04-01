@@ -1,7 +1,6 @@
 /**
  * @module HomePage
- * The primary dashboard for the Team Directory.
- * Refactored to utilize the PageHeader molecule and AppPanel atom.
+ * Primary dashboard with fixed Dialog/Filter visibility.
  */
 
 "use client";
@@ -11,8 +10,14 @@ import { Container, VStack, Text, Button, Separator } from "@chakra-ui/react";
 import { LuFilter, LuActivity } from "react-icons/lu";
 
 import {
-  DialogBody, DialogCloseTrigger, DialogContent, DialogHeader,
-  DialogRoot, DialogTitle, DialogTrigger
+  DialogBody, 
+  DialogCloseTrigger, 
+  DialogContent, 
+  DialogHeader,
+  DialogRoot, 
+  DialogTitle, 
+  DialogTrigger,
+  DialogBackdrop // Добавляем бэкдроп для фокусировки
 } from "@/components/ui/dialog";
 
 import { Employees } from "@/components/Employees";
@@ -28,12 +33,8 @@ import { employeeFilterSchema } from "@crm/shared/schemas/employee.schema.js";
 export const HomePage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { filteredCount } = useEmployees();
-  
   const { filters } = useFilters();
 
-  /**
-   * Domain Logic: Check if current filters differ from schema defaults
-   */
   const isFiltered = useMemo(() => {
     const defaults = employeeFilterSchema.parse({});
     return JSON.stringify(filters) !== JSON.stringify(defaults);
@@ -43,18 +44,21 @@ export const HomePage = () => {
     <Container maxW="6xl" py={{ base: "6", md: "10" }} px={{ base: "4", md: "8" }}>
       <VStack align="stretch" gap="8">
         
-        {/* 1. Integrated Page Header */}
         <PageHeader
           title="Team Directory"
           description="Manage and overview organization members across all departments."
-          icon={LuActivity} // Added an icon for visual flair
+          icon={LuActivity}
           rightElement={
             <DialogRoot
               open={isDialogOpen}
               onOpenChange={(e) => setIsDialogOpen(e.open)}
               size="sm"
               placement="center"
+              motionPreset="slide-in-bottom"
             >
+              {/* 1. Backdrop: Затемняет фон, чтобы выделить фильтры */}
+              <DialogBackdrop bg="blackAlpha.700" backdropFilter="blur(4px)" />
+
               <DialogTrigger asChild>
                 <Button
                   variant={isFiltered ? "solid" : "outline"}
@@ -62,59 +66,58 @@ export const HomePage = () => {
                   size="md"
                   rounded="full"
                   px="6"
-                  shadow={isFiltered ? "md" : "none"}
+                  gap="2"
                 >
                   <LuFilter />
-                  Filters
+                  <Text>Filters</Text>
                   {isFiltered && (
-                    <Text as="span" ms="1" fontWeight="bold">
-                      ({filteredCount})
+                    <Text as="span" fontWeight="black" fontSize="xs" bg="whiteAlpha.200" px="2" borderRadius="full">
+                      {filteredCount}
                     </Text>
                   )}
                 </Button>
               </DialogTrigger>
               
-              <DialogContent borderRadius="2xl" bg="bg.panel">
-                <DialogHeader borderBottomWidth="1px" borderColor="border.subtle">
-                  <DialogTitle fontSize="xl">Filter Directory</DialogTitle>
+              {/* 2. DialogContent: Добавляем границы и тени */}
+              <DialogContent 
+                borderRadius="2xl" 
+                bg="bg.panel" 
+                borderWidth="1px" 
+                borderColor="border.emphasized" // Светлая рамка — спасение для темной темы
+                shadow="dark-lg"
+              >
+                <DialogHeader borderBottomWidth="1px" borderColor="border.subtle" py="4">
+                  <DialogTitle fontSize="lg" fontWeight="black" color="brand.500">
+                    FILTER SETTINGS
+                  </DialogTitle>
                 </DialogHeader>
-                <DialogBody pb="6">
+
+                <DialogBody pb="2">
                   <Filters onClose={() => setIsDialogOpen(false)} />
                 </DialogBody>
-                <DialogCloseTrigger />
+
+                <DialogCloseTrigger color="fg.muted" _hover={{ color: "brand.500" }} />
               </DialogContent>
             </DialogRoot>
           }
         />
 
-        <Separator borderColor="border.subtle" />
+        <Separator borderColor="border.subtle" opacity={0.5} />
 
-        {/* 2. Content Section */}
         <VStack align="stretch" gap="4">
           <ActiveFilters />
-          
-          {/* Main List wrapped in AppPanel */}
           <AppPanel 
             p={0} 
             overflow="hidden"
             borderColor={isFiltered ? "brand.500/40" : "border.subtle"}
-            transition="border-color 0.3s ease"
           >
             <Employees />
           </AppPanel>
         </VStack>
 
-        {/* 3. System Status Footer */}
-        <VStack gap="2" mt="8" opacity={0.5}>
+        <VStack gap="2" mt="8" opacity={0.3}>
           <Separator width="40px" />
-          <Text 
-            fontSize="2xs" 
-            color="fg.subtle" 
-            textAlign="center" 
-            textTransform="uppercase" 
-            letterSpacing="widest"
-            fontWeight="bold"
-          >
+          <Text fontSize="2xs" fontWeight="bold" letterSpacing="widest">
             Live Sync: Express Engine Port 3000
           </Text>
         </VStack>

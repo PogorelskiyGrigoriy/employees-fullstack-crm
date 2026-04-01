@@ -1,10 +1,21 @@
 /**
  * @module ThemeConfig
  * Centralized design system tokens for Chakra UI 3.x.
+ * Fixed: Added global CSS to force dark mode for native browser elements.
  */
 import { createSystem, defineConfig, defaultConfig } from "@chakra-ui/react";
 
 const customConfig = defineConfig({
+  globalCss: {
+    ":root": {
+      colorScheme: "dark !important",
+    },
+    "select option": {
+      backgroundColor: "#18181b !important", 
+      color: "#ffffff !important",
+    },
+  },
+
   theme: {
     // 1. Base Tokens
     tokens: {

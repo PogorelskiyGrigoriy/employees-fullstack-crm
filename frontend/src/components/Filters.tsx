@@ -1,7 +1,6 @@
 /**
  * @module Filters
- * A refined search interface for the employee directory.
- * Refactored for Midnight Slate aesthetics using standardized molecules.
+ * Final Clean Version: Refined search interface.
  */
 
 import { VStack, HStack, Input, Button, Text } from "@chakra-ui/react";
@@ -47,20 +46,33 @@ export const Filters = ({ onClose }: Props) => {
     reset(defaultValues);
   };
 
+  const FilterLabel = ({ children }: { children: React.ReactNode }) => (
+    <Text as="span" color="fg.emphasized" fontWeight="bold" fontSize="xs">
+      {children}
+    </Text>
+  );
+
   return (
     <form onSubmit={handleSubmit(handleApply)}>
-      <VStack gap={6} align="stretch" py={2}>
-        
-        {/* 1. Department: Uses 'filter' variant which includes "All" option */}
+      <VStack gap={6} align="stretch" p={6}>
+        <Text 
+          fontSize="xs" 
+          fontWeight="black" 
+          color="brand.500" 
+          textTransform="uppercase" 
+          letterSpacing="widest"
+        >
+          Filter Directory
+        </Text>
+
         <DepartmentSelect 
           variant="filter"
-          label="Organization Unit"
+          label={<FilterLabel>Organization Unit</FilterLabel>}
           registration={register("department")} 
         />
 
-        {/* 2. Salary Range: Subtle paired inputs */}
         <Field 
-          label={`Salary Range (${salConf.currency})`}
+          label={<FilterLabel>Salary Range ({salConf.currency})</FilterLabel>}
           invalid={!!errors.minSalary || !!errors.maxSalary}
           errorText={errors.minSalary?.message || errors.maxSalary?.message}
         >
@@ -69,21 +81,22 @@ export const Filters = ({ onClose }: Props) => {
               variant="subtle"
               type="number"
               placeholder="Min"
+              bg="bg.muted/50"
               {...register("minSalary", { valueAsNumber: true })} 
             />
-            <Text color="fg.muted" fontSize="sm">to</Text>
+            <Text color="fg.muted" fontSize="xs">to</Text>
             <Input 
               variant="subtle"
               type="number"
               placeholder="Max"
+              bg="bg.muted/50"
               {...register("maxSalary", { valueAsNumber: true })} 
             />
           </HStack>
         </Field>
 
-        {/* 3. Age Range: Subtle paired inputs */}
         <Field 
-          label="Age Demographics"
+          label={<FilterLabel>Age Demographics</FilterLabel>}
           invalid={!!errors.minAge || !!errors.maxAge}
           errorText={errors.minAge?.message || errors.maxAge?.message}
         >
@@ -92,34 +105,37 @@ export const Filters = ({ onClose }: Props) => {
               variant="subtle"
               type="number"
               placeholder="Min"
+              bg="bg.muted/50"
               {...register("minAge", { valueAsNumber: true })} 
             />
-            <Text color="fg.muted" fontSize="sm">to</Text>
+            <Text color="fg.muted" fontSize="xs">to</Text>
             <Input 
               variant="subtle"
               type="number"
               placeholder="Max"
+              bg="bg.muted/50"
               {...register("maxAge", { valueAsNumber: true })} 
             />
           </HStack>
         </Field>
 
-        {/* 4. Action Bar: Standardized branded buttons */}
-        <HStack gap={4} mt={6}>
+        <HStack gap={4} pt={2}>
           <Button 
             variant="ghost" 
+            size="sm"
             onClick={handleReset} 
             flex="1"
-            _hover={{ bg: "whiteAlpha.100" }}
+            color="fg.muted"
+            _hover={{ bg: "whiteAlpha.100", color: "fg.emphasized" }}
           >
             Reset All
           </Button>
           <Button 
             type="submit" 
+            size="sm"
             colorPalette="brand" 
             disabled={!isValid}
             flex="2"
-            shadow="md"
           >
             Apply Filters
           </Button>
