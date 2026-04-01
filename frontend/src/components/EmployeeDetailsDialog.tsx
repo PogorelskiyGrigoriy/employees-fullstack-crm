@@ -1,15 +1,12 @@
 /**
  * @module EmployeeDetailsDialog
  * Read-only profile view aligned with the "Midnight Slate" system.
- * Uses AppBadge and standardized identity molecules.
+ * Refactored: Uses adaptive AppDialog atoms for consistent depth and positioning.
  */
 
 import {
   DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
   DialogHeader,
-  DialogRoot,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -20,6 +17,9 @@ import { EmployeeIdentity } from "@/components/shared/molecules/EmployeeIdentity
 import { AppBadge } from "@/components/shared/atoms/AppBadge";
 import { CurrencyText, DateText } from "@/components/shared/atoms/DataDisplay";
 
+// Наши новые адаптивные атомы
+import { AppDialogRoot, AppDialogContent } from "@/components/shared/atoms/AppDialog";
+
 import { calculateAge } from "@crm/shared/utils/date-utils";
 import type { Employee } from "@crm/shared/schemas/employee.schema.js";
 
@@ -29,7 +29,8 @@ interface Props {
 
 export const EmployeeDetailsDialog = ({ employee }: Props) => {
   return (
-    <DialogRoot motionPreset="slide-in-bottom" size="sm">
+    /* 1. AppDialogRoot автоматически применит Backdrop и адаптивный размер */
+    <AppDialogRoot size="sm">
       <DialogTrigger asChild>
         <IconButton
           aria-label="View details"
@@ -43,14 +44,8 @@ export const EmployeeDetailsDialog = ({ employee }: Props) => {
         </IconButton>
       </DialogTrigger>
 
-      <DialogContent 
-        borderRadius="2xl" 
-        pb="4" 
-        bg="bg.panel" 
-        borderWidth="1px" 
-        borderColor="border.subtle"
-        shadow="2xl"
-      >
+      /* 2. AppDialogContent добавит Portal, Positioner, тени и крестик */
+      <AppDialogContent pb="4">
         <DialogHeader borderBottomWidth="1px" borderColor="border.subtle" py={5}>
           <DialogTitle fontSize="xl" letterSpacing="tight">
             Employee Profile
@@ -58,8 +53,8 @@ export const EmployeeDetailsDialog = ({ employee }: Props) => {
         </DialogHeader>
 
         <DialogBody py={6}>
-          <VStack align="stretch" gap="8">
-            {/* 1. Header Identity Block */}
+          <VStack align="stretch" gap={8}>
+            {/* Header Identity Block */}
             <Box>
               <EmployeeIdentity 
                 name={employee.fullName} 
@@ -67,12 +62,11 @@ export const EmployeeDetailsDialog = ({ employee }: Props) => {
               />
             </Box>
 
-            {/* 2. Detailed Info Rows */}
+            {/* Detailed Info Rows */}
             <VStack align="stretch" gap={5}>
               <InfoRow 
                 icon={LuBriefcase} 
                 label="Department" 
-                // Using the new AppBadge atom instead of DeptBadge
                 value={<AppBadge type="dept" value={employee.department} />} 
               />
               
@@ -97,14 +91,12 @@ export const EmployeeDetailsDialog = ({ employee }: Props) => {
             </VStack>
           </VStack>
         </DialogBody>
-
-        <DialogCloseTrigger color="fg.muted" />
-      </DialogContent>
-    </DialogRoot>
+      </AppDialogContent>
+    </AppDialogRoot>
   );
 };
 
-/* --- Helper Component --- */
+/* --- Helper Component (без изменений, так как он завязан на внутреннюю верстку) --- */
 
 interface InfoRowProps {
   icon: React.ElementType;
@@ -115,7 +107,6 @@ interface InfoRowProps {
 const InfoRow = ({ icon, label, value }: InfoRowProps) => (
   <HStack justify="space-between" width="full" align="center">
     <HStack gap="3">
-      {/* Brand accent for icons */}
       <Center 
         boxSize="8" 
         borderRadius="md" 

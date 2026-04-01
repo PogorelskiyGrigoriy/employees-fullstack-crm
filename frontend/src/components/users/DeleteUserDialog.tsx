@@ -1,23 +1,22 @@
 /**
  * @module DeleteUserDialog
  * Confirmative destruction dialog for the "Midnight Slate" theme.
- * Zero-fetch implementation: uses data passed from the parent.
+ * Refactored: Uses AppDialog atoms, centered layout, and balanced actions.
  */
 
-import { Button, Text, HStack, Stack, Icon } from "@chakra-ui/react";
-import { LuTrash2, LuTriangleAlert } from "react-icons/lu";
+import { Button, Text, HStack, Stack, Box, VStack } from "@chakra-ui/react";
+import { LuTrash2 } from "react-icons/lu";
 
 import {
   DialogActionTrigger,
   DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogRoot,
   DialogTitle,
 } from "@/components/ui/dialog";
 
+// Импортируем наши адаптивные атомы
+import { AppDialogRoot, AppDialogContent } from "@/components/shared/atoms/AppDialog";
 import { useDeleteUser } from "@/services/hooks/user-hooks/use-users";
 
 interface DeleteUserDialogProps {
@@ -36,58 +35,57 @@ export const DeleteUserDialog = ({ user, onOpenChange }: DeleteUserDialogProps) 
   };
 
   return (
-    <DialogRoot 
+    /* 1. AppDialogRoot: обрабатывает состояние открытия и адаптивный размер (full на мобилках) */
+    <AppDialogRoot 
       open={!!user} 
       onOpenChange={onOpenChange}
       role="alertdialog"
-      placement="center"
+      size="sm"
     >
-      {/* 1. Themed Shell */}
-      <DialogContent 
-        bg="bg.panel" 
-        borderRadius="2xl" 
-        borderWidth="1px" 
-        borderColor="red.500/20" // Subtle red border to indicate danger
-        shadow="2xl"
-      >
-        <DialogHeader borderBottomWidth="1px" borderColor="border.subtle" py={5}>
-          <DialogTitle>
-            <HStack gap={3} color="red.500">
-              <Icon as={LuTriangleAlert} />
-              <Text letterSpacing="tight">Confirm Deletion</Text>
-            </HStack>
+      {/* 2. AppDialogContent: добавляет Portal, тени и красную рамку для Danger-статуса */}
+      <AppDialogContent borderColor="red.500/40">
+        <DialogHeader borderBottomWidth="1px" borderColor="border.subtle">
+          <DialogTitle color="red.500" textAlign="center" width="full" letterSpacing="tight">
+            Confirm Deletion
           </DialogTitle>
         </DialogHeader>
 
         <DialogBody py={8}>
-          <Stack gap={5}>
-            <Text fontSize="md">
-              Are you sure you want to delete user <Text as="span" fontWeight="black" color="fg.emphasized">{user?.username}</Text>?
-            </Text>
+          <VStack gap={6} align="stretch" textAlign="center">
+            <Box>
+              <Text fontSize="md">
+                Are you sure you want to delete user
+              </Text>
+              <Text fontSize="lg" fontWeight="black" color="fg.emphasized" mt={1}>
+                {user?.username}
+              </Text>
+            </Box>
             
-            {/* 2. Redesigned Warning Box for Dark Mode */}
+            {/* 3. Warning Box: без иконки, с исправленным переносом текста */}
             <HStack 
-              gap={3}
-              fontSize="sm" 
-              color="red.200" 
-              bg="red.500/10" 
-              p={4} 
-              borderRadius="xl" 
-              borderLeftWidth="4px" 
-              borderLeftColor="red.500"
+              gap={3} p={4} borderRadius="xl" bg="red.500/10" 
+              borderLeftWidth="4px" borderLeftColor="red.500"
+              textAlign="left"
+              width="full"
             >
-              <LuTriangleAlert size={20} />
-              <Text>
+              <Text fontSize="sm" color="red.100" flex="1" whiteSpace="normal" lineHeight="tall">
                 This action is <b>permanent</b> and will be logged in the system audit trail.
               </Text>
             </HStack>
-          </Stack>
+          </VStack>
         </DialogBody>
 
-        {/* 3. Themed Footer Actions */}
-        <DialogFooter borderTopWidth="1px" borderColor="border.subtle" gap={3} bg="bg.canvas/50" py={4}>
+        {/* 4. Footer: центрированные кнопки с равным весом (flex=1) */}
+        <DialogFooter 
+          borderTopWidth="1px" 
+          borderColor="border.subtle" 
+          gap={3} 
+          justifyContent="center" 
+          px={6}
+          py={4}
+        >
           <DialogActionTrigger asChild>
-            <Button variant="ghost" disabled={isPending}>
+            <Button variant="subtle" colorPalette="gray" disabled={isPending} flex="1">
               Cancel
             </Button>
           </DialogActionTrigger>
@@ -96,14 +94,12 @@ export const DeleteUserDialog = ({ user, onOpenChange }: DeleteUserDialogProps) 
             colorPalette="red" 
             loading={isPending}
             onClick={handleDelete}
-            px={8}
+            flex="1"
           >
-            <LuTrash2 />
             Delete Account
           </Button>
         </DialogFooter>
-        <DialogCloseTrigger />
-      </DialogContent>
-    </DialogRoot>
+      </AppDialogContent>
+    </AppDialogRoot>
   );
 };

@@ -1,31 +1,28 @@
 /**
  * @module EditUserModal
- * Refactored to align with the "Midnight Slate" design system.
- * Optimized: Uses existing user data from props and semantic tokens.
+ * Refactored to use adaptive AppDialog atoms.
+ * Optimized: Uses centralized logic for positioning, shadows, and mobile responsiveness.
  */
 
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { 
-  Button, 
-  Stack, 
+  Button,  
   Input, 
   NativeSelect, 
   HStack, 
   Text, 
-  Icon 
+  Icon,
+  VStack
 } from "@chakra-ui/react";
 import { LuUserCog, LuX, LuSave } from "react-icons/lu";
 
 import {
   DialogActionTrigger,
   DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogRoot,
   DialogTitle,
 } from "@/components/ui/dialog";
 
@@ -33,6 +30,9 @@ import { Field } from "@/components/ui/field";
 import { updateUserSchema, type UpdateUserDto } from "@crm/shared/schemas/auth.schema.js";
 import { useUpdateUser } from "@/services/hooks/user-hooks/use-users";
 import type { User } from "@crm/shared/schemas/auth.schema.js";
+
+// Наши адаптивные атомы
+import { AppDialogRoot, AppDialogContent } from "@/components/shared/atoms/AppDialog";
 
 interface EditUserModalProps {
   user: User | null; 
@@ -70,32 +70,26 @@ export const EditUserModal = ({ user, onOpenChange }: EditUserModalProps) => {
   };
 
   return (
-    <DialogRoot 
+    /* 1. AppDialogRoot: обрабатывает "!!user" как состояние открытия и адаптирует размер */
+    <AppDialogRoot 
       open={!!user} 
       onOpenChange={onOpenChange}
-      size={{ base: "full", md: "md" }}
-      placement="center"
-      motionPreset="slide-in-bottom"
+      size="md"
     >
-      <DialogContent 
-        bg="bg.panel" 
-        borderRadius="2xl" 
-        shadow="2xl" 
-        borderWidth="1px" 
-        borderColor="border.subtle"
-      >
+      /* 2. AppDialogContent: обеспечивает Portal, Positioner и встроенный крестик закрытия */
+      <AppDialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader borderBottomWidth="1px" borderColor="border.subtle" py={5}>
             <DialogTitle>
               <HStack gap={3}>
                 <Icon as={LuUserCog} color="brand.500" />
-                <Text letterSpacing="tight">Edit User Account</Text>
+                <Text letterSpacing="tight" fontWeight="bold">Edit User Account</Text>
               </HStack>
             </DialogTitle>
           </DialogHeader>
 
           <DialogBody py={8}>
-            <Stack gap={6}>
+            <VStack gap={6} align="stretch">
               <Field 
                 label="Username" 
                 invalid={!!errors.username} 
@@ -118,24 +112,30 @@ export const EditUserModal = ({ user, onOpenChange }: EditUserModalProps) => {
                 errorText={errors.role?.message}
               >
                 <NativeSelect.Root>
-                  <NativeSelect.Field {...register("role")} bg="bg.muted">
+                  <NativeSelect.Field 
+                    {...register("role")} 
+                    bg="bg.muted"
+                    borderWidth="1px"
+                    borderColor="border.subtle"
+                  >
                     <option value="USER">User (Standard Access)</option>
                     <option value="ADMIN">Admin (Full Control)</option>
                   </NativeSelect.Field>
                 </NativeSelect.Root>
               </Field>
-            </Stack>
+            </VStack>
           </DialogBody>
 
           <DialogFooter 
             borderTopWidth="1px" 
             borderColor="border.subtle" 
             gap={3} 
-            bg="bg.canvas/50" 
+            justifyContent="center" 
             py={4}
+            px={6}
           >
             <DialogActionTrigger asChild>
-              <Button variant="ghost" disabled={isUpdating}>
+              <Button variant="subtle" colorPalette="gray" disabled={isUpdating} flex="1">
                 <LuX /> Cancel
               </Button>
             </DialogActionTrigger>
@@ -145,14 +145,14 @@ export const EditUserModal = ({ user, onOpenChange }: EditUserModalProps) => {
               colorPalette="brand" 
               loading={isUpdating} 
               disabled={!isDirty}
-              px={8}
+              flex="1"
+              shadow="md"
             >
               <LuSave /> Save Changes
             </Button>
           </DialogFooter>
         </form>
-        <DialogCloseTrigger />
-      </DialogContent>
-    </DialogRoot>
+      </AppDialogContent>
+    </AppDialogRoot>
   );
 };

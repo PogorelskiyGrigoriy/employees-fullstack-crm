@@ -1,7 +1,7 @@
 /**
  * @module CreateUserModal
- * Refactored to align with the "Midnight Slate" design system.
- * Uses semantic tokens and brand color palette.
+ * Refactored to use adaptive AppDialog atoms.
+ * Aligns with the "Midnight Slate" design system and handles mobile fullscreen automatically.
  */
 
 import { useForm } from "react-hook-form";
@@ -20,17 +20,17 @@ import { LuUserPlus, LuX, LuCheck } from "react-icons/lu";
 import {
   DialogActionTrigger,
   DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogRoot,
   DialogTitle,
 } from "@/components/ui/dialog";
 
 import { Field } from "@/components/ui/field";
 import { createUserSchema, type CreateUserDto } from "@crm/shared/schemas/auth.schema.js";
 import { useCreateUser } from "@/services/hooks/user-hooks/use-users";
+
+// Наши новые атомы
+import { AppDialogRoot, AppDialogContent } from "@/components/shared/atoms/AppDialog";
 
 interface CreateUserModalProps {
   isOpen: boolean;
@@ -65,20 +65,20 @@ export const CreateUserModal = ({ isOpen, onOpenChange }: CreateUserModalProps) 
   };
 
   return (
-    <DialogRoot 
+    /* 1. AppDialogRoot: теперь принимает size="md", так как форма требует больше места, чем алерт удаления */
+    <AppDialogRoot 
       open={isOpen} 
       onOpenChange={onOpenChange}
-      size={{ base: "full", md: "md" }}
-      placement="center"
-      motionPreset="slide-in-bottom"
+      size="md" 
     >
-      <DialogContent bg="bg.panel" borderRadius="2xl" shadow="2xl" borderWidth="1px" borderColor="border.subtle">
+      /* 2. AppDialogContent: инкапсулирует Portal, Positioner и декоративные элементы */
+      <AppDialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader borderBottomWidth="1px" borderColor="border.subtle" py={5}>
             <DialogTitle>
               <HStack gap={3}>
                 <Icon as={LuUserPlus} color="brand.500" />
-                <Text letterSpacing="tight">Create New User</Text>
+                <Text letterSpacing="tight" fontWeight="bold">Create New User</Text>
               </HStack>
             </DialogTitle>
           </DialogHeader>
@@ -104,7 +104,12 @@ export const CreateUserModal = ({ isOpen, onOpenChange }: CreateUserModalProps) 
 
               <Field label="System Role" invalid={!!errors.role} errorText={errors.role?.message}>
                 <NativeSelect.Root>
-                  <NativeSelect.Field {...register("role")} bg="bg.muted">
+                  <NativeSelect.Field 
+                    {...register("role")} 
+                    bg="bg.muted"
+                    borderWidth="1px"
+                    borderColor="border.subtle"
+                  >
                     <option value="USER">User (Standard Access)</option>
                     <option value="ADMIN">Admin (Full Control)</option>
                   </NativeSelect.Field>
@@ -115,7 +120,7 @@ export const CreateUserModal = ({ isOpen, onOpenChange }: CreateUserModalProps) 
 
           <DialogFooter borderTopWidth="1px" borderColor="border.subtle" gap={3} bg="bg.canvas/50" py={4}>
             <DialogActionTrigger asChild>
-              <Button variant="ghost" disabled={isPending}>
+              <Button variant="subtle" colorPalette="gray" disabled={isPending}>
                 <LuX /> Cancel
               </Button>
             </DialogActionTrigger>
@@ -125,13 +130,14 @@ export const CreateUserModal = ({ isOpen, onOpenChange }: CreateUserModalProps) 
               colorPalette="brand" 
               loading={isPending}
               px={8}
+              shadow="md"
             >
               <LuCheck /> Create Account
             </Button>
           </DialogFooter>
         </form>
-        <DialogCloseTrigger />
-      </DialogContent>
-    </DialogRoot>
+        {/* DialogCloseTrigger удален, так как он встроен в AppDialogContent */}
+      </AppDialogContent>
+    </AppDialogRoot>
   );
 };

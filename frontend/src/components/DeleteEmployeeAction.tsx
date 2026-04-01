@@ -1,24 +1,24 @@
 /**
  * @module DeleteEmployeeAction
  * Confirmation dialog for employee deletion.
- * Refactored using ActionButton atom and Midnight Slate danger styles.
+ * Fixed: Removed trash icon from the delete button in the footer for cleaner aesthetics.
+ * Refactored using AppDialogContent for consistent depth and ActionButton for interactions.
  */
 
 import { useState } from "react";
-import { Button, Text, HStack, Icon, Stack } from "@chakra-ui/react";
-import { LuTrash2, LuTriangleAlert } from "react-icons/lu";
+import { Button, Text, HStack, Stack, Box, VStack } from "@chakra-ui/react";
+// Убираем импорт LuTrash2, так как он больше не используется в этом компоненте
 import {
   DialogActionTrigger,
   DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogRoot,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+// Импортируем наши атомы
+import { AppDialogContent, AppDialogRoot } from "@/components/shared/atoms/AppDialog";
 import { useDeleteEmployee } from "@/services/hooks/mutation-hooks/use-delete-employee";
 import { ActionButton } from "@/components/shared/atoms/ActionButton";
 
@@ -38,65 +38,51 @@ export const DeleteEmployeeAction = ({ id, name }: Props) => {
   };
 
   return (
-    <DialogRoot 
-      role="alertdialog" 
-      placement="center" 
-      open={open} 
-      onOpenChange={(e) => setOpen(e.open)}
-    >
+    <AppDialogRoot open={open} onOpenChange={(e) => setOpen(e.open)} size="sm">
       <DialogTrigger asChild>
-        {/* 1. Using our new ActionButton atom instead of raw IconButton */}
-        <ActionButton 
-          actionType="delete" 
-          disabled={isPending}
-          label={`Delete employee ${name}`}
-        />
+        <ActionButton actionType="delete" disabled={isPending} label={`Delete ${name}`} />
       </DialogTrigger>
       
-      <DialogContent 
-        bg="bg.panel" 
-        borderRadius="2xl" 
-        borderWidth="1px" 
-        borderColor="red.500/20" 
-        shadow="2xl"
-      >
-        <DialogHeader borderBottomWidth="1px" borderColor="border.subtle" py={5}>
-          <DialogTitle>
-            <HStack gap={3} color="red.500">
-              <Icon as={LuTriangleAlert} />
-              <Text letterSpacing="tight">Confirm Deletion</Text>
-            </HStack>
+      {/* Используем AppDialogContent. Переопределяем borderColor на красный для Danger-статуса */}
+      <AppDialogContent borderColor="red.500/40">
+        <DialogHeader borderBottomWidth="1px" borderColor="border.subtle">
+          {/* Заголовок: Центрирование */}
+          <DialogTitle color="red.500" textAlign="center" width="full" letterSpacing="tight">
+            Confirm Deletion
           </DialogTitle>
         </DialogHeader>
         
+        {/* Тело диалога: Центрирование контента */}
         <DialogBody py={8}>
-          <Stack gap={5}>
-            <Text fontSize="md">
-              Are you sure you want to delete <Text as="span" fontWeight="black" color="fg.emphasized">{name}</Text>? 
-            </Text>
+          <VStack gap={6} align="stretch" textAlign="center">
+            <Box>
+              <Text fontSize="md">
+                Are you sure you want to delete
+              </Text>
+              <Text fontSize="lg" fontWeight="black" color="fg.emphasized" mt={1}>
+                {name}
+              </Text>
+            </Box>
 
-            {/* 2. Consistent danger warning box */}
+            {/* Danger warning box: Исправление Overflow и центрирование */}
             <HStack 
-              gap={3}
-              fontSize="sm" 
-              color="red.200" 
-              bg="red.500/10" 
-              p={4} 
-              borderRadius="xl" 
-              borderLeftWidth="4px" 
-              borderLeftColor="red.500"
+              gap={3} p={4} borderRadius="xl" bg="red.500/10" 
+              borderLeftWidth="4px" borderLeftColor="red.500"
+              align="flex-start"
+              textAlign="left"
+              width="full"
             >
-              <Icon as={LuTriangleAlert} size="md" />
-              <Text>
-                This action is <b>permanent</b> and will immediately remove the record from the directory.
+              <Text fontSize="sm" color="red.100" flex="1" whiteSpace="normal" lineHeight="tall">
+                This action is permanent and will immediately remove the record from the directory.
               </Text>
             </HStack>
-          </Stack>
+          </VStack>
         </DialogBody>
         
-        <DialogFooter borderTopWidth="1px" borderColor="border.subtle" gap={3} bg="bg.canvas/50" py={4}>
+        {/* Футер: Кнопки отцентрированы, имеют равный вес (flex=1) */}
+        <DialogFooter borderTopWidth="1px" borderColor="border.subtle" gap={3} justifyContent="center" px={6}>
           <DialogActionTrigger asChild>
-            <Button variant="ghost" disabled={isPending}>
+            <Button variant="subtle" colorPalette="gray" disabled={isPending} flex="1">
               Cancel
             </Button>
           </DialogActionTrigger>
@@ -104,16 +90,14 @@ export const DeleteEmployeeAction = ({ id, name }: Props) => {
           <Button 
             colorPalette="red" 
             loading={isPending} 
-            onClick={handleDelete}
-            px={8}
+            onClick={handleDelete} 
+            flex="1"
           >
-            <LuTrash2 />
+            {/* КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Удалена строка с <LuTrash2 /> */}
             Delete Employee
           </Button>
         </DialogFooter>
-        
-        <DialogCloseTrigger />
-      </DialogContent>
-    </DialogRoot>
+      </AppDialogContent>
+    </AppDialogRoot>
   );
 };

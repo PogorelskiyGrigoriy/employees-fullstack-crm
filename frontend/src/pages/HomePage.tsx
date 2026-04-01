@@ -1,6 +1,7 @@
 /**
  * @module HomePage
- * Primary dashboard with fixed Dialog/Filter visibility.
+ * Primary dashboard for the Team Directory.
+ * Refactored to use AppDialogRoot and AppDialogContent for consistency and cleaner code.
  */
 
 "use client";
@@ -11,19 +12,17 @@ import { LuFilter, LuActivity } from "react-icons/lu";
 
 import {
   DialogBody, 
-  DialogCloseTrigger, 
-  DialogContent, 
   DialogHeader,
-  DialogRoot, 
   DialogTitle, 
   DialogTrigger,
-  DialogBackdrop // Добавляем бэкдроп для фокусировки
 } from "@/components/ui/dialog";
 
 import { Employees } from "@/components/Employees";
 import { Filters } from "@/components/Filters";
 import { ActiveFilters } from "@/components/ActiveFilters";
 import { PageHeader } from "@/components/shared/molecules/PageHeader";
+// Импортируем оба наших атома
+import { AppDialogContent, AppDialogRoot } from "@/components/shared/atoms/AppDialog";
 import { AppPanel } from "@/components/shared/atoms/AppPanel";
 
 import { useEmployees } from "@/services/hooks/use-employees";
@@ -49,16 +48,12 @@ export const HomePage = () => {
           description="Manage and overview organization members across all departments."
           icon={LuActivity}
           rightElement={
-            <DialogRoot
+            /* 1. Используем AppDialogRoot: Backdrop уже внутри */
+            <AppDialogRoot
               open={isDialogOpen}
               onOpenChange={(e) => setIsDialogOpen(e.open)}
               size="sm"
-              placement="center"
-              motionPreset="slide-in-bottom"
             >
-              {/* 1. Backdrop: Затемняет фон, чтобы выделить фильтры */}
-              <DialogBackdrop bg="blackAlpha.700" backdropFilter="blur(4px)" />
-
               <DialogTrigger asChild>
                 <Button
                   variant={isFiltered ? "solid" : "outline"}
@@ -78,14 +73,8 @@ export const HomePage = () => {
                 </Button>
               </DialogTrigger>
               
-              {/* 2. DialogContent: Добавляем границы и тени */}
-              <DialogContent 
-                borderRadius="2xl" 
-                bg="bg.panel" 
-                borderWidth="1px" 
-                borderColor="border.emphasized" // Светлая рамка — спасение для темной темы
-                shadow="dark-lg"
-              >
+              {/* 2. Используем AppDialogContent: Крестик и стили уже внутри */}
+              <AppDialogContent>
                 <DialogHeader borderBottomWidth="1px" borderColor="border.subtle" py="4">
                   <DialogTitle fontSize="lg" fontWeight="black" color="brand.500">
                     FILTER SETTINGS
@@ -95,10 +84,8 @@ export const HomePage = () => {
                 <DialogBody pb="2">
                   <Filters onClose={() => setIsDialogOpen(false)} />
                 </DialogBody>
-
-                <DialogCloseTrigger color="fg.muted" _hover={{ color: "brand.500" }} />
-              </DialogContent>
-            </DialogRoot>
+              </AppDialogContent>
+            </AppDialogRoot>
           }
         />
 
