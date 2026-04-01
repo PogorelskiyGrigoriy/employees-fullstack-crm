@@ -18,7 +18,7 @@ export const AppPanel = ({ isInteractive, ...props }: AppPanelProps) => {
         _hover: { 
           bg: "bg.subtle",
           borderColor: "border.emphasized",
-          transform: "translateY(-2px)" // Subtle lift effect
+          transform: "translateY(-2px)"
         },
         _active: { transform: "scale(0.98)" },
       }

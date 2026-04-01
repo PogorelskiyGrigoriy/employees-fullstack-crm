@@ -1,7 +1,7 @@
 /**
  * @module StatisticsSelector
  * Role-based analytics switcher.
- * Refactored for Midnight Slate aesthetics and standardized design tokens.
+ * Optimized with AppMenu atoms for consistent high-contrast UI in dark mode.
  */
 
 "use client";
@@ -11,12 +11,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Icon, Text, HStack, Box } from "@chakra-ui/react";
 import { LuChevronDown, LuChartColumn } from "react-icons/lu";
 
-import { 
-  MenuContent, 
-  MenuItem, 
-  MenuRoot, 
-  MenuTrigger 
-} from "@/components/ui/menu"; 
+import { MenuRoot, MenuTrigger } from "@/components/ui/menu"; 
+import { AppMenuContent, AppMenuItem } from "@/components/shared/atoms/AppMenu";
 
 import { STATS_NAV_LINKS } from "@/config/navigation";
 import { useIsAuthenticated, useUserRole } from "@/store/auth-store";
@@ -30,7 +26,7 @@ export const StatisticsSelector = () => {
   const userRole = useUserRole() as UserRole | null;
 
   /**
-   * Filter stats based on role to decide if we should render the component.
+   * RBAC Filtering: determines which stats pages the user can access.
    */
   const allowedStats = useMemo(() => {
     if (!isAuthenticated || !userRole) return [];
@@ -39,6 +35,9 @@ export const StatisticsSelector = () => {
     );
   }, [isAuthenticated, userRole]);
 
+  /**
+   * Visual Sync: highlights the selector if the user is currently on a stats page.
+   */
   const activeStat = useMemo(() => {
     return allowedStats.find(link => link.to === location.pathname);
   }, [allowedStats, location.pathname]);
@@ -46,7 +45,7 @@ export const StatisticsSelector = () => {
   if (allowedStats.length === 0) return null;
 
   return (
-    <MenuRoot positioning={{ placement: "bottom-end" }}>
+    <MenuRoot positioning={{ placement: "bottom-end", offset: { mainAxis: 8 } }}>
       <MenuTrigger asChild>
         <Button 
           variant="subtle" 
@@ -78,39 +77,37 @@ export const StatisticsSelector = () => {
           </HStack>
         </Button>
       </MenuTrigger>
-      
-      <MenuContent 
-        minW="200px" 
-        bg="bg.panel" 
-        borderRadius="xl" 
-        shadow="2xl"
-        borderColor="border.subtle"
-      >
+
+      {/* New Atom: Handles borders, shadows, and z-index automatically */}
+      <AppMenuContent minW="200px">
         {allowedStats.map((item) => {
           const isSelected = item.to === location.pathname;
           
           return (
-            <MenuItem 
+            <AppMenuItem 
               key={item.to} 
               value={item.to}
               onClick={() => navigate(item.to)}
-              color={isSelected ? "brand.500" : "fg.muted"}
-              fontWeight={isSelected ? "black" : "medium"}
-              bg={isSelected ? "brand.500/5" : "transparent"}
-              _hover={{ bg: "bg.muted", color: "fg.emphasized" }}
-              cursor="pointer"
-              py="3"
+              color={isSelected ? "brand.500" : "fg.default"}
+              fontWeight={isSelected ? "bold" : "medium"}
             >
               <HStack justify="space-between" width="full">
-                <Text>{item.label}</Text>
+                <Text fontSize="sm">{item.label}</Text>
+                
+                {/* Active Indicator: Small glowing dot */}
                 {isSelected && (
-                  <Box boxSize="1.5" borderRadius="full" bg="brand.500" />
+                  <Box 
+                    boxSize="2" 
+                    borderRadius="full" 
+                    bg="brand.500" 
+                    shadow="0 0 8px var(--colors-brand-500)" 
+                  />
                 )}
               </HStack>
-            </MenuItem>
+            </AppMenuItem>
           );
         })}
-      </MenuContent>
+      </AppMenuContent>
     </MenuRoot>
   );
 };

@@ -1,13 +1,12 @@
 /**
  * @module ThemeConfig
  * Centralized design system tokens for Chakra UI 3.x.
- * Implements the "Midnight Slate" dark theme.
  */
-import { createSystem, defineConfig, defaultBaseConfig } from "@chakra-ui/react";
+import { createSystem, defineConfig, defaultConfig } from "@chakra-ui/react";
 
 const customConfig = defineConfig({
   theme: {
-    // 1. Base Tokens (The Palette)
+    // 1. Base Tokens
     tokens: {
       colors: {
         brand: {
@@ -19,28 +18,28 @@ const customConfig = defineConfig({
         },
       },
       radii: {
-        xl: { value: "12px" },   // Standard for AppPanel
-        "2xl": { value: "16px" }, // For large modals
+        xl: { value: "12px" },
+        "2xl": { value: "16px" },
       },
     },
 
-    // 2. Semantic Tokens (Contextual Naming)
+    // 2. Semantic Tokens
     semanticTokens: {
       colors: {
         bg: {
-          canvas: { value: "{colors.zinc.950}" }, // Deep background (Body)
-          panel: { value: "{colors.zinc.900}" },  // Cards, Tables, Forms
-          muted: { value: "{colors.zinc.800}" },  // Secondary blocks (Table headers)
-          subtle: { value: "{colors.whiteAlpha.50}" }, // Hover states
+          canvas: { value: "{colors.zinc.950}" }, 
+          panel: { value: "{colors.zinc.900}" },
+          muted: { value: "{colors.zinc.800}" },
+          subtle: { value: "{colors.whiteAlpha.50}" },
         },
         fg: {
-          default: { value: "{colors.whiteAlpha.900}" }, // Primary text
-          muted: { value: "{colors.zinc.400}" },         // Secondary/De-emphasized text
-          emphasized: { value: "{colors.white}" },       // Headers/Titles
-          info: { value: "{colors.brand.500}" },         // Accent text
+          default: { value: "{colors.whiteAlpha.900}" },
+          muted: { value: "{colors.zinc.400}" },
+          emphasized: { value: "{colors.white}" },
+          info: { value: "{colors.brand.500}" },
         },
         border: {
-          subtle: { value: "{colors.whiteAlpha.100}" },   // Standard panel borders
+          subtle: { value: "{colors.whiteAlpha.100}" },
           emphasized: { value: "{colors.whiteAlpha.300}" },
         },
       },
@@ -48,4 +47,4 @@ const customConfig = defineConfig({
   },
 });
 
-export const system = createSystem(defaultBaseConfig, customConfig);
+export const system = createSystem(defaultConfig, customConfig);

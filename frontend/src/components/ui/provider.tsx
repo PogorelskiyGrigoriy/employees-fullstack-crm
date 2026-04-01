@@ -1,16 +1,18 @@
 /**
  * @module UIProvider
- * Optimized Chakra 3 provider with fixed "Midnight" dark theme.
+ * Optimized Chakra 3 provider with forced Dark Mode.
  */
 "use client"
 
-import { ChakraProvider } from "@chakra-ui/react"
+import { ChakraProvider, Theme } from "@chakra-ui/react"
 import { system } from "@/theme/index"
 
 export function Provider({ children }: { children: React.ReactNode }) {
   return (
     <ChakraProvider value={system}>
-      {children}
+      <Theme appearance="dark" colorPalette="brand">
+        {children}
+      </Theme>
     </ChakraProvider>
   )
 }

@@ -46,7 +46,6 @@ export const AppInitializer: React.FC<{ children: React.ReactNode }> = ({ childr
     return (
       <Center h="100vh" bg="bg.canvas">
         <VStack gap={5}>
-          {/* Fixed Spinner for v3.x: removed 'speed' prop */}
           <Spinner 
             size="xl" 
             color="brand.500" 
