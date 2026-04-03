@@ -48,32 +48,20 @@ export const StatisticsSelector = () => {
     <MenuRoot positioning={{ placement: "bottom-end", offset: { mainAxis: 8 } }}>
       <MenuTrigger asChild>
         <Button 
-          variant="subtle" 
+          variant="ghost" // Меняем на ghost для чистоты
           size="sm"
-          bg={activeStat ? "brand.500/10" : "bg.panel"} 
-          borderWidth="1px"
-          borderColor={activeStat ? "brand.500/40" : "border.subtle"}
-          color={activeStat ? "brand.500" : "fg.emphasized"}
-          fontWeight={activeStat ? "bold" : "medium"}
-          px="4"
-          height="36px"
-          borderRadius="full"
-          _hover={{ 
-            bg: "brand.500/20", 
-            borderColor: "brand.500",
-          }}
-          transition="all 0.2s"
+          color="white"   // Текст всегда белый
+          fontWeight="bold"
+          px="3"
+          _hover={{ bg: "whiteAlpha.100" }}
         >
           <HStack gap="2">
-            <Icon as={LuChartColumn} color={activeStat ? "brand.500" : "fg.muted"} />
-            <Text letterSpacing="tight">
+            {/* Иконка ВСЕГДА синяя */}
+            <Icon as={LuChartColumn} color="brand.500" boxSize="4" />
+            <Text letterSpacing="tight" hideBelow="md">
               {activeStat ? activeStat.label : "Analytics"} 
             </Text>
-            <Icon 
-              as={LuChevronDown} 
-              transition="transform 0.2s"
-              opacity={0.6}
-            />
+            <Icon as={LuChevronDown} opacity={0.5} boxSize="3" />
           </HStack>
         </Button>
       </MenuTrigger>

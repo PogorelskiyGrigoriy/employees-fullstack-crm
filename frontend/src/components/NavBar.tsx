@@ -1,7 +1,8 @@
 /**
  * @module Navbar
- * Minimalist "Control Center" implementation.
- * Fixed: Replaced Dialog components with Drawer components to resolve context errors.
+ * Fully Unified Control Center with DRY refactoring.
+ * Imports shared interaction atoms (AppNavLink, NavTrigger) for a clean,
+ * modular architecture.
  */
 
 import {
@@ -15,29 +16,15 @@ import {
   Icon,
   VStack,
 } from "@chakra-ui/react";
-import { 
-  LuLogOut, 
-  LuUser, 
-  LuShieldCheck, 
-  LuChevronDown 
-} from "react-icons/lu";
+import { LuUser, LuShieldCheck } from "react-icons/lu";
 
-import { AppNavLink } from "@/components/shared/atoms/AppNavLink";
+import { AppNavLink, NavTrigger } from "@/components/shared/atoms/AppNavLink";
 import { StatisticsSelector } from "./StatisticsSelector";
 import { AppBadge } from "@/components/shared/atoms/AppBadge";
 import { RBACGuard } from "@/components/shared/organisms/RBACGuard";
 import { AppDrawerRoot, AppDrawerContent } from "@/components/shared/atoms/AppDrawer";
 
-/**
- * IMPORT FIX:
- * We now use Drawer components instead of Dialog components for the Admin Drawer.
- */
-import {
-  MenuRoot,
-  MenuTrigger,
-  MenuContent,
-  MenuItem,
-} from "@/components/ui/menu";
+import { MenuRoot, MenuTrigger, MenuContent, MenuItem } from "@/components/ui/menu";
 import { 
   DrawerTrigger, 
   DrawerHeader, 
@@ -50,9 +37,9 @@ import { useLogout } from "@/services/hooks/auth-hooks/use-logout";
 import { MAIN_NAV_LINKS, ADMIN_NAV_LINKS, ROUTES } from "@/config/navigation";
 
 export const Navbar = () => {
-  const role = useUserRole();
   const isAuthenticated = useIsAuthenticated();
   const username = useAuthStore((state) => state.user?.username);
+  const role = useUserRole();
   const { mutate: logout, isPending } = useLogout();
 
   return (
@@ -60,25 +47,23 @@ export const Navbar = () => {
       as="nav" 
       bg="bg.panel" 
       borderBottomWidth="1px" 
-      borderColor="border.subtle"
-      position="sticky"
-      top="0"
-      zIndex="sticky"
-      w="full"
+      borderColor="border.subtle" 
+      position="sticky" 
+      top="0" 
+      zIndex="sticky" 
+      w="full" 
       backdropFilter="blur(10px)"
     >
       <Container maxW="6xl" px={{ base: "4", md: "8" }}> 
-        <HStack justify="space-between" py="2.5">
+        <HStack justify="space-between" py="2">
           
-          {/* 1. SECTION: HOME */}
-          <HStack gap="4">
+          {/* 1. SECTION: HOME (Using the unified AppNavLink atom) */}
+          <HStack gap="1">
             {MAIN_NAV_LINKS.map((link) => (
               <AppNavLink key={link.to} to={link.to}>
                 <HStack gap="2">
-                  <Icon as={link.icon} />
-                  <Text fontWeight="bold" letterSpacing="tight" hideBelow="md">
-                    {link.label}
-                  </Text>
+                  <Icon as={link.icon} color="brand.500" boxSize="4" />
+                  <Text letterSpacing="tight" hideBelow="md">{link.label}</Text>
                 </HStack>
               </AppNavLink>
             ))}
@@ -86,15 +71,12 @@ export const Navbar = () => {
 
           <Spacer />
 
-          {/* 2. SECTION: AUTHENTICATED ACTIONS */}
+          {/* 2. SECTION: AUTHENTICATED TOOLS */}
           {isAuthenticated ? (
-            <HStack gap={{ base: "2", md: "4" }}>
-              
-              <Box maxW={{ base: "100px", sm: "160px", md: "200px" }}>
-                <StatisticsSelector />
-              </Box>
+            <HStack gap="2">
+              <StatisticsSelector />
 
-              <Separator orientation="vertical" height="20px" opacity={0.5} hideBelow="sm" />
+              <Separator orientation="vertical" height="20px" opacity={0.3} hideBelow="sm" />
 
               <RBACGuard roles={["ADMIN"]}>
                 <AdminCenterDrawer />
@@ -106,10 +88,14 @@ export const Navbar = () => {
                 onLogout={() => logout()}
                 isLoading={isPending}
               />
-
             </HStack>
           ) : (
-            <AppNavLink to={ROUTES.LOGIN}>Sign In</AppNavLink>
+            <AppNavLink to={ROUTES.LOGIN}>
+               <HStack gap="2">
+                  <Icon as={LuUser} color="brand.500" boxSize="4" />
+                  <Text letterSpacing="tight">Sign In</Text>
+               </HStack>
+            </AppNavLink>
           )}
         </HStack>
       </Container>
@@ -121,37 +107,23 @@ export const Navbar = () => {
 
 const AdminCenterDrawer = () => (
   <AppDrawerRoot size="sm">
-    {/* FIX: Use DrawerTrigger instead of DialogTrigger */}
     <DrawerTrigger asChild>
-      <Button variant="ghost" size="sm" color="brand.500" gap="2" px={{ base: "2", md: "3" }}>
-        <LuShieldCheck size="20" />
-        <Text hideBelow="lg">Admin</Text>
-      </Button>
+      {/* Use shared NavTrigger for consistent ghost-button styling */}
+      <NavTrigger icon={LuShieldCheck} label="Admin" hideLabelBelow="lg" />
     </DrawerTrigger>
     
     <AppDrawerContent>
-      {/* FIX: Use DrawerHeader instead of DialogHeader */}
       <DrawerHeader borderBottomWidth="1px" borderColor="border.subtle" py="5">
-        <DrawerTitle fontWeight="black" color="brand.500" letterSpacing="widest">
-          ADMIN CENTER
-        </DrawerTitle>
+        <DrawerTitle fontWeight="black" color="brand.500">ADMIN CENTER</DrawerTitle>
       </DrawerHeader>
       
-      {/* FIX: Use DrawerBody instead of DialogBody */}
       <DrawerBody py="6">
         <VStack align="stretch" gap="3">
           {ADMIN_NAV_LINKS.map((link) => (
             <Box key={link.to} width="full">
               <AppNavLink to={link.to}>
-                <Button 
-                  variant="subtle" 
-                  width="full" 
-                  justifyContent="flex-start" 
-                  size="lg" 
-                  gap="4"
-                  _hover={{ bg: "brand.500/10", color: "brand.500" }}
-                >
-                  <Icon as={link.icon} />
+                <Button variant="subtle" width="full" justifyContent="flex-start" size="lg" gap="4">
+                  <Icon as={link.icon} color="brand.500" />
                   {link.label}
                 </Button>
               </AppNavLink>
@@ -163,24 +135,23 @@ const AdminCenterDrawer = () => (
   </AppDrawerRoot>
 );
 
-/* --- Sub-component: User Session Dropdown --- */
+/* --- Sub-component: User Session Menu --- */
 
 const UserSessionMenu = ({ username, role, onLogout, isLoading }: any) => (
   <MenuRoot>
     <MenuTrigger asChild>
-      <Button variant="ghost" size="sm" gap="2" px="2" _hover={{ bg: "whiteAlpha.100" }}>
-        <Icon as={LuUser} color="brand.500" boxSize="5" />
-        <Text hideBelow="sm" fontWeight="bold" fontSize="sm">{username}</Text>
-        <LuChevronDown size="14" opacity={0.5} />
-      </Button>
+      {/* Use shared NavTrigger with Chevron for dropdowns */}
+      <NavTrigger 
+        icon={LuUser} 
+        label={username} 
+        showChevron 
+        hideLabelBelow="sm" 
+      />
     </MenuTrigger>
     
     <MenuContent bg="bg.panel" borderColor="border.subtle" shadow="2xl">
       <Box px="4" py="3">
-        <Text fontSize="2xs" color="fg.muted" textTransform="uppercase" mb="1">
-          Current Session
-        </Text>
-        <HStack justify="space-between">
+        <HStack justify="space-between" gap="4">
           <Text fontWeight="bold" fontSize="sm">{username}</Text>
           <AppBadge type="role" value={role} size="xs" />
         </HStack>
@@ -192,13 +163,11 @@ const UserSessionMenu = ({ username, role, onLogout, isLoading }: any) => (
         value="logout" 
         color="red.400" 
         onClick={onLogout} 
-        disabled={isLoading}
-        cursor="pointer"
-        p="3"
-        _hover={{ bg: "red.500/10", color: "red.500" }}
+        disabled={isLoading} 
+        cursor="pointer" 
+        _hover={{ bg: "red.500/10" }}
       >
-        <LuLogOut /> 
-        <Text fontWeight="semibold">Logout</Text>
+        Logout
       </MenuItem>
     </MenuContent>
   </MenuRoot>
