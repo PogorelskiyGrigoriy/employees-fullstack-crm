@@ -1,7 +1,7 @@
 /**
  * @module ThemeConfig
- * Centralized design system tokens for Chakra UI 3.x.
- * Fixed: Added global CSS to force dark mode for native browser elements.
+ * Solid UI Version: Removed all alpha-transparency tokens.
+ * Using solid Zinc shades for high-performance, opaque interfaces.
  */
 import { createSystem, defineConfig, defaultConfig } from "@chakra-ui/react";
 
@@ -17,7 +17,6 @@ const customConfig = defineConfig({
   },
 
   theme: {
-    // 1. Base Tokens
     tokens: {
       colors: {
         brand: {
@@ -34,24 +33,24 @@ const customConfig = defineConfig({
       },
     },
 
-    // 2. Semantic Tokens
     semanticTokens: {
       colors: {
         bg: {
           canvas: { value: "{colors.zinc.950}" }, 
-          panel: { value: "{colors.zinc.900}" },
-          muted: { value: "{colors.zinc.800}" },
-          subtle: { value: "{colors.whiteAlpha.50}" },
+          panel: { value: "#18181b" },   // Сплошной Zinc 900
+          muted: { value: "{colors.zinc.800}" }, // Сплошной фон
+          subtle: { value: "#27272a" },  // Заменили whiteAlpha.50 на Zinc 800
         },
         fg: {
-          default: { value: "{colors.whiteAlpha.900}" },
+          default: { value: "#f4f4f5" }, // Заменили whiteAlpha.900 на Zinc 100
           muted: { value: "{colors.zinc.400}" },
-          emphasized: { value: "{colors.white}" },
+          emphasized: { value: "#ffffff" },
           info: { value: "{colors.brand.500}" },
         },
         border: {
-          subtle: { value: "{colors.whiteAlpha.100}" },
-          emphasized: { value: "{colors.whiteAlpha.300}" },
+          // Заменили прозрачные границы на твердые цвета
+          subtle: { value: "#27272a" },     // Твердый Zinc 800
+          emphasized: { value: "#3f3f46" }, // Твердый Zinc 700
         },
       },
     },

@@ -1,8 +1,7 @@
 /**
  * @module Navbar
- * Fully Unified Control Center with DRY refactoring.
- * Imports shared interaction atoms (AppNavLink, NavTrigger) for a clean,
- * modular architecture.
+ * Fully Unified Control Center with synchronized breakpoints.
+ * Threshold: >= 768px (md) shows text. < 768px shows only icons.
  */
 
 import {
@@ -45,25 +44,26 @@ export const Navbar = () => {
   return (
     <Box 
       as="nav" 
-      bg="bg.panel" 
+      bg="bg.panel"
       borderBottomWidth="1px" 
       borderColor="border.subtle" 
       position="sticky" 
       top="0" 
       zIndex="sticky" 
       w="full" 
-      backdropFilter="blur(10px)"
     >
       <Container maxW="6xl" px={{ base: "4", md: "8" }}> 
         <HStack justify="space-between" py="2">
           
-          {/* 1. SECTION: HOME (Using the unified AppNavLink atom) */}
+          {/* 1. SECTION: HOME - Label hides below 768px (md) */}
           <HStack gap="1">
             {MAIN_NAV_LINKS.map((link) => (
               <AppNavLink key={link.to} to={link.to}>
                 <HStack gap="2">
                   <Icon as={link.icon} color="brand.500" boxSize="4" />
-                  <Text letterSpacing="tight" hideBelow="md">{link.label}</Text>
+                  <Text fontWeight="bold" letterSpacing="tight" hideBelow="md">
+                    {link.label}
+                  </Text>
                 </HStack>
               </AppNavLink>
             ))}
@@ -71,7 +71,7 @@ export const Navbar = () => {
 
           <Spacer />
 
-          {/* 2. SECTION: AUTHENTICATED TOOLS */}
+          {/* 2. SECTION: AUTHENTICATED ACTIONS */}
           {isAuthenticated ? (
             <HStack gap="2">
               <StatisticsSelector />
@@ -93,7 +93,7 @@ export const Navbar = () => {
             <AppNavLink to={ROUTES.LOGIN}>
                <HStack gap="2">
                   <Icon as={LuUser} color="brand.500" boxSize="4" />
-                  <Text letterSpacing="tight">Sign In</Text>
+                  <Text letterSpacing="tight" hideBelow="md">Sign In</Text>
                </HStack>
             </AppNavLink>
           )}
@@ -108,13 +108,20 @@ export const Navbar = () => {
 const AdminCenterDrawer = () => (
   <AppDrawerRoot size="sm">
     <DrawerTrigger asChild>
-      {/* Use shared NavTrigger for consistent ghost-button styling */}
-      <NavTrigger icon={LuShieldCheck} label="Admin" hideLabelBelow="lg" />
+      {/* FIXED: Label hides below 768px (md) */}
+      <NavTrigger 
+        icon={LuShieldCheck} 
+        label="Admin" 
+        hideLabelBelow="md" 
+        showChevron 
+      />
     </DrawerTrigger>
     
     <AppDrawerContent>
       <DrawerHeader borderBottomWidth="1px" borderColor="border.subtle" py="5">
-        <DrawerTitle fontWeight="black" color="brand.500">ADMIN CENTER</DrawerTitle>
+        <DrawerTitle fontWeight="black" color="brand.500" letterSpacing="widest">
+          ADMIN CENTER
+        </DrawerTitle>
       </DrawerHeader>
       
       <DrawerBody py="6">
@@ -140,12 +147,12 @@ const AdminCenterDrawer = () => (
 const UserSessionMenu = ({ username, role, onLogout, isLoading }: any) => (
   <MenuRoot>
     <MenuTrigger asChild>
-      {/* Use shared NavTrigger with Chevron for dropdowns */}
+      {/* FIXED: Label hides below 768px (md) */}
       <NavTrigger 
         icon={LuUser} 
         label={username} 
         showChevron 
-        hideLabelBelow="sm" 
+        hideLabelBelow="md" 
       />
     </MenuTrigger>
     
@@ -156,9 +163,7 @@ const UserSessionMenu = ({ username, role, onLogout, isLoading }: any) => (
           <AppBadge type="role" value={role} size="xs" />
         </HStack>
       </Box>
-      
       <Separator />
-      
       <MenuItem 
         value="logout" 
         color="red.400" 

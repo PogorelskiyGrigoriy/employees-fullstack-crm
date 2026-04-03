@@ -2,7 +2,7 @@
  * @module AppNavLink
  * Shared atoms for Navbar interactions.
  * Contains NavTrigger (for Buttons/Menus) and AppNavLink (for Routing).
- * Both follow the "Ghost Button" pattern: White text, Blue icons, Gray hover.
+ * Final Visual Fix: All text is white, even when active.
  */
 
 import { 
@@ -16,7 +16,7 @@ import {
 import { NavLink } from "react-router-dom";
 import { LuChevronDown } from "react-icons/lu";
 
-/* --- 1. NavTrigger: Visual base for Menus, Drawers, and static buttons --- */
+/* --- 1. NavTrigger: Remains unchanged --- */
 
 export interface NavTriggerProps extends ButtonProps {
   icon: React.ElementType;
@@ -25,9 +25,6 @@ export interface NavTriggerProps extends ButtonProps {
   showChevron?: boolean;
 }
 
-/**
- * Standardized Ghost Button for Navbar triggers.
- */
 export const NavTrigger = ({ 
   icon, 
   label, 
@@ -58,17 +55,13 @@ export const NavTrigger = ({
   </Button>
 );
 
-/* --- 2. AppNavLink: Link wrapper with identical NavTrigger styling --- */
+/* --- 2. AppNavLink: Final Fix for white text --- */
 
 interface AppNavLinkProps {
   to: string;
   children: React.ReactNode;
 }
 
-/**
- * Semantic Link atom styled exactly like NavTrigger.
- * Prevents double-hover issues by applying styles directly to the link.
- */
 export const AppNavLink = ({ to, children }: AppNavLinkProps) => {
   return (
     <ChakraLink 
@@ -76,7 +69,7 @@ export const AppNavLink = ({ to, children }: AppNavLinkProps) => {
       variant="plain"
       fontSize="sm"
       fontWeight="bold"
-      color="white"
+      color="white" // Base color: White
       px="3"
       py="2"
       borderRadius="md"
@@ -90,18 +83,9 @@ export const AppNavLink = ({ to, children }: AppNavLinkProps) => {
       alignItems="center"
       css={{
         "&.active": {
-          position: "relative",
-          _after: {
-            content: '""',
-            position: "absolute",
-            bottom: "-10px", 
-            left: "15%",
-            width: "70%",
-            height: "2px",
-            bg: "brand.500",
-            borderRadius: "full",
-            boxShadow: "0 0 10px var(--colors-brand-500)",
-          }
+          // FIX: Text stays white even when the route is active
+          color: "white", 
+          // All other indicators (lines/dots) are removed for total minimalism
         }
       }}
     >
