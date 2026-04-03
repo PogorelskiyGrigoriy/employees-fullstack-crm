@@ -15,12 +15,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/shared/ui/chakra/dialog";
 
 // Импортируем наши атомы
-import { AppDialogContent, AppDialogRoot } from "@/components/shared/atoms/AppDialog";
+import { AppDialogContent, AppDialogRoot } from "@/shared/ui/atoms/AppDialog";
 import { useDeleteEmployee } from "@/services/hooks/mutation-hooks/use-delete-employee";
-import { ActionButton } from "@/components/shared/atoms/ActionButton";
+import { ActionButton } from "@/shared/ui/atoms/ActionButton";
 
 interface Props {
   id: string;

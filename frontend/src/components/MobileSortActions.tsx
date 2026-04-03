@@ -13,7 +13,7 @@ import {
   LuArrowDown, 
   LuArrowUpDown 
 } from "react-icons/lu";
-import { useSortStore } from "@/store/sort-store";
+import { useSortStore } from "@/features/sort-employees/model/sort-store";
 
 export const MobileSortActions = () => {
   const { sort, toggleSort } = useSortStore();

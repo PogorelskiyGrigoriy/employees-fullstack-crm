@@ -3,7 +3,7 @@
  * Fixed: Now accepts 'readonly' arrays to support strict configuration constants.
  */
 import React from "react";
-import { useUserRole } from "@/store/auth-store";
+import { useUserRole } from "@/entities/user/model/auth-store";
 import { type UserRole } from "@crm/shared/schemas/auth.schema.js";
 
 interface RBACGuardProps {

@@ -24,15 +24,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/shared/ui/chakra/dialog";
 
-import { Field } from "@/components/ui/field";
+import { Field } from "@/shared/ui/chakra/field";
 import { updateUserSchema, type UpdateUserDto } from "@crm/shared/schemas/auth.schema.js";
 import { useUpdateUser } from "@/services/hooks/user-hooks/use-users";
 import type { User } from "@crm/shared/schemas/auth.schema.js";
 
 // Наши адаптивные атомы
-import { AppDialogRoot, AppDialogContent } from "@/components/shared/atoms/AppDialog";
+import { AppDialogRoot, AppDialogContent } from "@/shared/ui/atoms/AppDialog";
 
 interface EditUserModalProps {
   user: User | null; 

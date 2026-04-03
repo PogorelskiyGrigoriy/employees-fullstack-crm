@@ -5,7 +5,7 @@
 import type { Employee, NewEmployee } from "@crm/shared/schemas/employee.schema.js"; 
 import { apiClient } from "@/services/api-client.implementation";
 import { useEmployeesMutation } from "./use-employee-mutation";
-import { toaster } from "@/components/ui/toaster-config";
+import { toaster } from "@/shared/ui/toaster-config";
 
 export const useAddEmployee = () => {
   return useEmployeesMutation<NewEmployee, Employee>(

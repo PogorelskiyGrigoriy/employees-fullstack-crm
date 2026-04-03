@@ -1,10 +1,10 @@
-import { Provider as ChakraProvider } from "@/components/ui/provider";
-import { Toaster } from "@/components/ui/toaster"; 
+import { Provider as ChakraProvider } from "@/shared/ui/chakra/provider";
+import { Toaster } from "@/shared/ui/chakra/toaster"; 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import { appRouter } from "./router/app-router";
+import { appRouter } from "./app/router/app-router";
 import { AppInitializer } from "./components/auth/AppInitializer";
 
 const queryClient = new QueryClient({

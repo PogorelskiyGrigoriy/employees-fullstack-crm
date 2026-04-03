@@ -1,8 +1,9 @@
 /**
- * @module NavigationConfig
- * Centralized route paths and RBAC settings for navigation.
- * All icons are updated to match react-icons/lu v1.7.0 (Lucide 0.400+ naming).
+ * @module NavbarNavigationConfig
+ * UI-specific configuration for the Navbar widget.
+ * Ties route constants to visual elements (icons) and RBAC rules.
  */
+
 import { 
   LuHouse,
   LuUserPlus, 
@@ -12,18 +13,9 @@ import {
   LuChartBar,
   LuTrendingUp 
 } from "react-icons/lu";
-import type { UserRole } from "@crm/shared/schemas/auth.schema";
 
-export const ROUTES = {
-  HOME: "/",
-  LOGIN: "/login",
-  ADD_EMPLOYEE: "/add-employee",
-  ADMIN_USERS: "/admin/users",
-  ADMIN_LOGS: "/admin/logs",
-  STATS_AGE: "/statistics/age",
-  STATS_SALARY: "/statistics/salary",
-  STATS_DEPT: "/statistics/department",
-} as const;
+import { ROUTES } from "@/config/routes";
+import type { UserRole } from "@crm/shared/schemas/auth.schema";
 
 export interface NavItemConfig {
   readonly to: string;

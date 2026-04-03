@@ -5,8 +5,8 @@
  */
 
 import { HStack, Text, Button } from "@chakra-ui/react";
-import { Tag } from "./ui/tag";
-import { useFilters } from "@/store/filters-store";
+import { Tag } from "../shared/ui/chakra/tag";
+import { useFilters } from "@/features/filter-employees/model/filters-store";
 import { employeeFilterSchema } from "@crm/shared/schemas/employee.schema.js";
 import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees.config";
 

@@ -6,10 +6,10 @@
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '@/services/auth.implementation';
-import { useAuthStore } from '@/store/auth-store';
+import { useAuthStore } from '@/entities/user/model/auth-store';
 import { ROUTES } from '@/config/navigation';
 import type { LoginData, UserData } from '@crm/shared/schemas/auth.schema.js';
-import { toaster } from "@/components/ui/toaster-config";
+import { toaster } from "@/shared/ui/toaster-config";
 
 export const useLogin = () => {
   const setLogin = useAuthStore((state) => state.setLogin);

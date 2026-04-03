@@ -29,5 +29,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "../shared/src", "src/theme/index.ts"]
+  "include": ["src", "../shared/src", "src/shared/config/theme/index.ts"]
 }

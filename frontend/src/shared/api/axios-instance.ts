@@ -4,9 +4,9 @@
  */
 
 import axios, { AxiosError } from 'axios';
-import { toaster } from "@/components/ui/toaster-config";
-import { useAuthStore } from '@/store/auth-store';
-import { appRouter } from '@/router/app-router';
+import { toaster } from "@/shared/ui/toaster-config";
+import { useAuthStore } from '@/entities/user/model/auth-store';
+import { appRouter } from '@/app/router/app-router';
 import { ROUTES } from '@/config/navigation';
 import type { ApiErrorResponse } from "@crm/shared/types/error.types";
 

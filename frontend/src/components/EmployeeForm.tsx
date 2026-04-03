@@ -9,8 +9,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Stack, Input, Button, HStack } from "@chakra-ui/react";
 
-import { Field } from "@/components/ui/field";
-import { DepartmentSelect } from "./shared/molecules/DepartmentSelect";
+import { Field } from "@/shared/ui/chakra/field";
+import { DepartmentSelect } from "../shared/ui/molecules/DepartmentSelect";
 
 import { 
   employeeSchema,

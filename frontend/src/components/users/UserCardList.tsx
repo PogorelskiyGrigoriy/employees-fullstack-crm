@@ -8,8 +8,8 @@ import { Stack, HStack, Text, Spacer, Button, Icon } from "@chakra-ui/react";
 import { LuPencil, LuTrash2, LuMail } from "react-icons/lu"; 
 import type { User } from "@crm/shared/schemas/auth.schema.js";
 
-import { AppPanel } from "@/components/shared/atoms/AppPanel";
-import { AppBadge } from "@/components/shared/atoms/AppBadge";
+import { AppPanel } from "@/shared/ui/atoms/AppPanel";
+import { AppBadge } from "@/shared/ui/atoms/AppBadge";
 
 interface UserCardListProps {
   readonly users: User[];

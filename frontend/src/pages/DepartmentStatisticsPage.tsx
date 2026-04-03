@@ -11,9 +11,9 @@ import { LuLayoutDashboard } from "react-icons/lu"
 
 import { useDepartmentStats } from "@/services/hooks/use-department-stats"
 import { DepartmentsTable } from "@/components/DepartmentsTable"
-import { PageHeader } from "@/components/shared/molecules/PageHeader"
-import { AppPanel } from "@/components/shared/atoms/AppPanel"
-import { DataStateWrapper } from "@/components/shared/organisms/DataStateWrapper"
+import { PageHeader } from "@/shared/ui/molecules/PageHeader"
+import { AppPanel } from "@/shared/ui/atoms/AppPanel"
+import { DataStateWrapper } from "@/shared/ui/organisms/DataStateWrapper"
 
 const DepartmentStatisticsPage = () => {
   // Destructuring all necessary states from the hook

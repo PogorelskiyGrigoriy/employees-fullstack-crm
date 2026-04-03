@@ -4,7 +4,7 @@
  */
 import { Box, HStack, Text, Table, type TableColumnHeaderProps } from "@chakra-ui/react";
 import { LuArrowUp, LuArrowDown, LuArrowUpDown } from "react-icons/lu";
-import { useSortStore } from "@/store/sort-store";
+import { useSortStore } from "@/features/sort-employees/model/sort-store";
 import type { Employee } from "@crm/shared/schemas/employee.schema";
 
 interface SortableColumnProps extends TableColumnHeaderProps {

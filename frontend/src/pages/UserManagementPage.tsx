@@ -14,10 +14,10 @@ import { CreateUserModal } from "@/components/users/CreateUserModal";
 import { EditUserModal } from "@/components/users/EditUserModal";
 import { DeleteUserDialog } from "@/components/users/DeleteUserDialog";
 
-import { PageHeader } from "@/components/shared/molecules/PageHeader";
-import { AppPanel } from "@/components/shared/atoms/AppPanel";
-import { DataStateWrapper } from "@/components/shared/organisms/DataStateWrapper";
-import { RBACGuard } from "@/components/shared/organisms/RBACGuard";
+import { PageHeader } from "@/shared/ui/molecules/PageHeader";
+import { AppPanel } from "@/shared/ui/atoms/AppPanel";
+import { DataStateWrapper } from "@/shared/ui/organisms/DataStateWrapper";
+import { RBACGuard } from "@/shared/ui/organisms/RBACGuard";
 
 import type { User } from "@crm/shared/schemas/auth.schema.js";
 

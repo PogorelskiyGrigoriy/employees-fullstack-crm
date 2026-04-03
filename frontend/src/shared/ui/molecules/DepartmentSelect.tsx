@@ -4,7 +4,7 @@
  */
 
 import { NativeSelect } from "@chakra-ui/react";
-import { Field } from "@/components/ui/field";
+import { Field } from "@/shared/ui/chakra/field";
 import { 
   DEPARTMENTS_LIST, 
   DEPARTMENT_FILTER_LIST 

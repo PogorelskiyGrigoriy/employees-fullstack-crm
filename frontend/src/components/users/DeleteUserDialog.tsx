@@ -13,10 +13,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/shared/ui/chakra/dialog";
 
 // Импортируем наши адаптивные атомы
-import { AppDialogRoot, AppDialogContent } from "@/components/shared/atoms/AppDialog";
+import { AppDialogRoot, AppDialogContent } from "@/shared/ui/atoms/AppDialog";
 import { useDeleteUser } from "@/services/hooks/user-hooks/use-users";
 
 interface DeleteUserDialogProps {

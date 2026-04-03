@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userService } from '@/services/user.implementation';
-import { toaster } from "@/components/ui/toaster-config";
+import { toaster } from "@/shared/ui/toaster-config";
 import { type CreateUserDto, type UpdateUserDto } from "@crm/shared/schemas/auth.schema.js";
 
 /**

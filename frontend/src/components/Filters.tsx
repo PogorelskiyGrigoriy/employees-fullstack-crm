@@ -7,10 +7,10 @@ import { VStack, HStack, Input, Button, Text } from "@chakra-ui/react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Field } from "@/components/ui/field";
-import { DepartmentSelect } from "@/components/shared/molecules/DepartmentSelect";
+import { Field } from "@/shared/ui/chakra/field";
+import { DepartmentSelect } from "@/shared/ui/molecules/DepartmentSelect";
 
-import { useFilters } from "@/store/filters-store";
+import { useFilters } from "@/features/filter-employees/model/filters-store";
 import { employeeFilterSchema, type EmployeeFilter } from "@crm/shared/schemas/employee.schema.js";
 import { EMPLOYEES_CONFIG } from "@crm/shared/config/employees.config";
 

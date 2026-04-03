@@ -9,9 +9,9 @@ import { Container, Stack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 import { EmployeeForm } from "@/components/EmployeeForm";
-import { PageHeader } from "@/components/shared/molecules/PageHeader";
-import { AppPanel } from "@/components/shared/atoms/AppPanel";
-import { CloseButton } from "@/components/ui/close-button";
+import { PageHeader } from "@/shared/ui/molecules/PageHeader";
+import { AppPanel } from "@/shared/ui/atoms/AppPanel";
+import { CloseButton } from "@/shared/ui/chakra/close-button";
 
 import { useAddEmployee } from "@/services/hooks/mutation-hooks/use-add-employee.ts";
 import { ROUTES } from "@/config/navigation";

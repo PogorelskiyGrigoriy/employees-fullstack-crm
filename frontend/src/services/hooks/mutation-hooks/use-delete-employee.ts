@@ -5,7 +5,7 @@
 
 import { apiClient } from "@/services/api-client.implementation";
 import { useEmployeesMutation } from "./use-employee-mutation";
-import { toaster } from "@/components/ui/toaster-config";
+import { toaster } from "@/shared/ui/toaster-config";
 
 /**
  * Hook to delete an employee by ID.

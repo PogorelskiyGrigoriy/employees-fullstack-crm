@@ -7,9 +7,9 @@
 import { useRef } from "react";
 import { HStack, Spacer, Text, VStack, Box } from "@chakra-ui/react";
 
-import { EmployeeIdentity } from "@/components/shared/molecules/EmployeeIdentity";
-import { AppPanel } from "@/components/shared/atoms/AppPanel";
-import { RBACGuard } from "@/components/shared/organisms/RBACGuard";
+import { EmployeeIdentity } from "@/shared/ui/molecules/EmployeeIdentity";
+import { AppPanel } from "@/shared/ui/atoms/AppPanel";
+import { RBACGuard } from "@/shared/ui/organisms/RBACGuard";
 
 import { DeleteEmployeeAction } from "./DeleteEmployeeAction";
 import { EditEmployeeAction } from "./EditEmployeeAction";

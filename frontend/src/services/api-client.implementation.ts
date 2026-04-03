@@ -2,8 +2,8 @@
  * @module ApiClientImplementation
  * REST implementation of the ApiClient interface using centralized API_ENDPOINTS.
  */
-import { api } from "@/api/axios-instance";
-import { API_ENDPOINTS } from "@/api/endpoints";
+import { api } from "@/shared/api/axios-instance";
+import { API_ENDPOINTS } from "@/shared/api/endpoints";
 import type { AxiosRequestConfig } from "axios";
 import { 
   employeeSchema, 
@@ -12,7 +12,7 @@ import {
   type EmployeeUpdatePayload,
   type EmployeeFilter
 } from "@crm/shared/schemas/employee.schema.js";
-import type { SortState } from "@/store/sort-store";
+import type { SortState } from "@/features/sort-employees/model/sort-store";
 import type { ApiClient } from "./api-client";
 import type { StatsResponse } from "@crm/shared/schemas/stats.schema.js";
 import type { UserData } from "@crm/shared/schemas/auth.schema.js";

@@ -18,8 +18,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import { AppPanel } from "@/components/shared/atoms/AppPanel";
-import type { StatsChartProps } from "@/types/stats";
+import { AppPanel } from "@/shared/ui/atoms/AppPanel";
+import type { StatsChartProps } from "@/entities/employee/model/stats";
 
 const CHART_MARGIN = { top: 10, right: 10, left: -20, bottom: 0 } as const;
 

@@ -7,10 +7,10 @@ import { Container, Table, Text } from "@chakra-ui/react";
 import { LuShieldCheck } from "react-icons/lu";
 
 import { useAuditLogs } from "@/services/hooks/user-hooks/use-audit-logs";
-import { PageHeader } from "@/components/shared/molecules/PageHeader";
-import { AppPanel } from "@/components/shared/atoms/AppPanel";
-import { AppBadge } from "@/components/shared/atoms/AppBadge";
-import { DataStateWrapper } from "@/components/shared/organisms/DataStateWrapper";
+import { PageHeader } from "@/shared/ui/molecules/PageHeader";
+import { AppPanel } from "@/shared/ui/atoms/AppPanel";
+import { AppBadge } from "@/shared/ui/atoms/AppBadge";
+import { DataStateWrapper } from "@/shared/ui/organisms/DataStateWrapper";
 
 export const AuditLogsPage = () => {
   const { data: logs, isLoading, isError, error, refetch } = useAuditLogs();

@@ -5,8 +5,8 @@
  */
 
 import { Table, Text } from "@chakra-ui/react";
-import { CurrencyText, AgeText } from "@/components/shared/atoms/DataDisplay";
-import { AppBadge } from "@/components/shared/atoms/AppBadge";
+import { CurrencyText, AgeText } from "@/shared/ui/atoms/DataDisplay";
+import { AppBadge } from "@/shared/ui/atoms/AppBadge";
 import type { DepartmentInfo } from "@crm/shared/schemas/department.schema.js";
 
 interface Props {

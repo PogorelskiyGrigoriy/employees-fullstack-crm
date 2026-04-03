@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { authService } from '@/services/auth.implementation';
-import { useAuthStore } from '@/store/auth-store';
+import { useAuthStore } from '@/entities/user/model/auth-store';
 
 export const useAuthInit = () => {
   const { setLogin, setInitialized } = useAuthStore();

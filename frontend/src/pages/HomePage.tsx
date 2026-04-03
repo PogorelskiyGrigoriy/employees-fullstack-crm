@@ -15,18 +15,18 @@ import {
   DialogHeader,
   DialogTitle, 
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/shared/ui/chakra/dialog";
 
 import { Employees } from "@/components/Employees";
 import { Filters } from "@/components/Filters";
 import { ActiveFilters } from "@/components/ActiveFilters";
-import { PageHeader } from "@/components/shared/molecules/PageHeader";
+import { PageHeader } from "@/shared/ui/molecules/PageHeader";
 // Импортируем оба наших атома
-import { AppDialogContent, AppDialogRoot } from "@/components/shared/atoms/AppDialog";
-import { AppPanel } from "@/components/shared/atoms/AppPanel";
+import { AppDialogContent, AppDialogRoot } from "@/shared/ui/atoms/AppDialog";
+import { AppPanel } from "@/shared/ui/atoms/AppPanel";
 
 import { useEmployees } from "@/services/hooks/use-employees";
-import { useFilters } from "@/store/filters-store";
+import { useFilters } from "@/features/filter-employees/model/filters-store";
 import { employeeFilterSchema } from "@crm/shared/schemas/employee.schema.js";
 
 export const HomePage = () => {

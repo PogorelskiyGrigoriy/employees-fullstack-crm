@@ -17,12 +17,12 @@ import {
   DrawerRoot,
   DrawerTitle,
   DrawerTrigger
-} from "@/components/ui/drawer";
+} from "@/shared/ui/chakra/drawer";
 import { EmployeeForm } from "./EmployeeForm";
-import { ActionButton } from "@/components/shared/atoms/ActionButton";
+import { ActionButton } from "@/shared/ui/atoms/ActionButton";
 
 import { useUpdateEmployee } from "@/services/hooks/mutation-hooks/use-update-employee";
-import { toaster } from "@/components/ui/toaster-config";
+import { toaster } from "@/shared/ui/toaster-config";
 import type { Employee, NewEmployee } from "@crm/shared/schemas/employee.schema.js";
 
 interface Props {

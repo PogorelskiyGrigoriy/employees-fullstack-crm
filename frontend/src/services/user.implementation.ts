@@ -1,5 +1,5 @@
-import { api } from "@/api/axios-instance";
-import { API_ENDPOINTS } from "@/api/endpoints";
+import { api } from "@/shared/api/axios-instance";
+import { API_ENDPOINTS } from "@/shared/api/endpoints";
 import { type UserData, type CreateUserDto, type UpdateUserDto } from "@crm/shared/schemas/auth.schema.js";
 import { type AuditLog } from "@crm/shared/schemas/audit.schema.js";
 import type { UserService } from "./user.service";

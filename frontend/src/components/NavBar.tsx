@@ -17,22 +17,22 @@ import {
 } from "@chakra-ui/react";
 import { LuUser, LuShieldCheck } from "react-icons/lu";
 
-import { AppNavLink, NavTrigger } from "@/components/shared/atoms/AppNavLink";
+import { AppNavLink, NavTrigger } from "@/shared/ui/atoms/AppNavLink";
 import { StatisticsSelector } from "./StatisticsSelector";
-import { AppBadge } from "@/components/shared/atoms/AppBadge";
-import { RBACGuard } from "@/components/shared/organisms/RBACGuard";
-import { AppDrawerRoot, AppDrawerContent } from "@/components/shared/atoms/AppDrawer";
+import { AppBadge } from "@/shared/ui/atoms/AppBadge";
+import { RBACGuard } from "@/shared/ui/organisms/RBACGuard";
+import { AppDrawerRoot, AppDrawerContent } from "@/shared/ui/atoms/AppDrawer";
 
-import { MenuRoot, MenuTrigger, MenuContent, MenuItem } from "@/components/ui/menu";
+import { MenuRoot, MenuTrigger, MenuContent, MenuItem } from "@/shared/ui/chakra/menu";
 import { 
   DrawerTrigger, 
   DrawerHeader, 
   DrawerTitle, 
   DrawerBody 
-} from "@/components/ui/drawer";
+} from "@/shared/ui/chakra/drawer";
 
-import { useAuthStore, useIsAuthenticated, useUserRole } from "@/store/auth-store";
-import { useLogout } from "@/services/hooks/auth-hooks/use-logout";
+import { useAuthStore, useIsAuthenticated, useUserRole } from "@/entities/user/model/auth-store";
+import { useLogout } from "@/features/auth/model/use-logout";
 import { MAIN_NAV_LINKS, ADMIN_NAV_LINKS, ROUTES } from "@/config/navigation";
 
 export const Navbar = () => {

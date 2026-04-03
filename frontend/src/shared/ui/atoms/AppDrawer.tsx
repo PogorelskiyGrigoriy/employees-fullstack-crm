@@ -14,7 +14,7 @@ import {
   type DrawerRootProps,
   type DrawerContentProps,
 } from "@chakra-ui/react";
-import { DrawerCloseTrigger } from "@/components/ui/drawer";
+import { DrawerCloseTrigger } from "@/shared/ui/chakra/drawer";
 
 /**
  * Standardized Drawer Root for Mobile/Tablet.

@@ -16,9 +16,9 @@ import {
   LuCircleAlert, LuTriangleAlert 
 } from "react-icons/lu";
 
-import { getErrorData, formatValidationErrors } from "@/utils/error-helpers";
-import { AppPanel } from "@/components/shared/atoms/AppPanel";
-import { AppBadge } from "@/components/shared/atoms/AppBadge";
+import { getErrorData, formatValidationErrors } from "@/shared/utils/error-helpers";
+import { AppPanel } from "@/shared/ui/atoms/AppPanel";
+import { AppBadge } from "@/shared/ui/atoms/AppBadge";
 
 const ErrorPage = () => {
   const navigate = useNavigate();

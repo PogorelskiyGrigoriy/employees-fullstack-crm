@@ -5,7 +5,7 @@
  */
 
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuthStore, useIsAuthenticated } from "@/store/auth-store";
+import { useAuthStore, useIsAuthenticated } from "@/entities/user/model/auth-store";
 import { ROUTES } from "@/config/navigation";
 import type { UserRole } from "@crm/shared/schemas/auth.schema.js";
 

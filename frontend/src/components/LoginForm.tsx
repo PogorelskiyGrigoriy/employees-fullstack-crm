@@ -22,8 +22,8 @@ import {
 } from "@chakra-ui/react";
 import { LuLogIn, LuInfo } from "react-icons/lu";
 
-import { Field } from "@/components/ui/field";
-import { AppPanel } from "@/components/shared/atoms/AppPanel";
+import { Field } from "@/shared/ui/chakra/field";
+import { AppPanel } from "@/shared/ui/atoms/AppPanel";
 import { useLogin } from "@/services/hooks/auth-hooks/use-login";
 import { loginSchema, type LoginData } from "@crm/shared/schemas/auth.schema.js";
 

@@ -7,7 +7,7 @@ import {
   Stack,
   Toast,
 } from "@chakra-ui/react"
-import { toaster } from "./toaster-config"
+import { toaster } from "../toaster-config"
 
 export const Toaster = () => {
   return (

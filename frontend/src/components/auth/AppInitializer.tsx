@@ -5,7 +5,7 @@
  */
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useAuthStore } from '@/store/auth-store';
+import { useAuthStore } from '@/entities/user/model/auth-store';
 import { Center, Spinner, Text, VStack } from '@chakra-ui/react';
 import { authService } from '@/services/auth.implementation';
 

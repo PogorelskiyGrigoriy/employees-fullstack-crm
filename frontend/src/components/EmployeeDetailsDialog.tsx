@@ -9,16 +9,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/shared/ui/chakra/dialog";
 import { IconButton, VStack, HStack, Text, Box, Icon, Center } from "@chakra-ui/react";
 import { LuChevronRight, LuBriefcase, LuCalendar, LuWallet } from "react-icons/lu";
 
-import { EmployeeIdentity } from "@/components/shared/molecules/EmployeeIdentity";
-import { AppBadge } from "@/components/shared/atoms/AppBadge";
-import { CurrencyText, DateText } from "@/components/shared/atoms/DataDisplay";
+import { EmployeeIdentity } from "@/shared/ui/molecules/EmployeeIdentity";
+import { AppBadge } from "@/shared/ui/atoms/AppBadge";
+import { CurrencyText, DateText } from "@/shared/ui/atoms/DataDisplay";
 
 // Наши новые адаптивные атомы
-import { AppDialogRoot, AppDialogContent } from "@/components/shared/atoms/AppDialog";
+import { AppDialogRoot, AppDialogContent } from "@/shared/ui/atoms/AppDialog";
 
 import { calculateAge } from "@crm/shared/utils/date-utils";
 import type { Employee } from "@crm/shared/schemas/employee.schema.js";

@@ -10,7 +10,7 @@ import type {
   EmployeeFilter 
 } from "@crm/shared/schemas/employee.schema";
 import type { UserData } from "@crm/shared/schemas/auth.schema";
-import type { SortState } from "@/store/sort-store";
+import type { SortState } from "@/features/sort-employees/model/sort-store";
 import type { StatsResponse } from "@crm/shared/schemas/stats.schema.js";
 
 export interface ApiClient {

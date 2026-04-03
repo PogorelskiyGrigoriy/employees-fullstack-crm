@@ -7,8 +7,8 @@
 import { Table, HStack, Text } from "@chakra-ui/react";
 import type { User } from "@crm/shared/schemas/auth.schema.js";
 
-import { AppBadge } from "@/components/shared/atoms/AppBadge";
-import { ActionButton } from "@/components/shared/atoms/ActionButton";
+import { AppBadge } from "@/shared/ui/atoms/AppBadge";
+import { ActionButton } from "@/shared/ui/atoms/ActionButton";
 
 interface UserTableProps {
   readonly users: User[];

@@ -15,7 +15,7 @@ import {
   type DialogRootProps,
   useBreakpointValue // Наш спаситель
 } from "@chakra-ui/react";
-import { DialogCloseTrigger } from "@/components/ui/dialog";
+import { DialogCloseTrigger } from "@/shared/ui/chakra/dialog";
 
 export const AppDialogRoot = (props: DialogRootProps) => {
   // Явно вычисляем, мобильное ли устройство (точка md = 768px)

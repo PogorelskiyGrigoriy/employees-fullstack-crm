@@ -23,14 +23,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/shared/ui/chakra/dialog";
 
-import { Field } from "@/components/ui/field";
+import { Field } from "@/shared/ui/chakra/field";
 import { createUserSchema, type CreateUserDto } from "@crm/shared/schemas/auth.schema.js";
 import { useCreateUser } from "@/services/hooks/user-hooks/use-users";
 
 // Наши новые атомы
-import { AppDialogRoot, AppDialogContent } from "@/components/shared/atoms/AppDialog";
+import { AppDialogRoot, AppDialogContent } from "@/shared/ui/atoms/AppDialog";
 
 interface CreateUserModalProps {
   isOpen: boolean;

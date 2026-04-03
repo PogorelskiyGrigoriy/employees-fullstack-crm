@@ -11,8 +11,8 @@ import { LuTrendingUp } from "react-icons/lu";
 
 import { useStatistics } from "@/services/hooks/use-statistics";
 import { StatisticsChart } from "@/components/StatisticsChart";
-import { PageHeader } from "@/components/shared/molecules/PageHeader";
-import { DataStateWrapper } from "@/components/shared/organisms/DataStateWrapper";
+import { PageHeader } from "@/shared/ui/molecules/PageHeader";
+import { DataStateWrapper } from "@/shared/ui/organisms/DataStateWrapper";
 
 const SalaryStatisticsPage = () => {
   // Extracting all necessary states from the query hook

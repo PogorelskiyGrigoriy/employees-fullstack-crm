@@ -6,10 +6,10 @@
 
 import { Table, HStack, VStack, Text } from "@chakra-ui/react";
 
-import { EmployeeIdentity } from "@/components/shared/molecules/EmployeeIdentity";
-import { AppBadge } from "@/components/shared/atoms/AppBadge";
-import { CurrencyText, DateText } from "@/components/shared/atoms/DataDisplay";
-import { RBACGuard } from "@/components/shared/organisms/RBACGuard";
+import { EmployeeIdentity } from "@/shared/ui/molecules/EmployeeIdentity";
+import { AppBadge } from "@/shared/ui/atoms/AppBadge";
+import { CurrencyText, DateText } from "@/shared/ui/atoms/DataDisplay";
+import { RBACGuard } from "@/shared/ui/organisms/RBACGuard";
 
 import { DeleteEmployeeAction } from "./DeleteEmployeeAction";
 import { EditEmployeeAction } from "./EditEmployeeAction";

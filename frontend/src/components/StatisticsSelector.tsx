@@ -11,11 +11,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Icon, Text, HStack, Box } from "@chakra-ui/react";
 import { LuChevronDown, LuChartColumn } from "react-icons/lu";
 
-import { MenuRoot, MenuTrigger } from "@/components/ui/menu"; 
-import { AppMenuContent, AppMenuItem } from "@/components/shared/atoms/AppMenu";
+import { MenuRoot, MenuTrigger } from "@/shared/ui/chakra/menu"; 
+import { AppMenuContent, AppMenuItem } from "@/shared/ui/atoms/AppMenu";
 
 import { STATS_NAV_LINKS } from "@/config/navigation";
-import { useIsAuthenticated, useUserRole } from "@/store/auth-store";
+import { useIsAuthenticated, useUserRole } from "@/entities/user/model/auth-store";
 import type { UserRole } from "@crm/shared/schemas/auth.schema.js";
 
 export const StatisticsSelector = () => {

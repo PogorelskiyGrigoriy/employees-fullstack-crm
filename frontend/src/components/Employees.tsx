@@ -9,12 +9,12 @@ import { Box, Table, Text, VStack } from "@chakra-ui/react";
 import { EmployeeCard } from "./EmployeeCard";
 import { EmployeeRow } from "./EmployeeRow";
 import { MobileSortActions } from "./MobileSortActions";
-import { SortableColumn } from "./shared/molecules/SortableColumn";
+import { SortableColumn } from "../shared/ui/molecules/SortableColumn";
 
 import { useEmployees } from "@/services/hooks/use-employees";
-import { DataStateWrapper } from "@/components/shared/organisms/DataStateWrapper";
-import { AppPanel } from "@/components/shared/atoms/AppPanel";
-import { RBACGuard } from "@/components/shared/organisms/RBACGuard";
+import { DataStateWrapper } from "@/shared/ui/organisms/DataStateWrapper";
+import { AppPanel } from "@/shared/ui/atoms/AppPanel";
+import { RBACGuard } from "@/shared/ui/organisms/RBACGuard";
 
 export const Employees = () => {
   const { 
