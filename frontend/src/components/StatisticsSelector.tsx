@@ -21,13 +21,9 @@ import type { UserRole } from "@crm/shared/schemas/auth.schema.js";
 export const StatisticsSelector = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const isAuthenticated = useIsAuthenticated();
   const userRole = useUserRole() as UserRole | null;
 
-  /**
-   * RBAC Filtering: determines which stats pages the user can access.
-   */
   const allowedStats = useMemo(() => {
     if (!isAuthenticated || !userRole) return [];
     return STATS_NAV_LINKS.filter(link => 
@@ -35,9 +31,6 @@ export const StatisticsSelector = () => {
     );
   }, [isAuthenticated, userRole]);
 
-  /**
-   * Visual Sync: highlights the selector if the user is currently on a stats page.
-   */
   const activeStat = useMemo(() => {
     return allowedStats.find(link => link.to === location.pathname);
   }, [allowedStats, location.pathname]);
@@ -48,16 +41,25 @@ export const StatisticsSelector = () => {
     <MenuRoot positioning={{ placement: "bottom-end", offset: { mainAxis: 8 } }}>
       <MenuTrigger asChild>
         <Button 
-          variant="ghost" // Меняем на ghost для чистоты
+          variant="ghost" 
           size="sm"
-          color="white"   // Текст всегда белый
+          color="white"
           fontWeight="bold"
           px="3"
-          _hover={{ bg: "whiteAlpha.100" }}
+          // FIX: Используем сплошной цвет вместо прозрачного
+          _hover={{ bg: "bg.subtle" }}
+          // FIX: Перекрываем дефолтный белый фон при открытом меню
+          _open={{ bg: "bg.subtle" }} 
+          _active={{ bg: "bg.subtle" }}
+          _focus={{ boxShadow: "none" }}
         >
           <HStack gap="2">
-            {/* Иконка ВСЕГДА синяя */}
-            <Icon as={LuChartColumn} color="brand.500" boxSize="4" />
+            {/* Иконка подсвечивается синим, если выбрана статистика */}
+            <Icon 
+              as={LuChartColumn} 
+              color="brand.500" 
+              boxSize="4" 
+            />
             <Text letterSpacing="tight" hideBelow="md">
               {activeStat ? activeStat.label : "Analytics"} 
             </Text>
@@ -66,7 +68,6 @@ export const StatisticsSelector = () => {
         </Button>
       </MenuTrigger>
 
-      {/* New Atom: Handles borders, shadows, and z-index automatically */}
       <AppMenuContent minW="200px">
         {allowedStats.map((item) => {
           const isSelected = item.to === location.pathname;
@@ -76,13 +77,12 @@ export const StatisticsSelector = () => {
               key={item.to} 
               value={item.to}
               onClick={() => navigate(item.to)}
-              color={isSelected ? "brand.500" : "fg.default"}
+              color={isSelected ? "brand.500" : "white"}
               fontWeight={isSelected ? "bold" : "medium"}
+              _hover={{ bg: "bg.subtle" }}
             >
               <HStack justify="space-between" width="full">
                 <Text fontSize="sm">{item.label}</Text>
-                
-                {/* Active Indicator: Small glowing dot */}
                 {isSelected && (
                   <Box 
                     boxSize="2" 
