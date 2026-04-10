@@ -4,7 +4,8 @@
  * Refactored with Midnight Slate tokens and consistent "pill" styling.
  */
 
-import { HStack, MenuRoot, MenuTrigger, MenuContent, MenuItem, Button, Text, Icon, Box } from "@chakra-ui/react";
+import { HStack, Button, Text, Icon, Box } from "@chakra-ui/react";
+import { MenuRoot, MenuTrigger, MenuContent, MenuItem } from "@/components/ui/menu";
 import { 
   LuArrowDownAZ, 
   LuArrowDownWideNarrow, 
